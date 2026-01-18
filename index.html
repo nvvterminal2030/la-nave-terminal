@@ -7,11 +7,11 @@
     <style>
         body { background-color: #000; color: #00ff00; font-family: 'Courier New', monospace; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
         #lock-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; }
-        #lock-screen input { background: #000; border: 2px solid #00ff00; color: #00ff00; padding: 15px; text-align: center; font-size: 20px; outline: none; border-radius: 10px; }
+        #lock-screen input { background: #000; border: 2px solid #00ff00; color: #00ff00; padding: 15px; text-align: center; font-size: 20px; outline: none; border-radius: 10px; margin-bottom: 10px; }
         #header { padding: 15px; text-align: center; border-bottom: 2px solid #00ff00; background: #000; }
         .logo-estudio { width: 150px; height: auto; margin-bottom: 20px; filter: drop-shadow(0 0 5px #00ff00); }
         #chat { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; background: #000; }
-        .msg { padding: 12px; border-radius: 8px; max-width: 85%; font-size: 15px; }
+        .msg { padding: 12px; border-radius: 8px; max-width: 85%; font-size: 15px; line-height: 1.4; }
         .user { align-self: flex-end; border: 1px solid #00ff00; color: #fff; text-align: right; }
         .bot { align-self: flex-start; border-left: 5px solid #00ff00; color: #00ff00; background: rgba(0, 255, 0, 0.05); }
         #input-area { padding: 20px; display: flex; gap: 10px; border-top: 1px solid #00ff00; background: #000; }
@@ -22,7 +22,7 @@
 <body>
     <div id="lock-screen">
         <img src="https://i.ibb.co/VWVm0X38/image.png" class="logo-estudio">
-        <input type="password" id="passInput" placeholder="CLAVE" onkeypress="if(event.key==='Enter') checkPass()">
+        <input type="password" id="passInput" placeholder="CLAVE">
         <button onclick="checkPass()">ENTRAR</button>
     </div>
     <div id="header">
@@ -35,8 +35,8 @@
     </div>
 
     <script>
-        // PEGA AQUÍ TU LLAVE NUEVA
-        const API_KEY = "AIzaSyB_QJ1qeoa5JSX3ymcihnWiqcEbmg7pAOg"; 
+        // CONFIGURACIÓN DE NVVEX STUDIOS
+        const API_KEY = "AIzaSyCVZKLwMdr9GfTd1MxcMJ_C25-CDZOQYvM"; 
         const ACCESS_CODE = "nvv04";
 
         function checkPass() { 
@@ -58,13 +58,13 @@
             chat.scrollTop = chat.scrollHeight;
 
             try {
-                // Actualizado para Gemini 3 Flash (Motor 2.0 en API)
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`, {
+                // Usamos el modelo 1.5-flash que es el más resistente a caídas de servidor
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         contents: [{
-                            parts: [{ text: "Actúa como La Nave de NVVEX STUDIOS. Eres dominicano, de calle pero profesional, socio del usuario. El radar es tu enfoque. Responde corto y directo a: " + userMsg }]
+                            parts: [{ text: "Actúa como La Nave de NVVEX STUDIOS. Eres dominicano, profesional y directo. Tu enfoque es el radar y las tendencias de LATAM, USA y España. Responde corto y directo a: " + userMsg }]
                         }]
                     })
                 });
@@ -74,13 +74,16 @@
                 if (data.candidates && data.candidates[0].content) {
                     const botText = data.candidates[0].content.parts[0].text;
                     chat.innerHTML += `<div class="msg bot">${botText}</div>`;
+                } else if (data.error) {
+                    // Si Google falla, esto nos dirá por qué exactamente
+                    chat.innerHTML += `<div class="msg bot" style="color:orange">Socio, Google reporta: ${data.error.message}</div>`;
                 } else {
-                    chat.innerHTML += `<div class="msg bot" style="color:red">ERROR: SEÑAL BLOQUEADA O API INVÁLIDA.</div>`;
+                    chat.innerHTML += `<div class="msg bot" style="color:red">SEÑAL BLOQUEADA. REVISA TU API KEY.</div>`;
                 }
                 
                 chat.scrollTop = chat.scrollHeight;
             } catch (e) { 
-                chat.innerHTML += `<div class="msg bot" style="color:red">ERROR DE CONEXIÓN TOTAL.</div>`; 
+                chat.innerHTML += `<div class="msg bot" style="color:red">ERROR DE CONEXIÓN TOTAL. REVISA EL SERVER.</div>`; 
             }
         }
     </script>
