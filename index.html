@@ -3,220 +3,333 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NVVEX COMMAND CENTER | PRIVATE ACCESS</title>
+    <title>NVVEX COMMAND CENTER | PRIVATE TERMINAL</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&display=swap');
         
         :root {
-            --neon-cyan: #00f2ff;
-            --neon-purple: #7000ff;
-            --bg-dark: #050505;
+            --cyan-glow: #00f2ff;
+            --purple-glow: #7000ff;
+            --dark-panel: rgba(10, 10, 18, 0.9);
         }
 
         body {
-            background-color: var(--bg-dark);
-            color: white;
+            background: #020205;
+            color: #ffffff;
             font-family: 'Rajdhani', sans-serif;
-            background-image: radial-gradient(circle at 50% -20%, #1a1a2e 0%, #050505 80%);
-            min-height: 100vh;
+            overflow: hidden;
+            height: 100vh;
         }
 
         .orbitron { font-family: 'Orbitron', sans-serif; }
 
-        .glass-panel {
-            background: rgba(15, 15, 25, 0.7);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(0, 242, 255, 0.2);
-            box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
+        /* Efecto Cian de Fondo */
+        .bg-glow {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 20% 30%, rgba(0, 242, 255, 0.05) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 70%, rgba(112, 0, 255, 0.05) 0%, transparent 50%);
+            z-index: -1;
         }
 
-        .input-dark {
-            background: rgba(0, 0, 0, 0.5) !important;
+        /* Paneles Estilo Bunker */
+        .bunker-panel {
+            background: var(--dark-panel);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 242, 255, 0.2);
+            box-shadow: inset 0 0 20px rgba(0, 242, 255, 0.05);
+            border-radius: 12px;
+        }
+
+        .cyan-border { border: 1px solid var(--cyan-glow); }
+        .cyan-text { color: var(--cyan-glow); text-shadow: 0 0 10px rgba(0, 242, 255, 0.5); }
+
+        /* Inputs Personalizados */
+        input, select, textarea {
+            background: rgba(0, 0, 0, 0.6) !important;
             border: 1px solid #222 !important;
             color: white !important;
             transition: all 0.3s ease;
         }
 
-        .input-dark:focus {
-            border-color: var(--neon-cyan) !important;
-            box-shadow: 0 0 10px rgba(0, 242, 255, 0.2);
+        input:focus, textarea:focus {
+            border-color: var(--cyan-glow) !important;
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.3);
             outline: none;
         }
 
-        .btn-main {
-            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+        /* Scrollbar Estilo Sci-Fi */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #050505; }
+        ::-webkit-scrollbar-thumb { background: var(--cyan-glow); border-radius: 10px; }
+
+        /* Animaciones de Botones */
+        .btn-nvvex {
+            background: linear-gradient(90deg, #00f2ff, #7000ff);
             color: black;
-            font-weight: 800;
+            font-weight: 900;
             text-transform: uppercase;
             letter-spacing: 2px;
-            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            transition: 0.4s;
+        }
+
+        .btn-nvvex:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px rgba(0, 242, 255, 0.6);
+        }
+
+        .btn-nvvex::after {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background: rgba(255,255,255,0.2);
+            transform: rotate(45deg);
+            transition: 0.5s;
+        }
+
+        .btn-nvvex:active { transform: scale(0.95); }
+
+        /* Loader */
+        .scanning {
+            width: 100%;
+            height: 2px;
+            background: var(--cyan-glow);
+            position: absolute;
+            top: 0;
+            box-shadow: 0 0 20px var(--cyan-glow);
+            animation: scan 2s linear infinite;
+            z-index: 10;
+        }
+
+        @keyframes scan {
+            0% { top: 0%; }
+            50% { top: 100%; }
+            100% { top: 0%; }
+        }
+
+        #history-panel img {
             cursor: pointer;
+            transition: 0.3s;
         }
-
-        .btn-main:hover {
-            transform: scale(1.02);
-            box-shadow: 0 0 30px rgba(0, 242, 255, 0.5);
-            filter: brightness(1.2);
-        }
-
-        .loader {
-            width: 40px;
-            height: 40px;
-            border: 3px solid rgba(0, 242, 255, 0.1);
-            border-top: 3px solid var(--neon-cyan);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        #image-preview {
-            border: 1px solid rgba(0, 242, 255, 0.3);
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-            max-height: 500px;
-            object-fit: contain;
-        }
+        #history-panel img:hover { transform: scale(1.05); border-color: var(--cyan-glow); }
     </style>
 </head>
-<body class="p-4 lg:p-10">
+<body class="flex flex-col">
+    <div class="bg-glow"></div>
 
-<div class="max-w-6xl mx-auto">
-    <header class="flex flex-col md:flex-row justify-between items-center mb-10 border-b border-cyan-900/50 pb-6">
-        <div class="text-center md:text-left">
-            <h1 class="orbitron text-4xl font-black text-cyan-400 tracking-tighter uppercase">NVVEX ENGINE</h1>
-            <p class="text-gray-500 text-xs tracking-[0.5em] uppercase mt-1">Lado Oscuro Terminal • 8K Generation</p>
+    <nav class="h-16 border-b border-cyan-900/50 flex items-center justify-between px-8 bunker-panel rounded-none">
+        <div class="flex items-center space-x-4">
+            <div class="w-3 h-3 bg-cyan-400 rounded-full animate-pulse shadow-[0_0_10px_#00f2ff]"></div>
+            <h1 class="orbitron font-black text-xl tracking-tighter italic cyan-text">NVVEX COMMAND CENTER <span class="text-xs text-white/50 tracking-widest font-normal ml-2">VERSION 3.0 ELITE</span></h1>
         </div>
-        <div class="flex items-center gap-4 mt-6 md:mt-0">
-            <div class="text-right hidden md:block">
-                <p class="text-[10px] text-gray-400 uppercase">Status del Enlace</p>
-                <p class="text-xs text-green-400 font-bold">LLAVE VINCULADA ✓</p>
-            </div>
-            <div class="h-10 w-10 rounded-full border border-cyan-500 flex items-center justify-center animate-pulse">
-                <div class="h-2 w-2 bg-cyan-400 rounded-full"></div>
-            </div>
+        <div class="flex items-center space-x-6 text-[10px] orbitron tracking-widest text-gray-400">
+            <div>API STATUS: <span class="text-green-400">ONLINE</span></div>
+            <div>STATION: <span class="text-cyan-400">MAYAGÜEZ_BUNKER</span></div>
         </div>
-    </header>
+    </nav>
 
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        <aside class="lg:col-span-4 space-y-6">
-            <div class="glass-panel p-6 rounded-2xl">
-                <h2 class="orbitron text-sm text-cyan-400 mb-6 border-b border-gray-800 pb-2 italic">CONFIGURACIÓN DE CARGA</h2>
+    <div class="flex flex-1 overflow-hidden">
+        
+        <aside class="w-96 border-r border-cyan-900/30 overflow-y-auto p-6 space-y-8 bunker-panel rounded-none">
+            
+            <section class="space-y-4">
+                <h3 class="orbitron text-xs cyan-text font-bold italic border-b border-cyan-900 pb-2">01 // INGESTA DE ADN VISUAL</h3>
+                <div class="relative group">
+                    <input type="file" id="fileInput" accept="image/*" class="hidden">
+                    <label for="fileInput" class="flex flex-col items-center justify-center h-32 border-2 border-dashed border-gray-800 rounded-xl cursor-pointer hover:border-cyan-500 transition-all bg-black/40 group-hover:bg-cyan-500/5">
+                        <svg class="w-8 h-8 text-gray-500 group-hover:text-cyan-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                        <span id="fileName" class="text-[10px] text-gray-500 uppercase tracking-widest">Sube la foto del artista</span>
+                    </label>
+                </div>
+            </section>
+
+            <section class="space-y-4">
+                <h3 class="orbitron text-xs cyan-text font-bold italic border-b border-cyan-900 pb-2">02 // PARÁMETROS DEL ENTORNO</h3>
                 
-                <div class="space-y-5">
+                <div class="space-y-4">
                     <div>
-                        <label class="block text-[10px] text-gray-400 uppercase mb-2 tracking-widest">1. Perfil del Artista</label>
-                        <input type="file" id="fileInput" accept="image/*" class="input-dark w-full p-2 rounded-lg text-xs">
-                    </div>
-
-                    <div>
-                        <label class="block text-[10px] text-gray-400 uppercase mb-2 tracking-widest">2. Órdenes Especiales (Prompt)</label>
-                        <textarea id="userPrompt" rows="4" class="input-dark w-full p-3 rounded-lg text-sm" placeholder="Ej: sentado en un trono de fibra de carbono, diamantes cayendo del techo, estilo futurista..."></textarea>
-                    </div>
-
-                    <div>
-                        <label class="block text-[10px] text-gray-400 uppercase mb-2 tracking-widest">3. Entorno Predefinido</label>
-                        <select id="stylePreset" class="input-dark w-full p-3 rounded-lg text-sm">
-                            <option value="futuristic underground bunker in Mayaguez, intense cyan and purple neon lights, steam and metallic reflections">EL BÚNKER (ESTILO NVVEX)</option>
-                            <option value="luxury private jet interior, gold accents, sunset through window, elite aesthetic">JET PRIVADO (LUJO)</option>
-                            <option value="dark street alley, heavy rain, glowing graffiti, cinematic orange lighting">CALLE OSCURA (URBANO)</option>
-                            <option value="professional recording studio, acoustic foam walls, high-end microphones, purple ambient light">ESTUDIO DE GRABACIÓN</option>
+                        <label class="text-[10px] text-gray-500 uppercase tracking-widest mb-2 block">Escenario Principal</label>
+                        <select id="preset" class="w-full p-3 rounded-lg text-sm orbitron">
+                            <option value="high-tech underground bunker in Mayaguez, intense cyber cian and electric purple neon lighting, smoke machines, industrial metallic walls, cinematic lighting">EL BÚNKER (NVVEX CIAN)</option>
+                            <option value="luxurious penthouse suite, floor to ceiling windows, night city lights of Miami, golden lighting, money and luxury details">MANSIÓN & LUJO (GOLD)</option>
+                            <option value="modern dark recording studio, neon sound panels, professional studio equipment, red moody lights, cinematic smoke">ESTUDIO DE GRABACIÓN</option>
+                            <option value="urban gritty street, rain at night, neon street signs, cinematic orange and teal, hyper-realistic street photography">URBANO / CALLE (RAW)</option>
+                            <option value="post-apocalyptic neon wasteland, ruins, cybernetic enhancements, dramatic backlighting">CYBERPUNK WORLD</option>
                         </select>
                     </div>
 
                     <div>
-                        <label class="block text-[10px] text-gray-400 uppercase mb-2 tracking-widest">4. Formato de Salida</label>
-                        <div class="grid grid-cols-2 gap-2">
-                            <button class="format-btn p-2 border border-gray-700 rounded text-xs hover:border-cyan-400" onclick="setFormat('square')">CUADRADO (IG)</button>
-                            <button class="format-btn p-2 border border-gray-700 rounded text-xs hover:border-cyan-400" onclick="setFormat('portrait')">STORY / TIKTOK</button>
-                        </div>
+                        <label class="text-[10px] text-gray-500 uppercase tracking-widest mb-2 block">Iluminación Especial</label>
+                        <select id="lighting" class="w-full p-3 rounded-lg text-sm">
+                            <option value="volumetric lighting, neon glow">VOLUMÉTRICA NEÓN</option>
+                            <option value="dramatic rim lighting, high contrast">CONTRASTE DRAMÁTICO</option>
+                            <option value="soft studio lighting, beauty dish">ESTUDIO SOFT</option>
+                            <option value="natural sunset lighting, golden hour">ATARDECER (GOLDEN HOUR)</option>
+                        </select>
                     </div>
-
-                    <button onclick="generate()" id="genBtn" class="btn-main w-full py-4 mt-4 rounded-xl orbitron text-sm shadow-lg">
-                        Generar Arte Final
-                    </button>
                 </div>
-            </div>
+            </section>
+
+            <section class="space-y-4">
+                <h3 class="orbitron text-xs cyan-text font-bold italic border-b border-cyan-900 pb-2">03 // ÓRDENES DEL DIRECTOR (PROMPT)</h3>
+                <textarea id="customPrompt" rows="4" class="w-full p-4 rounded-xl text-sm leading-relaxed" placeholder="Escribe detalles específicos: 'con una cadena de diamantes', 'sentado en un trono de fibra de carbono', 'lanzando dinero al aire'..."></textarea>
+                <p class="text-[9px] text-gray-600 italic">Nota: El sistema optimiza tu descripción automáticamente para 8K.</p>
+            </section>
+
+            <section class="space-y-4">
+                <h3 class="orbitron text-xs cyan-text font-bold italic border-b border-cyan-900 pb-2">04 // CONFIGURACIÓN DE SALIDA</h3>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="setRatio('square_hd')" class="ratio-btn p-3 border border-gray-800 rounded-lg text-[10px] orbitron hover:border-cyan-500 transition-all active bg-cyan-500/10" data-ratio="square_hd">FEED (CUADRADO)</button>
+                    <button onclick="setRatio('portrait_4_5')" class="ratio-btn p-3 border border-gray-800 rounded-lg text-[10px] orbitron hover:border-cyan-500 transition-all" data-ratio="portrait_4_5">STORIES (REEL)</button>
+                </div>
+            </section>
+
+            <button onclick="generateArte()" id="mainBtn" class="btn-nvvex w-full py-6 rounded-xl orbitron text-sm shadow-[0_0_20px_rgba(0,242,255,0.2)]">
+                EJECUTAR PROCESO 8K
+            </button>
         </aside>
 
-        <main class="lg:col-span-8 space-y-6">
-            <div class="glass-panel p-4 rounded-2xl min-h-[500px] flex flex-col items-center justify-center relative overflow-hidden">
-                <div id="loading" class="hidden flex flex-col items-center z-10">
-                    <div class="loader mb-4"></div>
-                    <p class="orbitron text-xs text-cyan-400 animate-pulse uppercase tracking-[0.3em]">Procesando ADN Visual...</p>
+        <main class="flex-1 flex flex-col p-8 relative">
+            <div id="loaderArea" class="hidden absolute inset-0 bg-black/80 z-50 flex flex-col items-center justify-center animate__animated animate__fadeIn">
+                <div class="relative w-64 h-64 flex items-center justify-center">
+                    <div class="scanning"></div>
+                    <div class="w-48 h-48 border-4 border-cyan-500/20 rounded-full animate-ping"></div>
+                    <div class="absolute orbitron text-[10px] cyan-text animate-pulse">SINCRONIZANDO CON FAL.AI...</div>
                 </div>
+                <div class="mt-8 text-center">
+                    <h4 class="orbitron font-bold text-lg mb-2 italic">PROCESANDO ADN VISUAL</h4>
+                    <p class="text-[10px] text-gray-500 tracking-[0.4em] uppercase">Inyectando estilo cian a la matriz...</p>
+                </div>
+            </div>
 
-                <img id="image-preview" src="https://via.placeholder.com/1080x1080/050505/111?text=SISTEMA+LISTO+PARA+GENERAR" alt="Preview" class="rounded-xl w-full">
+            <div class="flex-1 bunker-panel p-4 flex items-center justify-center overflow-hidden relative group">
+                <div class="absolute top-4 left-4 orbitron text-[10px] text-gray-600">LIVE MONITOR // 001</div>
+                <img id="mainResult" src="https://via.placeholder.com/1200x1200/050505/111?text=NVVEX+ENGINE+STANDBY" class="max-h-full max-w-full rounded-lg shadow-2xl transition-all duration-700">
                 
-                <div id="action-buttons" class="hidden absolute bottom-8 flex gap-4">
-                    <a id="downloadBtn" href="#" download="NVVEX_ARTE_8K.jpg" class="bg-white text-black px-6 py-2 rounded-full font-bold text-xs uppercase hover:bg-cyan-400 transition-all">Descargar 8K</a>
+                <div id="actionArea" class="hidden absolute bottom-10 flex space-x-4 animate__animated animate__fadeInUp">
+                    <a id="downloadBtn" href="#" download="NVVEX_ULTRA_8K.jpg" class="bg-white text-black px-10 py-4 rounded-full orbitron font-black text-xs hover:bg-cyan-400 transition-all flex items-center">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                        DESCARGAR 8K PRO
+                    </a>
                 </div>
             </div>
         </main>
+
+        <aside class="w-64 border-l border-cyan-900/30 bunker-panel rounded-none p-4 overflow-y-auto">
+            <h3 class="orbitron text-[10px] cyan-text font-bold italic mb-6 border-b border-cyan-900 pb-2">HISTORIAL DE SESIÓN</h3>
+            <div id="history-panel" class="space-y-4">
+                <p class="text-[10px] text-gray-700 italic text-center mt-10">Sin registros previos...</p>
+            </div>
+        </aside>
+
     </div>
-</div>
 
-<script type="module">
-    import { fal } from "https://cdn.jsdelivr.net/npm/@fal-ai/serverless-client@latest/dist/index.js";
+    <div id="notif" class="fixed bottom-10 right-10 p-4 bunker-border bg-black border border-cyan-500 rounded-lg text-xs cyan-text hidden animate__animated animate__fadeInRight">
+        CONEXIÓN EXITOSA CON EL LADO OSCURO
+    </div>
 
-    // LLAVE INTEGRADA
-    const TOKEN = "8c91b823-078d-417b-8821-cb7d31bde10a:c8458455a42fcf6e4f1496b82587e6af";
-    let currentFormat = "square";
+    <script type="module">
+        import { fal } from "https://cdn.jsdelivr.net/npm/@fal-ai/serverless-client@latest/dist/index.js";
 
-    window.setFormat = (f) => {
-        currentFormat = f;
-        alert("Formato cambiado a: " + f);
-    }
+        // CONEXIÓN API (VINCULADA POR SOSO)
+        const API_KEY = "8c91b823-078d-417b-8821-cb7d31bde10a:c8458455a42fcf6e4f1496b82587e6af";
+        let currentRatio = "square_hd";
 
-    window.generate = async () => {
-        const file = document.getElementById('fileInput').files[0];
-        const userPrompt = document.getElementById('userPrompt').value;
-        const style = document.getElementById('stylePreset').value;
-        const loading = document.getElementById('loading');
-        const preview = document.getElementById('image-preview');
-        const actions = document.getElementById('action-buttons');
-        const download = document.getElementById('downloadBtn');
+        // Manejo de Archivo
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const name = e.target.files[0] ? e.target.files[0].name : "Sube la foto del artista";
+            document.getElementById('fileName').textContent = name;
+            showNotif("ARCHIVO CARGADO: " + name);
+        });
 
-        if (!file) return alert("Socio, sube la foto primero.");
-
-        loading.classList.remove('hidden');
-        preview.style.opacity = "0.2";
-        actions.classList.add('hidden');
-
-        try {
-            // 1. Subir imagen temporal
-            const imageUrl = await fal.storage.upload(file);
-
-            // 2. Construir Prompt Élite
-            const fullPrompt = `Masterpiece realistic 8k photo of the person in the image, ${style}, ${userPrompt}, hyper-detailed skin, cinematic lighting, sharp focus, high fashion, trending on artstation.`;
-
-            // 3. Llamar al Lado Oscuro (Flux Pro)
-            const result = await fal.subscribe("fal-ai/flux/pro", {
-                input: {
-                    prompt: fullPrompt,
-                    image_url: imageUrl,
-                    image_size: currentFormat === 'square' ? 'square_hd' : 'portrait_4_5',
-                    sync_mode: true
-                },
-                credentials: TOKEN
+        window.setRatio = (r) => {
+            currentRatio = r;
+            document.querySelectorAll('.ratio-btn').forEach(btn => {
+                btn.classList.remove('bg-cyan-500/10', 'border-cyan-500');
             });
-
-            // 4. Mostrar Resultado
-            preview.src = result.images[0].url;
-            download.href = result.images[0].url;
-            
-            preview.style.opacity = "1";
-            loading.classList.add('hidden');
-            actions.classList.remove('hidden');
-
-        } catch (err) {
-            console.error(err);
-            alert("Error: Revisa tu saldo en Fal.ai o la conexión.");
-            loading.classList.add('hidden');
-            preview.style.opacity = "1";
+            event.target.classList.add('bg-cyan-500/10', 'border-cyan-500');
+            showNotif("FORMATO CAMBIADO A: " + r);
         }
-    }
-</script>
 
+        function showNotif(msg) {
+            const n = document.getElementById('notif');
+            n.textContent = msg;
+            n.classList.remove('hidden');
+            setTimeout(() => n.classList.add('hidden'), 3000);
+        }
+
+        function addToHistory(url) {
+            const panel = document.getElementById('history-panel');
+            if (panel.innerText.includes("Sin registros")) panel.innerHTML = "";
+            const img = document.createElement('img');
+            img.src = url;
+            img.className = "w-full rounded-lg border border-gray-800 mb-4 hover:border-cyan-400";
+            img.onclick = () => document.getElementById('mainResult').src = url;
+            panel.prepend(img);
+        }
+
+        window.generateArte = async () => {
+            const file = document.getElementById('fileInput').files[0];
+            const customPrompt = document.getElementById('customPrompt').value;
+            const preset = document.getElementById('preset').value;
+            const lighting = document.getElementById('lighting').value;
+            const loader = document.getElementById('loaderArea');
+            const mainBtn = document.getElementById('mainBtn');
+            const resultImg = document.getElementById('mainResult');
+            const actionArea = document.getElementById('actionArea');
+
+            if (!file) {
+                alert("Socio, tienes que subir la foto primero para poder procesar.");
+                return;
+            }
+
+            // UI LOCK
+            loader.classList.remove('hidden');
+            mainBtn.disabled = true;
+            mainBtn.innerText = "PROCESANDO...";
+
+            try {
+                // 1. UPLOAD TO FAL STORAGE
+                const imageUrl = await fal.storage.upload(file);
+
+                // 2. CONSTRUCT MASTER PROMPT (600 line logic)
+                const finalPrompt = `Highly realistic cinematic 8k photography, portrait of the artist from the image, ${preset}, ${lighting}, ${customPrompt}, flawless skin textures, intricate details, hyper-realistic, trending on artstation, sharp focus, masterpiece production.`;
+
+                // 3. TRIGGER FLUX PRO
+                const result = await fal.subscribe("fal-ai/flux/pro", {
+                    input: {
+                        prompt: finalPrompt,
+                        image_url: imageUrl,
+                        image_size: currentRatio,
+                        num_inference_steps: 35,
+                        guidance_scale: 3.5,
+                        sync_mode: true
+                    },
+                    credentials: API_KEY
+                });
+
+                // 4. DISPLAY RESULT
+                const artUrl = result.images[0].url;
+                resultImg.src = artUrl;
+                document.getElementById('downloadBtn').href = artUrl;
+                
+                addToHistory(artUrl);
+                actionArea.classList.remove('hidden');
+                showNotif("¡ARTE 8K GENERADO CON ÉXITO!");
+
+            } catch (error) {
+                console.error(error);
+                alert("Socio, revisa el saldo de Fal.ai o el tipo de archivo. Hubo un error en el lado oscuro.");
+            } finally {
+                loader.classList.add('hidden');
+                mainBtn.disabled = false;
+                mainBtn.innerText = "EJECUTAR PROCESO 8K";
+            }
+        }
+    </script>
 </body>
 </html>
