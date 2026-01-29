@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NVVEX AI ENGINE | EL BÚNKER</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+        body {
+            background: radial-gradient(circle at center, #1a1a2e 0%, #0a0a0a 100%);
+            color: #fff;
+            font-family: 'Orbitron', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(0, 242, 255, 0.2);
+            border-radius: 24px;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 242, 255, 0.1);
+        }
+        .neon-text { color: #00f2ff; text-shadow: 0 0 10px rgba(0, 242, 255, 0.7); }
+        .btn-fuego {
+            background: linear-gradient(90deg, #00f2ff, #7000ff);
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.4);
+        }
+        .btn-fuego:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 25px rgba(0, 242, 255, 0.6);
+        }
+        #resultado {
+            border: 2px solid #00f2ff;
+            box-shadow: 0 0 30px rgba(0, 242, 255, 0.3);
+            display: none;
+        }
+        .loader {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-left-color: #00f2ff;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            display: none;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+<div class="glass-card p-8 w-full max-w-lg mx-4 text-center">
+    <h1 class="text-3xl font-bold mb-2 neon-text tracking-widest">NVVEX ENGINE</h1>
+    <p class="text-xs text-gray-400 mb-8 uppercase tracking-widest">Mayagüez Edition • 8K Ultra Resolution</p>
+    
+    <div class="space-y-6">
+        <div class="text-left">
+            <label class="block text-xs mb-2 text-cyan-400">PASO 1: SELECCIONA AL ARTISTA</label>
+            <input type="file" id="fotoArtista" accept="image/*" 
+                   class="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-cyan-900 file:text-cyan-400 hover:file:bg-cyan-800 cursor-pointer">
+        </div>
+
+        <button onclick="generarArte()" class="btn-fuego w-full py-4 rounded-xl font-bold text-black uppercase tracking-widest">
+            🔥 Ejecutar El Búnker 8K
+        </button>
+
+        <div id="loadingArea" class="flex flex-col items-center justify-center space-y-3 py-4 hidden">
+            <div class="loader"></div>
+            <p class="text-cyan-400 text-xs animate-pulse">PROCESANDO ADN DEL ARTISTA EN EL BÚNKER...</p>
+        </div>
+
+        <div class="relative mt-6">
+            <img id="resultado" class="w-full rounded-lg" src="" alt="Arte Final">
+            <p id="msgFinal" class="hidden mt-4 text-green-400 text-sm">✓ ARTE GENERADO CON ÉXITO</p>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { fal } from "https://cdn.jsdelivr.net/npm/@fal-ai/serverless-client@latest/dist/index.js";
+
+    // TU LLAVE MAESTRA YA INTEGRADA
+    const MI_LLAVE = "8c91b823-078d-417b-8821-cb7d31bde10a:c8458455a42fcf6e4f1496b82587e6af";
+
+    window.generarArte = async () => {
+        const fileInput = document.getElementById('fotoArtista');
+        const loadingArea = document.getElementById('loadingArea');
+        const resultado = document.getElementById('resultado');
+        const msgFinal = document.getElementById('msgFinal');
+        const loader = document.querySelector('.loader');
+
+        if (!fileInput.files[0]) {
+            alert("Socio, tienes que subir la foto del artista primero.");
+            return;
+        }
+
+        loadingArea.classList.remove('hidden');
+        loader.style.display = "block";
+        resultado.style.display = "none";
+        msgFinal.classList.add('hidden');
+
+        try {
+            // Subida de imagen
+            const urlImagen = await fal.storage.upload(fileInput.files[0]);
+
+            // Motor Flux Pro con el estilo exacto de NVVEX
+            const response = await fal.subscribe("fal-ai/flux/pro", {
+                input: {
+                    prompt: "Ultra-realistic 8k cinematic photo of the artist, inside a dark futuristic industrial bunker in Mayaguez, intense cyan and electric purple neon lights, steam and smoke in the background, reflections on metal walls, high fashion urban clothing, sharp focus, masterpiece textures, no text.",
+                    image_url: urlImagen,
+                    sync_mode: true
+                },
+                credentials: MI_LLAVE
+            });
+
+            resultado.src = response.images[0].url;
+            resultado.style.display = "block";
+            loadingArea.classList.add('hidden');
+            msgFinal.classList.remove('hidden');
+
+        } catch (error) {
+            console.error(error);
+            alert("Error en la conexión. Revisa tus créditos en Fal.ai.");
+            loadingArea.classList.add('hidden');
+        }
+    }
+</script>
+
+</body>
+</html>
