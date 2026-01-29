@@ -3,128 +3,217 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NVVEX AI ENGINE | EL BÚNKER</title>
+    <title>NVVEX COMMAND CENTER | PRIVATE ACCESS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap');
+        
+        :root {
+            --neon-cyan: #00f2ff;
+            --neon-purple: #7000ff;
+            --bg-dark: #050505;
+        }
+
         body {
-            background: radial-gradient(circle at center, #1a1a2e 0%, #0a0a0a 100%);
-            color: #fff;
-            font-family: 'Orbitron', sans-serif;
+            background-color: var(--bg-dark);
+            color: white;
+            font-family: 'Rajdhani', sans-serif;
+            background-image: radial-gradient(circle at 50% -20%, #1a1a2e 0%, #050505 80%);
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
-        .glass-card {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(15px);
+
+        .orbitron { font-family: 'Orbitron', sans-serif; }
+
+        .glass-panel {
+            background: rgba(15, 15, 25, 0.7);
+            backdrop-filter: blur(20px);
             border: 1px solid rgba(0, 242, 255, 0.2);
-            border-radius: 24px;
-            box-shadow: 0 0 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 242, 255, 0.1);
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
         }
-        .neon-text { color: #00f2ff; text-shadow: 0 0 10px rgba(0, 242, 255, 0.7); }
-        .btn-fuego {
-            background: linear-gradient(90deg, #00f2ff, #7000ff);
+
+        .input-dark {
+            background: rgba(0, 0, 0, 0.5) !important;
+            border: 1px solid #222 !important;
+            color: white !important;
             transition: all 0.3s ease;
-            box-shadow: 0 0 15px rgba(0, 242, 255, 0.4);
         }
-        .btn-fuego:hover {
+
+        .input-dark:focus {
+            border-color: var(--neon-cyan) !important;
+            box-shadow: 0 0 10px rgba(0, 242, 255, 0.2);
+            outline: none;
+        }
+
+        .btn-main {
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+            color: black;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.4s ease;
+            cursor: pointer;
+        }
+
+        .btn-main:hover {
             transform: scale(1.02);
-            box-shadow: 0 0 25px rgba(0, 242, 255, 0.6);
+            box-shadow: 0 0 30px rgba(0, 242, 255, 0.5);
+            filter: brightness(1.2);
         }
-        #resultado {
-            border: 2px solid #00f2ff;
-            box-shadow: 0 0 30px rgba(0, 242, 255, 0.3);
-            display: none;
-        }
+
         .loader {
-            border: 4px solid rgba(255, 255, 255, 0.1);
-            border-left-color: #00f2ff;
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(0, 242, 255, 0.1);
+            border-top: 3px solid var(--neon-cyan);
             border-radius: 50%;
-            width: 30px;
-            height: 30px;
             animation: spin 1s linear infinite;
-            display: none;
         }
-        @keyframes spin { to { transform: rotate(360deg); } }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        #image-preview {
+            border: 1px solid rgba(0, 242, 255, 0.3);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            max-height: 500px;
+            object-fit: contain;
+        }
     </style>
 </head>
-<body>
+<body class="p-4 lg:p-10">
 
-<div class="glass-card p-8 w-full max-w-lg mx-4 text-center">
-    <h1 class="text-3xl font-bold mb-2 neon-text tracking-widest">NVVEX ENGINE</h1>
-    <p class="text-xs text-gray-400 mb-8 uppercase tracking-widest">Mayagüez Edition • 8K Ultra Resolution</p>
-    
-    <div class="space-y-6">
-        <div class="text-left">
-            <label class="block text-xs mb-2 text-cyan-400">PASO 1: SELECCIONA AL ARTISTA</label>
-            <input type="file" id="fotoArtista" accept="image/*" 
-                   class="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-cyan-900 file:text-cyan-400 hover:file:bg-cyan-800 cursor-pointer">
+<div class="max-w-6xl mx-auto">
+    <header class="flex flex-col md:flex-row justify-between items-center mb-10 border-b border-cyan-900/50 pb-6">
+        <div class="text-center md:text-left">
+            <h1 class="orbitron text-4xl font-black text-cyan-400 tracking-tighter uppercase">NVVEX ENGINE</h1>
+            <p class="text-gray-500 text-xs tracking-[0.5em] uppercase mt-1">Lado Oscuro Terminal • 8K Generation</p>
         </div>
-
-        <button onclick="generarArte()" class="btn-fuego w-full py-4 rounded-xl font-bold text-black uppercase tracking-widest">
-            🔥 Ejecutar El Búnker 8K
-        </button>
-
-        <div id="loadingArea" class="flex flex-col items-center justify-center space-y-3 py-4 hidden">
-            <div class="loader"></div>
-            <p class="text-cyan-400 text-xs animate-pulse">PROCESANDO ADN DEL ARTISTA EN EL BÚNKER...</p>
+        <div class="flex items-center gap-4 mt-6 md:mt-0">
+            <div class="text-right hidden md:block">
+                <p class="text-[10px] text-gray-400 uppercase">Status del Enlace</p>
+                <p class="text-xs text-green-400 font-bold">LLAVE VINCULADA ✓</p>
+            </div>
+            <div class="h-10 w-10 rounded-full border border-cyan-500 flex items-center justify-center animate-pulse">
+                <div class="h-2 w-2 bg-cyan-400 rounded-full"></div>
+            </div>
         </div>
+    </header>
 
-        <div class="relative mt-6">
-            <img id="resultado" class="w-full rounded-lg" src="" alt="Arte Final">
-            <p id="msgFinal" class="hidden mt-4 text-green-400 text-sm">✓ ARTE GENERADO CON ÉXITO</p>
-        </div>
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <aside class="lg:col-span-4 space-y-6">
+            <div class="glass-panel p-6 rounded-2xl">
+                <h2 class="orbitron text-sm text-cyan-400 mb-6 border-b border-gray-800 pb-2 italic">CONFIGURACIÓN DE CARGA</h2>
+                
+                <div class="space-y-5">
+                    <div>
+                        <label class="block text-[10px] text-gray-400 uppercase mb-2 tracking-widest">1. Perfil del Artista</label>
+                        <input type="file" id="fileInput" accept="image/*" class="input-dark w-full p-2 rounded-lg text-xs">
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] text-gray-400 uppercase mb-2 tracking-widest">2. Órdenes Especiales (Prompt)</label>
+                        <textarea id="userPrompt" rows="4" class="input-dark w-full p-3 rounded-lg text-sm" placeholder="Ej: sentado en un trono de fibra de carbono, diamantes cayendo del techo, estilo futurista..."></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] text-gray-400 uppercase mb-2 tracking-widest">3. Entorno Predefinido</label>
+                        <select id="stylePreset" class="input-dark w-full p-3 rounded-lg text-sm">
+                            <option value="futuristic underground bunker in Mayaguez, intense cyan and purple neon lights, steam and metallic reflections">EL BÚNKER (ESTILO NVVEX)</option>
+                            <option value="luxury private jet interior, gold accents, sunset through window, elite aesthetic">JET PRIVADO (LUJO)</option>
+                            <option value="dark street alley, heavy rain, glowing graffiti, cinematic orange lighting">CALLE OSCURA (URBANO)</option>
+                            <option value="professional recording studio, acoustic foam walls, high-end microphones, purple ambient light">ESTUDIO DE GRABACIÓN</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] text-gray-400 uppercase mb-2 tracking-widest">4. Formato de Salida</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button class="format-btn p-2 border border-gray-700 rounded text-xs hover:border-cyan-400" onclick="setFormat('square')">CUADRADO (IG)</button>
+                            <button class="format-btn p-2 border border-gray-700 rounded text-xs hover:border-cyan-400" onclick="setFormat('portrait')">STORY / TIKTOK</button>
+                        </div>
+                    </div>
+
+                    <button onclick="generate()" id="genBtn" class="btn-main w-full py-4 mt-4 rounded-xl orbitron text-sm shadow-lg">
+                        Generar Arte Final
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <main class="lg:col-span-8 space-y-6">
+            <div class="glass-panel p-4 rounded-2xl min-h-[500px] flex flex-col items-center justify-center relative overflow-hidden">
+                <div id="loading" class="hidden flex flex-col items-center z-10">
+                    <div class="loader mb-4"></div>
+                    <p class="orbitron text-xs text-cyan-400 animate-pulse uppercase tracking-[0.3em]">Procesando ADN Visual...</p>
+                </div>
+
+                <img id="image-preview" src="https://via.placeholder.com/1080x1080/050505/111?text=SISTEMA+LISTO+PARA+GENERAR" alt="Preview" class="rounded-xl w-full">
+                
+                <div id="action-buttons" class="hidden absolute bottom-8 flex gap-4">
+                    <a id="downloadBtn" href="#" download="NVVEX_ARTE_8K.jpg" class="bg-white text-black px-6 py-2 rounded-full font-bold text-xs uppercase hover:bg-cyan-400 transition-all">Descargar 8K</a>
+                </div>
+            </div>
+        </main>
     </div>
 </div>
 
 <script type="module">
     import { fal } from "https://cdn.jsdelivr.net/npm/@fal-ai/serverless-client@latest/dist/index.js";
 
-    // TU LLAVE MAESTRA YA INTEGRADA
-    const MI_LLAVE = "8c91b823-078d-417b-8821-cb7d31bde10a:c8458455a42fcf6e4f1496b82587e6af";
+    // LLAVE INTEGRADA
+    const TOKEN = "8c91b823-078d-417b-8821-cb7d31bde10a:c8458455a42fcf6e4f1496b82587e6af";
+    let currentFormat = "square";
 
-    window.generarArte = async () => {
-        const fileInput = document.getElementById('fotoArtista');
-        const loadingArea = document.getElementById('loadingArea');
-        const resultado = document.getElementById('resultado');
-        const msgFinal = document.getElementById('msgFinal');
-        const loader = document.querySelector('.loader');
+    window.setFormat = (f) => {
+        currentFormat = f;
+        alert("Formato cambiado a: " + f);
+    }
 
-        if (!fileInput.files[0]) {
-            alert("Socio, tienes que subir la foto del artista primero.");
-            return;
-        }
+    window.generate = async () => {
+        const file = document.getElementById('fileInput').files[0];
+        const userPrompt = document.getElementById('userPrompt').value;
+        const style = document.getElementById('stylePreset').value;
+        const loading = document.getElementById('loading');
+        const preview = document.getElementById('image-preview');
+        const actions = document.getElementById('action-buttons');
+        const download = document.getElementById('downloadBtn');
 
-        loadingArea.classList.remove('hidden');
-        loader.style.display = "block";
-        resultado.style.display = "none";
-        msgFinal.classList.add('hidden');
+        if (!file) return alert("Socio, sube la foto primero.");
+
+        loading.classList.remove('hidden');
+        preview.style.opacity = "0.2";
+        actions.classList.add('hidden');
 
         try {
-            // Subida de imagen
-            const urlImagen = await fal.storage.upload(fileInput.files[0]);
+            // 1. Subir imagen temporal
+            const imageUrl = await fal.storage.upload(file);
 
-            // Motor Flux Pro con el estilo exacto de NVVEX
-            const response = await fal.subscribe("fal-ai/flux/pro", {
+            // 2. Construir Prompt Élite
+            const fullPrompt = `Masterpiece realistic 8k photo of the person in the image, ${style}, ${userPrompt}, hyper-detailed skin, cinematic lighting, sharp focus, high fashion, trending on artstation.`;
+
+            // 3. Llamar al Lado Oscuro (Flux Pro)
+            const result = await fal.subscribe("fal-ai/flux/pro", {
                 input: {
-                    prompt: "Ultra-realistic 8k cinematic photo of the artist, inside a dark futuristic industrial bunker in Mayaguez, intense cyan and electric purple neon lights, steam and smoke in the background, reflections on metal walls, high fashion urban clothing, sharp focus, masterpiece textures, no text.",
-                    image_url: urlImagen,
+                    prompt: fullPrompt,
+                    image_url: imageUrl,
+                    image_size: currentFormat === 'square' ? 'square_hd' : 'portrait_4_5',
                     sync_mode: true
                 },
-                credentials: MI_LLAVE
+                credentials: TOKEN
             });
 
-            resultado.src = response.images[0].url;
-            resultado.style.display = "block";
-            loadingArea.classList.add('hidden');
-            msgFinal.classList.remove('hidden');
+            // 4. Mostrar Resultado
+            preview.src = result.images[0].url;
+            download.href = result.images[0].url;
+            
+            preview.style.opacity = "1";
+            loading.classList.add('hidden');
+            actions.classList.remove('hidden');
 
-        } catch (error) {
-            console.error(error);
-            alert("Error en la conexión. Revisa tus créditos en Fal.ai.");
-            loadingArea.classList.add('hidden');
+        } catch (err) {
+            console.error(err);
+            alert("Error: Revisa tu saldo en Fal.ai o la conexión.");
+            loading.classList.add('hidden');
+            preview.style.opacity = "1";
         }
     }
 </script>
