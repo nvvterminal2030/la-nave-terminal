@@ -232,7 +232,7 @@
 
         // VINCULACIÓN DE MOTORES BLINDADA (NVVEX STUDIOS)
         const FAL_KEY = "8c91b823-078d-417b-8821-cb7d31bde10a:c8458455a42fcf6e4f1496b82587e6af";
-        const HF_TOKEN = "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";
+        const HF_TOKEN = "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";
         
         let currentRatio = "square_hd";
 
@@ -309,7 +309,7 @@
             const response = await fetch("https://api-inference.huggingface.co/models/black-forest-labs/FLUX.1-schnell", {
                 method: "POST",
                 headers: { 
-                    "Authorization": "Bearer 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",
+                    "Authorization": "Bearer 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",
                     "Content-Type": "application/json" 
                 },
                 body: JSON.stringify({ inputs: masterPrompt })
