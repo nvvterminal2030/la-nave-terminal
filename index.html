@@ -305,16 +305,20 @@
                     });
                     artUrl = result.images[0].url;
                 } else {
-                    // Motor Hugging Face (Gratis): Jala la tecnología automáticamente
-                    const response = await fetch("https://api-inference.huggingface.co/models/black-forest-labs/FLUX.1-schnell", {
-                        method: "POST",
-                        headers: { "Authorization": `Bearer ${HF_TOKEN}`, "Content-Type": "application/json" },
-                        body: JSON.stringify({ inputs: masterPrompt })
-                    });
-                    if (!response.ok) throw new Error("Fallo de enlace");
-                    const blob = await response.blob();
-                    artUrl = URL.createObjectURL(blob);
-                }
+            // Motor Hugging Face (Gratis): Jala la tecnología automáticamente
+            const response = await fetch("https://api-inference.huggingface.co/models/black-forest-labs/FLUX.1-schnell", {
+                method: "POST",
+                headers: { 
+                    "Authorization": "Bearer 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",
+                    "Content-Type": "application/json" 
+                },
+                body: JSON.stringify({ inputs: masterPrompt })
+            });
+
+            if (!response.ok) throw new Error("Fallo de enlace");
+            const blob = await response.blob();
+            artUrl = URL.createObjectURL(blob);
+        }
 
                 document.getElementById('mainResult').src = artUrl;
                 document.getElementById('downloadBtn').href = artUrl;
