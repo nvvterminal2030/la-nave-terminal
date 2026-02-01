@@ -3,406 +3,442 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NVVEX Intelligence Central</title>
+    <title>NVVEX | CENTRAL DE INTELIGENCIA</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
-        /* --- ESTÉTICA DE LA NAVE (CSS) --- */
+        /* ==========================================
+        [ESTÉTICA DE LA NAVE] : CSS MAESTRO
+        ==========================================
+        */
         :root {
             --morado-neon: #a855f7;
-            --morado-oscuro: #2e1065;
-            --negro-mate: #0a0a0a;
-            --cristal: rgba(255, 255, 255, 0.05);
-            --borde-glow: rgba(168, 85, 247, 0.3);
+            --morado-glow: rgba(168, 85, 247, 0.6);
+            --negro-mate: #050505;
+            --cristal: rgba(255, 255, 255, 0.03);
+            --borde: rgba(168, 85, 247, 0.2);
+            --exito: #22c55e;
         }
 
         body {
             background-color: var(--negro-mate);
-            color: white;
+            color: #e5e7eb;
             font-family: 'Inter', sans-serif;
             margin: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-height: 100vh;
             overflow-x: hidden;
+            scroll-behavior: smooth;
         }
 
-        /* Logo Central Arriba */
-        .logo-top {
-            margin-top: 20px;
+        /* Scrollbar Personalizado */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--negro-mate); }
+        ::-webkit-scrollbar-thumb { background: var(--morado-glow); border-radius: 10px; }
+
+        /* --- PISO 1: ENTRADA (BUSCADOR) --- */
+        .piso-entrada {
+            height: 40vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            background: radial-gradient(circle at center, #1e0b3a 0%, var(--negro-mate) 70%);
+        }
+
+        .logo-nvvex {
+            font-size: 1.5rem;
             font-weight: 700;
-            letter-spacing: 5px;
+            letter-spacing: 8px;
             color: var(--morado-neon);
-            text-shadow: 0 0 15px var(--morado-neon);
-            font-size: 1.2rem;
+            text-shadow: 0 0 20px var(--morado-glow);
+            margin-bottom: 40px;
             text-transform: uppercase;
         }
 
-        /* Buscador Inteligente */
-        .search-container {
-            margin: 30px 0;
-            width: 80%;
-            max-width: 600px;
+        .search-box {
+            width: 90%;
+            max-width: 700px;
+            position: relative;
         }
 
-        .main-search {
+        .main-input {
             width: 100%;
-            padding: 15px 25px;
-            border-radius: 50px;
-            border: 2px solid var(--borde-glow);
+            padding: 20px 30px;
             background: var(--cristal);
+            border: 1px solid var(--borde);
+            border-radius: 100px;
             color: white;
-            font-size: 1rem;
+            font-size: 1.1rem;
             outline: none;
-            backdrop-filter: blur(10px);
-            transition: 0.3s;
+            backdrop-filter: blur(20px);
+            transition: all 0.4s ease;
             text-align: center;
         }
 
-        .main-search:focus {
+        .main-input:focus {
             border-color: var(--morado-neon);
-            box-shadow: 0 0 20px var(--borde-glow);
+            box-shadow: 0 0 30px rgba(168, 85, 247, 0.2);
+            transform: scale(1.02);
         }
 
-        /* Dashboard Grid */
-        .dashboard {
-            display: grid;
-            grid-template-columns: 1.5fr 1fr;
-            gap: 20px;
+        /* --- CONTENEDOR DE PISOS --- */
+        .dashboard-container {
             width: 90%;
             max-width: 1200px;
-            padding-bottom: 50px;
-        }
-
-        .block {
-            background: var(--cristal);
-            border: 1px solid var(--borde-glow);
-            border-radius: 25px;
-            padding: 25px;
-            backdrop-filter: blur(15px);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .block::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, var(--borde-glow) 0%, transparent 70%);
-            opacity: 0.1;
-            pointer-events: none;
-        }
-
-        h2 {
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: #ccc;
-            margin-bottom: 20px;
-        }
-
-        /* --- ARTISTA INTEL (BLOQUE 1) --- */
-        .artist-header {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .artist-img {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            border: 3px solid var(--morado-neon);
-            box-shadow: 0 0 20px var(--morado-neon);
-            object-fit: cover;
-        }
-
-        .stats-circles {
-            display: flex;
-            gap: 20px;
-        }
-
-        .circle-stat {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            border: 4px solid var(--morado-neon);
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: rgba(168, 85, 247, 0.1);
+            gap: 100px; /* Espacio entre bloques para claridad */
+            padding-bottom: 100px;
         }
 
-        .circle-stat span { font-weight: bold; font-size: 1.2rem; }
-        .circle-stat label { font-size: 0.6rem; text-transform: uppercase; }
-
-        /* Nubes de Tracks */
-        .tracks-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
+        .piso {
+            background: var(--cristal);
+            border: 1px solid var(--borde);
+            border-radius: 40px;
+            padding: 40px;
+            backdrop-filter: blur(10px);
+            opacity: 0;
+            transform: translateY(30px);
+            transition: 0.8s all ease;
         }
 
-        .track-cloud {
-            background: rgba(255,255,255,0.05);
-            padding: 12px 15px;
-            border-radius: 15px;
+        .piso.visible { opacity: 1; transform: translateY(0); }
+
+        .piso-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 0.85rem;
-            border: 1px solid transparent;
-            animation: floatIn 0.5s ease forwards;
-            opacity: 0;
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--borde);
+            padding-bottom: 15px;
         }
 
-        .track-cloud:hover {
+        .piso-header h2 {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--morado-neon);
+        }
+
+        /* --- PISO 2: ARTISTA (SPOTIFY) --- */
+        .artist-grid {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 40px;
+        }
+
+        .profile-card { text-align: center; }
+        .artist-img {
+            width: 200px; height: 200px;
+            border-radius: 50%;
+            border: 4px solid var(--morado-neon);
+            box-shadow: 0 0 40px var(--morado-glow);
+            margin-bottom: 20px;
+            object-fit: cover;
+        }
+
+        .stat-circles { display: flex; justify-content: center; gap: 20px; }
+        .circle {
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            border: 2px solid var(--morado-neon);
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            background: rgba(168, 85, 247, 0.05);
+        }
+        .circle span { font-size: 1.2rem; font-weight: 700; }
+        .circle label { font-size: 0.6rem; color: #888; }
+
+        .nubes-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .nube-track {
+            background: rgba(255,255,255,0.03);
+            padding: 15px 20px;
+            border-radius: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid transparent;
+            transition: 0.3s;
+        }
+
+        .nube-track:hover {
             border-color: var(--morado-neon);
             background: rgba(168, 85, 247, 0.1);
+            transform: translateX(10px);
         }
 
-        .pop-badge {
-            background: var(--morado-oscuro);
-            padding: 2px 8px;
-            border-radius: 10px;
-            color: var(--morado-neon);
-            font-size: 0.7rem;
-            font-weight: bold;
-        }
-
-        /* --- MERCADO GLOBAL (BLOQUE 2) --- */
-        .reactor-container {
+        /* --- PISO 3: REACTOR GLOBAL --- */
+        .reactor-box {
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            height: 100%;
-            min-height: 300px;
+            padding: 60px;
             text-align: center;
         }
 
         .btn-reactor {
-            background: var(--morado-oscuro);
-            color: white;
+            padding: 20px 50px;
+            border-radius: 100px;
+            background: none;
             border: 2px solid var(--morado-neon);
-            padding: 15px 30px;
-            border-radius: 50px;
-            font-weight: bold;
+            color: white;
+            font-weight: 700;
+            font-size: 1.1rem;
             cursor: pointer;
-            text-transform: uppercase;
-            transition: 0.3s;
-            box-shadow: 0 0 15px var(--borde-glow);
+            transition: 0.4s;
+            box-shadow: 0 0 20px var(--borde);
         }
 
-        .btn-reactor:hover {
+        .btn-reactor.active {
             background: var(--morado-neon);
-            box-shadow: 0 0 30px var(--morado-neon);
+            box-shadow: 0 0 50px var(--morado-neon);
         }
 
-        .status-text {
-            margin-top: 15px;
-            font-size: 0.7rem;
-            color: #888;
-        }
-
-        /* --- RADAR VISUAL YT (BLOQUE 3) --- */
-        .full-width { grid-column: 1 / span 2; }
-        
-        .countries-flex {
+        /* --- PISO 4: YOUTUBE PRO --- */
+        .countries-bar {
             display: flex;
             gap: 15px;
+            margin-bottom: 30px;
             flex-wrap: wrap;
         }
 
-        .country-cloud {
-            background: var(--cristal);
+        .country-pill {
             padding: 10px 20px;
             border-radius: 50px;
+            background: var(--cristal);
+            border: 1px solid var(--borde);
             cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .country-pill:hover { background: var(--morado-neon); }
+
+        .yt-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .yt-card {
+            background: rgba(0,0,0,0.3);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid var(--borde);
+        }
+
+        .yt-thumb {
+            width: 100%;
+            height: 150px;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .yt-info { padding: 15px; }
+        .yt-title { font-size: 0.9rem; font-weight: 700; margin-bottom: 10px; height: 40px; overflow: hidden; }
+
+        .yt-btns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5px;
+        }
+
+        .btn-espia {
+            font-size: 0.6rem;
+            padding: 5px;
+            background: var(--cristal);
+            border: 1px solid var(--borde);
+            color: #aaa;
+            border-radius: 5px;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        .btn-espia:hover { color: var(--morado-neon); border-color: var(--morado-neon); }
+
+        /* --- PISO 5: DIAGNÓSTICO --- */
+        .diag-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .diag-item {
+            padding: 15px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 15px;
+            font-size: 0.8rem;
             display: flex;
             align-items: center;
             gap: 10px;
-            border: 1px solid var(--borde-glow);
-            transition: 0.3s;
         }
 
-        .country-cloud:hover {
-            background: var(--morado-neon);
-            transform: translateY(-5px);
-        }
-
-        /* Animaciones */
-        @keyframes floatIn {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.4); }
-            70% { box-shadow: 0 0 0 15px rgba(168, 85, 247, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(168, 85, 247, 0); }
-        }
-
-        .active-pulse { animation: pulse 2s infinite; }
+        .status-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--exito); box-shadow: 0 0 10px var(--exito); }
 
     </style>
 </head>
 <body>
 
-    <div class="logo-top">NVVEX STUDIOS</div>
+    <section class="piso-entrada">
+        <div class="logo-nvvex">NVVEX STUDIOS</div>
+        <div class="search-box">
+            <input type="text" id="masterSearch" class="main-input" placeholder="INGRESA ID, PAÍS O 'GLOBAL'..." onkeyup="evaluarIntento(event)">
+        </div>
+    </section>
 
-    <div class="search-container">
-        <input type="text" id="masterSearch" class="main-search" placeholder="INGERAR ID / PAÍS / MERCADO..." onkeyup="detectIntent(event)">
-    </div>
+    <div class="dashboard-container">
 
-    <div class="dashboard">
-        
-        <div class="block" id="block-artista">
-            <h2>Artista Intel</h2>
-            <div id="artist-content">
-                <div class="artist-header">
-                    <img src="https://via.placeholder.com/100" id="artist-img" class="artist-img">
-                    <div class="stats-circles">
-                        <div class="circle-stat">
-                            <span id="pop-val">--</span>
-                            <label>POP.</label>
-                        </div>
-                        <div class="circle-stat">
-                            <span id="eng-val">--</span>
-                            <label>ENG.</label>
-                        </div>
+        <div class="piso" id="piso-artista">
+            <div class="piso-header">
+                <h2>01. Artista Intelligence</h2>
+                <div class="status-dot"></div>
+            </div>
+            <div class="artist-grid">
+                <div class="profile-card">
+                    <img src="https://via.placeholder.com/200" id="art-img" class="artist-img">
+                    <div class="stat-circles">
+                        <div class="circle"><span id="art-pop">--</span><label>POP.</label></div>
+                        <div class="circle"><span id="art-eng">--</span><label>FOLL.</label></div>
                     </div>
                 </div>
-                <div class="tracks-grid" id="tracks-container">
+                <div class="nubes-container" id="art-tracks">
                     </div>
             </div>
         </div>
 
-        <div class="block" id="block-global">
-            <h2>Mercado Global</h2>
-            <div class="reactor-container">
-                <button class="btn-reactor" onclick="toggleReactor()" id="reactorBtn">Activar Radar Global</button>
-                <div class="status-text" id="reactorStatus">Modo: Manual - Ahorro de Energía</div>
-                <div id="global-data" style="margin-top:20px; width: 100%;"></div>
+        <div class="piso" id="piso-global">
+            <div class="piso-header">
+                <h2>02. Mercado Global Virus</h2>
+                <div class="status-dot"></div>
+            </div>
+            <div class="reactor-box">
+                <button class="btn-reactor" id="btnReactor" onclick="toggleReactor()">ACTIVAR REACTOR MUNDIAL</button>
+                <p id="reactorStatus" style="margin-top: 20px; color: #666; font-size: 0.8rem;">Manual Mode - Standby</p>
+                <div id="global-results" class="nubes-container" style="width: 100%; margin-top: 30px;"></div>
             </div>
         </div>
 
-        <div class="block full-width">
-            <h2>Radar Visual YT (Tendencias)</h2>
-            <div class="countries-flex">
-                <div class="country-cloud" onclick="triggerCountry('DO')"><span>🇩🇴</span> RD</div>
-                <div class="country-cloud" onclick="triggerCountry('PR')"><span>🇵🇷</span> PR</div>
-                <div class="country-cloud" onclick="triggerCountry('CO')"><span>🇨🇴</span> COL</div>
-                <div class="country-cloud" onclick="triggerCountry('US')"><span>🇺🇸</span> USA</div>
-                <div class="country-cloud" onclick="triggerCountry('ES')"><span>🇪🇸</span> ES</div>
-                <div class="country-cloud" onclick="triggerCountry('MX')"><span>🇲🇽</span> MX</div>
+        <div class="piso" id="piso-youtube">
+            <div class="piso-header">
+                <h2>03. Radar Visual Tendencia</h2>
+                <div class="status-dot"></div>
             </div>
-            <div id="yt-results" style="margin-top: 20px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;"></div>
+            <div class="countries-bar">
+                <div class="country-pill" onclick="buscarYT('RD')">🇩🇴 RD</div>
+                <div class="country-pill" onclick="buscarYT('PR')">🇵🇷 PR</div>
+                <div class="country-pill" onclick="buscarYT('CO')">🇨🇴 COL</div>
+                <div class="country-pill" onclick="buscarYT('US')">🇺🇸 USA</div>
+                <div class="country-pill" onclick="buscarYT('ES')">🇪🇸 ES</div>
+            </div>
+            <div class="yt-grid" id="yt-container">
+                </div>
+        </div>
+
+        <div class="piso" id="piso-diag">
+            <div class="piso-header">
+                <h2>04. Diagnóstico de Sistemas</h2>
+            </div>
+            <div class="diag-grid">
+                <div class="diag-item"><div class="status-dot"></div> Spotify API: Ready</div>
+                <div class="diag-item"><div class="status-dot"></div> YouTube Engine: Ready</div>
+                <div class="diag-item"><div class="status-dot"></div> NVVEX Cloud: Connected</div>
+            </div>
         </div>
 
     </div>
 
     <script>
-        /* --- LÓGICA DE INTELIGENCIA (JS) --- */
+        // Aparición suave de bloques al hacer scroll
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('visible');
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.piso').forEach(p => observer.observe(p));
 
         // 1. Detector Inteligente
-        function detectIntent(event) {
-            if (event.key === 'Enter') {
-                let val = document.getElementById('masterSearch').value.trim();
-                
-                // Si son 22 caracteres es un ID de Spotify
-                if (val.length === 22) {
-                    scanArtist(val);
-                } 
-                // Si dice Global o Mundo
-                else if (val.toLowerCase().includes('global')) {
-                    toggleReactor();
-                }
-                // Si es un país
-                else {
-                    triggerCountry(val.toUpperCase());
-                }
+        function evaluarIntento(e) {
+            if (e.key === 'Enter') {
+                let val = e.target.value.trim();
+                if (val.length === 22) dispararArtista(val);
+                else if (val.toLowerCase() === 'global') toggleReactor();
+                else buscarYT(val);
             }
         }
 
-        // 2. Escáner de Artista (Simulado con los datos de Papi Crish que pediste)
-        function scanArtist(id) {
-            console.log("Escaneando ID: " + id);
-            // Aquí iría el fetch a tu API de Spotify
-            document.getElementById('pop-val').innerText = "53%";
-            document.getElementById('eng-val').innerText = "317K";
-            document.getElementById('artist-img').src = "https://i.scdn.co/image/ab6761610000e5eb4a5e9545802146e492f2549a"; // Foto real de Papi Crish
+        // 2. Lógica de Artista (Simulada para Papi Crish)
+        function dispararArtista(id) {
+            document.getElementById('piso-artista').scrollIntoView();
+            document.getElementById('art-img').src = "https://i.scdn.co/image/ab6761610000e5eb4a5e9545802146e492f2549a";
+            document.getElementById('art-pop').innerText = "53%";
+            document.getElementById('art-eng').innerText = "317K";
             
             const tracks = [
-                {name: "Tengo un Flow", pop: "56%"},
-                {name: "Lo Malo", pop: "53%"},
-                {name: "Teteo", pop: "44%"},
-                {name: "No Tengo Culpa", pop: "41%"},
-                {name: "La Tipa", pop: "40%"},
-                {name: "Tirate", pop: "39%"}
+                {n: "Tengo un Flow", p: "56%"}, {n: "Lo Malo", p: "53%"},
+                {n: "Teteo", p: "44%"}, {n: "No Tengo Culpa", p: "41%"}
             ];
-
+            
             let html = "";
-            tracks.forEach((t, index) => {
-                html += `
-                    <div class="track-cloud" style="animation-delay: ${index * 0.1}s">
-                        <span>#${index+1} ${t.name}</span>
-                        <div class="pop-badge">${t.pop}</div>
-                    </div>
-                `;
+            tracks.forEach(t => {
+                html += `<div class="nube-track"><span>${t.n}</span> <div style="color:var(--morado-neon); font-weight:bold;">${t.p}</div></div>`;
             });
-            document.getElementById('tracks-container').innerHTML = html;
+            document.getElementById('art-tracks').innerHTML = html;
         }
 
-        // 3. Control del Reactor Global (Manual)
-        let reactorActive = false;
+        // 3. Lógica del Reactor Global
+        let reactorOn = false;
         function toggleReactor() {
-            const btn = document.getElementById('reactorBtn');
-            const status = document.getElementById('reactorStatus');
-            const block = document.getElementById('block-global');
+            const btn = document.getElementById('btnReactor');
+            const res = document.getElementById('global-results');
+            reactorOn = !reactorOn;
 
-            if (!reactorActive) {
-                reactorActive = true;
-                btn.innerText = "DESACTIVAR RADAR";
-                btn.style.background = "#ff0055";
-                btn.style.borderColor = "#ff0055";
-                status.innerText = "ESTADO: ESCANEANDO MERCADO MUNDIAL...";
-                block.classList.add('active-pulse');
-                // Simulación de carga de nubes globales
-                document.getElementById('global-data').innerHTML = `
-                    <div class="track-cloud" style="margin-bottom:5px">🌍 Viva Latino (Top 1)</div>
-                    <div class="track-cloud" style="margin-bottom:5px">🌍 Today's Top Hits</div>
-                `;
+            if (reactorOn) {
+                btn.classList.add('active');
+                btn.innerText = "REACTOR ONLINE";
+                document.getElementById('reactorStatus').innerText = "ESCANEANDO MUNDO...";
+                res.innerHTML = `<div class="nube-track">🌍 Viva Latino (Top 1)</div><div class="nube-track">🌍 Today's Top Hits</div>`;
             } else {
-                reactorActive = false;
-                btn.innerText = "Activar Radar Global";
-                btn.style.background = "var(--morado-oscuro)";
-                btn.style.borderColor = "var(--morado-neon)";
-                status.innerText = "Modo: Manual - Ahorro de Energía";
-                block.classList.remove('active-pulse');
-                document.getElementById('global-data').innerHTML = "";
+                btn.classList.remove('active');
+                btn.innerText = "ACTIVAR REACTOR MUNDIAL";
+                res.innerHTML = "";
             }
         }
 
-        // 4. Radar Visual YouTube
-        function triggerCountry(iso) {
-            const ytResults = document.getElementById('yt-results');
-            ytResults.innerHTML = "<p style='color:var(--morado-neon)'>Escaneando visuales en " + iso + "...</p>";
+        // 4. Lógica de YouTube Pro (Con botones de espionaje)
+        function buscarYT(pais) {
+            const container = document.getElementById('yt-container');
+            container.innerHTML = "<p>Conectando con Satélite...</p>";
             
-            // Simulación de nubes de video
             setTimeout(() => {
-                ytResults.innerHTML = `
-                    <div class="track-cloud">Video Viral 1</div>
-                    <div class="track-cloud">Video Viral 2</div>
-                    <div class="track-cloud">Video Viral 3</div>
-                    <div class="track-cloud">Video Viral 4</div>
-                `;
-            }, 800);
+                let html = "";
+                for(let i=1; i<=4; i++) {
+                    html += `
+                        <div class="yt-card">
+                            <div class="yt-thumb" style="background-image: url('https://via.placeholder.com/300x150/1a1a1a/a855f7?text=VIDEO+TENDENCIA')"></div>
+                            <div class="yt-info">
+                                <div class="yt-title">Palo Viral #${i} - ${pais}</div>
+                                <div class="yt-btns">
+                                    <button class="btn-espia">📈 Velocidad</button>
+                                    <button class="btn-espia">🏷️ Tags</button>
+                                    <button class="btn-espia">💬 Sentimiento</button>
+                                    <button class="btn-espia">🔞 Estado</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+                container.innerHTML = html;
+            }, 600);
         }
     </script>
 </body>
