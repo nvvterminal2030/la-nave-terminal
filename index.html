@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NVVEX | FERRARI REAL DATA</title>
+    <title>NVVEX | FERRARI ENGAGEMENT REAL</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -25,8 +25,9 @@
         .nube-track { background: rgba(255,255,255,0.03); padding: 10px 18px; border-radius: 12px; border: 1px solid var(--borde); margin-bottom: 8px; display: flex; justify-content: space-between; font-size: 0.8rem; }
         .mapa-conquista { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
         .flag-chip { background: #000; border: 1px solid var(--cyan); color: white; padding: 5px 12px; border-radius: 50px; font-size: 0.65rem; font-weight: bold; }
-        .yt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
+        .yt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; }
         .yt-card { background: rgba(0,0,0,0.3); border-radius: 20px; overflow: hidden; border: 1px solid var(--borde); cursor: pointer; }
+        .diag-item { padding: 12px; background: rgba(0,0,0,0.2); border-radius: 12px; margin-bottom: 8px; font-size: 0.75rem; border: 1px solid var(--borde); display: flex; justify-content: space-between; cursor: pointer; }
         .tag { display: inline-block; background: rgba(0,242,255,0.05); border: 1px solid var(--cyan); padding: 4px 8px; border-radius: 5px; margin: 3px; font-size: 0.6rem; color: var(--cyan); }
     </style>
 </head>
@@ -43,7 +44,7 @@
                 <div style="text-align: center;">
                     <img src="https://via.placeholder.com/220" id="art-img" class="artist-img">
                     <div style="display:flex; gap:10px; justify-content:center; margin-top:15px;">
-                        <div class="circle"><span id="art-pop" style="color:var(--cyan)">--</span><label style="font-size:0.5rem;">ENG REAL</label></div>
+                        <div class="circle"><span id="art-pop" style="color:var(--exito)">--</span><label style="font-size:0.5rem;">ENG REAL</label></div>
                         <div class="circle"><span id="art-eng">--</span><label style="font-size:0.5rem;">STATUS</label></div>
                     </div>
                 </div>
@@ -66,7 +67,7 @@
         </div>
 
         <div class="piso" id="piso-diag">
-            <div class="piso-header"><h2>04. Diagnóstico de Datos (Tags)</h2></div>
+            <div class="piso-header"><h2>04. Diagnóstico de Datos</h2></div>
             <div id="nubecita" style="margin-bottom:20px;"></div>
             <div id="piso-diag-content"></div>
         </div>
@@ -92,12 +93,12 @@
                 const data = await res.json();
                 let htmlV = ""; let htmlD = "";
                 data.items.forEach((v, i) => {
-                    htmlV += `<div class="yt-card" onclick="ejecutarEspionaje('${v.id}')"><img src="${v.snippet.thumbnails.high.url}" style="width:100%; height:110px; object-fit:cover;"><div style="padding:10px; font-size:0.75rem;">#${i+1} ${v.snippet.title.substring(0,25)}</div></div>`;
-                    htmlD += `<div style="padding:12px; border-bottom:1px solid var(--borde); font-size:0.8rem; cursor:pointer;" onclick="ejecutarEspionaje('${v.id}')">#${i+1} ${v.snippet.channelTitle} - ${Number(v.statistics.viewCount).toLocaleString()} views</div>`;
+                    htmlV += `<div class="yt-card" onclick="ejecutarEspionaje('${v.id}')"><img src="${v.snippet.thumbnails.high.url}" style="width:100%; height:110px; object-fit:cover;"><div style="padding:10px; font-size:0.7rem;">#${i+1} ${v.snippet.title.substring(0,25)}</div></div>`;
+                    htmlD += `<div class="diag-item" onclick="ejecutarEspionaje('${v.id}')"><span><b>#${i+1}</b> ${v.snippet.channelTitle}</span> <span style="color:var(--morado-neon)">${Number(v.statistics.viewCount).toLocaleString()}</span></div>`;
                 });
                 document.getElementById('yt-container').innerHTML = htmlV;
                 document.getElementById('piso-diag-content').innerHTML = htmlD;
-            } catch(e) { console.log("Error Radar"); }
+            } catch(e) { console.log("Error"); }
         }
 
         async function ejecutarEspionaje(vId) {
@@ -110,11 +111,11 @@
                 const dias = Math.max(Math.ceil((new Date() - new Date(v.snippet.publishedAt)) / (1000 * 60 * 60 * 24)), 1);
                 const vpd = Math.round(Number(v.statistics.viewCount) / dias);
                 
-                // ENGAGEMENT VERÍDICO: (Likes + Comentarios) / Vistas
-                const l = Number(v.statistics.likeCount) || 0;
-                const co = Number(v.statistics.commentCount) || 0;
-                const vi = Number(v.statistics.viewCount) || 1;
-                const engReal = (((l + co) / vi) * 100).toFixed(2);
+                // ENGAGEMENT REAL: (LIKES + COMENTARIOS) / VISTAS
+                const likes = Number(v.statistics.likeCount) || 0;
+                const comments = Number(v.statistics.commentCount) || 0;
+                const views = Number(v.statistics.viewCount) || 1;
+                const engReal = (((likes + comments) / views) * 100).toFixed(2);
 
                 document.getElementById('art-img').src = c.snippet.thumbnails.high.url;
                 document.getElementById('target-name').innerText = c.snippet.title.toUpperCase();
@@ -124,7 +125,7 @@
                 document.getElementById('art-tracks').innerHTML = `
                     <div class="nube-track"><span>OBJETIVO:</span> <b>${c.snippet.title.toUpperCase()}</b></div>
                     <div class="nube-track"><span>SUBS:</span> <b>${Number(c.statistics.subscriberCount).toLocaleString()}</b></div>
-                    <div class="nube-track"><span>VISTAS TOTALES:</span> <b>${vi.toLocaleString()}</b></div>
+                    <div class="nube-track"><span>VISTAS TOTALES:</span> <b>${views.toLocaleString()}</b></div>
                     <div class="nube-track" style="border-color:var(--cyan)"><span>VISTAS / DÍA:</span> <b style="color:var(--cyan)">${vpd.toLocaleString()}</b></div>
                     <div class="nube-track"><span>ANTIGÜEDAD:</span> <b>${dias} DÍAS</b></div>
                 `;
@@ -142,7 +143,7 @@
                 const rMap = await Promise.all(promesas);
                 document.getElementById('art-map').innerHTML = rMap.join('') || "SIN TENDENCIA";
                 document.getElementById('piso-artista').scrollIntoView({behavior:'smooth'});
-            } catch(e) { console.log("Error Intercepción"); }
+            } catch(e) { console.log("Error"); }
         }
     </script>
 </body>
