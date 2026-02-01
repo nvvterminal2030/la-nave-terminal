@@ -204,9 +204,10 @@
             }
             document.getElementById('global-map-link').innerHTML = mapaHtml || "<span style='font-size:0.6rem; color:var(--red)'>FUERA DE TENDENCIA GLOBAL</span>";
             
-            // INTELIGENCIA DE CONEXIÓN REAL (LA LÓGICA QUE ME PEDISTE)
-            const conversionFans = ((subsTotal / Number(c.statistics.viewCount)) * 100).toFixed(2);
-            const demandaOrganica = (likes / (views / 100)).toFixed(1);
+            // INTELIGENCIA DE CONEXIÓN REAL (AUDITORÍA DE EMPUJE ACTUAL)
+            const conversionEmpuje = ((subsTotal / views) * 100).toFixed(2);
+            const demandaOrganica = ((likes / views) * 100).toFixed(1);
+            const poderNombre = Math.min(((subsTotal / (Number(c.statistics.viewCount) / 100))), 100).toFixed(1);
             const calleRealPct = Math.min(((likes / views) * 1000), 100).toFixed(1);
 
             document.getElementById('target-debil').innerHTML = `
@@ -215,10 +216,13 @@
                     COMENTARIOS: <b style="color:var(--cyan)">${comments.toLocaleString()}</b>
                 </div>
                 <div class="gen-burbuja" style="border-color:var(--cyan); margin-bottom:8px;">
-                    CONVERSIÓN: <span class="gen-pct">${conversionFans}%</span>
+                    CONVERSIÓN (EMPUJE): <span class="gen-pct">${conversionEmpuje}%</span>
                 </div>
                 <div class="gen-burbuja" style="border-color:var(--morado-neon); margin-bottom:8px;">
                     DEMANDA: <span class="gen-pct">${demandaOrganica}%</span>
+                </div>
+                <div class="gen-burbuja" style="border-color:var(--exito); margin-bottom:8px;">
+                    PODER DE NOMBRE: <span class="gen-pct">${poderNombre}%</span>
                 </div>
                 <div class="gen-burbuja" style="background:var(--morado-glow); color:white; border:none;">
                     PODER CALLE: <span class="gen-pct" style="color:white">${calleRealPct}%</span>
