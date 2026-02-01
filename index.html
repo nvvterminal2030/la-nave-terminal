@@ -202,69 +202,54 @@
         }
 
         /* --- PISO 4: YOUTUBE PRO --- */
-        .countries-bar {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
+        async function ejecutarRadar(pais) {
+    const API_KEY = 'AIzaSyBQwGNe8DsxIdvgyHKV374Do-xOYZ1qCu0'; // Su llave verídica ya integrada 
+    const container = document.getElementById('yt-container'); // Donde caen las 30 nubes
+    const circulo = document.querySelector('.círculo-maestro'); // Su Piso 1 
+
+    // Escaneo de 30 tendencias de música en el país seleccionado 
+    const url = `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular&regionCode=${pais}&maxResults=30&videoCategoryId=10&key=${API_KEY}`;
+
+    try {
+        const res = await fetch(url);
+        const data = await res.json();
+        let html = "";
+
+        // Sincronización: La imagen del #1 va al círculo de Artista Intelligence 
+        if (data.items && data.items.length > 0) {
+            const fotoArtista = data.items[0].snippet.thumbnails.high.url;
+            circulo.style.backgroundImage = `url('${fotoArtista}')`;
+            circulo.style.backgroundSize = 'cover';
         }
 
-        .country-pill {
-            padding: 10px 20px;
-            border-radius: 50px;
-            background: var(--cristal);
-            border: 1px solid var(--borde);
-            cursor: pointer;
-            transition: 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+        // Mapeo dinámico de las 30 nubes de cristal 
+        data.items.forEach((video, i) => {
+            const v = video.snippet;
+            const s = video.statistics;
+            const rank = i + 1;
 
-        .country-pill:hover { background: var(--morado-neon); }
+            html += `
+                <div class="nube-cristal">
+                    <div class="nube-rank">#${rank}</div>
+                    <div class="nube-thumb" style="background-image: url('${v.thumbnails.high.url}')"></div>
+                    <div class="nube-data">
+                        <span class="artista">${v.channelTitle}</span>
+                        <p class="track">${v.title.substring(0, 45)}...</p>
+                        <div class="nube-stats">
+                            <span>📈 ${Number(s.viewCount).toLocaleString()}</span>
+                            <button onclick="window.open('https://youtu.be/${video.id}')">VER</button>
+                        </div>
+                    </div>
+                </div>`;
+        });
 
-        .yt-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 25px;
-        }
+        container.innerHTML = html;
+        console.log(`> SATÉLITE ${pais} EN VIVO: 30 PALOS CARGADOS`); // 
 
-        .yt-card {
-            background: rgba(0,0,0,0.3);
-            border-radius: 20px;
-            overflow: hidden;
-            border: 1px solid var(--borde);
-        }
-
-        .yt-thumb {
-            width: 100%;
-            height: 150px;
-            background-size: cover;
-            background-position: center;
-        }
-
-        .yt-info { padding: 15px; }
-        .yt-title { font-size: 0.9rem; font-weight: 700; margin-bottom: 10px; height: 40px; overflow: hidden; }
-
-        .yt-btns {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 5px;
-        }
-
-        .btn-espia {
-            font-size: 0.6rem;
-            padding: 5px;
-            background: var(--cristal);
-            border: 1px solid var(--borde);
-            color: #aaa;
-            border-radius: 5px;
-            cursor: pointer;
-            text-transform: uppercase;
-        }
-
-        .btn-espia:hover { color: var(--morado-neon); border-color: var(--morado-neon); }
-
+    } catch (e) {
+        console.error("Error de conexión con el radar");
+    }
+}
         /* --- PISO 5: DIAGNÓSTICO --- */
         .diag-grid {
             display: grid;
