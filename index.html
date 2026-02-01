@@ -3,38 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NVVEX | FERRARI INTELLIGENCE</title>
+    <title>NVVEX | CENTRAL CONTINENTAL</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --morado-neon: #a855f7; --morado-glow: rgba(168, 85, 247, 0.6); --negro-mate: #050505;
-            --cristal: rgba(255, 255, 255, 0.03); --borde: rgba(168, 85, 247, 0.2);
-            --exito: #22c55e; --red: #ff3131; --cyan: #00f2ff;
+            --morado-neon: #a855f7;
+            --morado-glow: rgba(168, 85, 247, 0.6);
+            --negro-mate: #050505;
+            --cristal: rgba(255, 255, 255, 0.03);
+            --borde: rgba(168, 85, 247, 0.2);
+            --exito: #22c55e;
+            --red: #ff3131;
+            --cyan: #00f2ff;
         }
-        body { background-color: var(--negro-mate); color: #e5e7eb; font-family: 'Inter', sans-serif; margin: 0; display: flex; flex-direction: column; align-items: center; overflow-x: hidden; scroll-behavior: smooth; }
-        .piso-entrada { height: 30vh; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; background: radial-gradient(circle at center, #1e0b3a 0%, var(--negro-mate) 70%); }
-        .logo-nvvex { font-size: 1.5rem; font-weight: 700; letter-spacing: 8px; color: var(--morado-neon); text-shadow: 0 0 20px var(--morado-glow); text-transform: uppercase; margin-bottom: 20px; }
+
+        body {
+            background-color: var(--negro-mate); color: #e5e7eb; font-family: 'Inter', sans-serif;
+            margin: 0; display: flex; flex-direction: column; align-items: center; overflow-x: hidden;
+        }
+
+        /* DISEÑO DE PISOS */
+        .piso-entrada { height: 40vh; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; background: radial-gradient(circle at center, #1e0b3a 0%, var(--negro-mate) 70%); }
+        .logo-nvvex { font-size: 1.5rem; font-weight: 700; letter-spacing: 8px; color: var(--morado-neon); text-shadow: 0 0 20px var(--morado-glow); text-transform: uppercase; margin-bottom: 30px; }
         .main-input { width: 90%; max-width: 700px; padding: 20px 30px; background: var(--cristal); border: 1px solid var(--borde); border-radius: 100px; color: white; font-size: 1.1rem; text-align: center; backdrop-filter: blur(20px); outline: none; }
-        .dashboard-container { width: 95%; max-width: 1200px; display: flex; flex-direction: column; gap: 30px; padding-bottom: 100px; }
-        .piso { background: var(--cristal); border: 1px solid var(--borde); border-radius: 40px; padding: 35px; backdrop-filter: blur(10px); }
-        .piso-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--borde); padding-bottom: 10px; }
+
+        .dashboard-container { width: 90%; max-width: 1200px; display: flex; flex-direction: column; gap: 60px; padding-bottom: 100px; }
+        .piso { background: var(--cristal); border: 1px solid var(--borde); border-radius: 40px; padding: 35px; backdrop-filter: blur(10px); opacity: 0; transform: translateY(20px); transition: 0.6s all ease; }
+        .piso.visible { opacity: 1; transform: translateY(0); }
+        .piso-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1px solid var(--borde); padding-bottom: 10px; }
         .piso-header h2 { font-size: 0.8rem; letter-spacing: 3px; color: var(--morado-neon); text-transform: uppercase; }
+
+        /* PISO 1: ARTISTA INTELLIGENCE */
         .artist-grid { display: grid; grid-template-columns: 280px 1fr; gap: 30px; }
         .artist-img { width: 220px; height: 220px; border-radius: 50%; border: 4px solid var(--morado-neon); box-shadow: 0 0 40px var(--morado-glow); object-fit: cover; }
         .circle { width: 85px; height: 85px; border-radius: 50%; border: 2px solid var(--morado-neon); display: flex; flex-direction: column; justify-content: center; align-items: center; background: rgba(168, 85, 247, 0.05); font-size: 0.9rem; font-weight: bold; }
         .nube-track { background: rgba(255,255,255,0.03); padding: 12px 20px; border-radius: 15px; border: 1px solid var(--borde); margin-bottom: 10px; display: flex; justify-content: space-between; font-size: 0.85rem; }
-        .mapa-conquista { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
-        .flag-chip { background: #000; border: 1px solid var(--cyan); color: white; padding: 5px 12px; border-radius: 50px; font-size: 0.65rem; font-weight: bold; }
+
+        /* PISO 2: REACTOR */
+        .btn-reactor { padding: 15px 40px; border-radius: 100px; background: none; border: 2px solid var(--morado-neon); color: white; font-weight: 700; cursor: pointer; }
+        .btn-reactor.active { background: var(--morado-neon); box-shadow: 0 0 30px var(--morado-neon); }
+
+        /* PISO 3: PAÍSES (SCROLL LATERAL) */
         .countries-scroll { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 15px; width: 100%; scrollbar-width: none; }
-        .country-pill { padding: 10px 20px; border-radius: 50px; background: var(--cristal); border: 1px solid var(--borde); cursor: pointer; white-space: nowrap; color: white; font-size: 0.8rem; }
-        .yt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; }
-        .yt-card { background: rgba(0,0,0,0.3); border-radius: 20px; overflow: hidden; border: 1px solid var(--borde); cursor: pointer; transition: 0.3s; }
-        .yt-card:hover { border-color: var(--cyan); transform: translateY(-5px); }
-        .yt-thumb { width: 100%; height: 125px; background-size: cover; background-position: center; }
-        .tag { display: inline-block; background: rgba(0,242,255,0.05); border: 1px solid var(--cyan); padding: 4px 8px; border-radius: 5px; margin: 3px; font-size: 0.6rem; color: var(--cyan); }
+        .country-pill { padding: 10px 20px; border-radius: 50px; background: var(--cristal); border: 1px solid var(--borde); cursor: pointer; white-space: nowrap; color: white; }
+        .country-pill:hover { background: var(--morado-neon); }
+
+        /* PISO 4: BANCA & NUBECITA */
+        .yt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
+        .yt-card { background: rgba(0,0,0,0.3); border-radius: 20px; overflow: hidden; border: 1px solid var(--borde); }
+        .yt-thumb { width: 100%; height: 140px; background-size: cover; background-position: center; }
+        .yt-info { padding: 12px; }
+        .diag-item { padding: 12px; background: rgba(0,0,0,0.2); border-radius: 12px; margin-bottom: 8px; font-size: 0.75rem; border: 1px solid var(--borde); display: flex; justify-content: space-between; }
+        
+        .nubecita-box { grid-column: 1 / -1; background: linear-gradient(90deg, #1e0b3a, #050505); border: 1px solid var(--cyan); border-radius: 20px; padding: 20px; margin-top: 20px; display: none; }
     </style>
 </head>
 <body>
+
     <section class="piso-entrada">
         <div class="logo-nvvex">NVVEX STUDIOS</div>
         <input type="text" id="masterSearch" class="main-input" placeholder="PEGA LINK O ESCRIBE PAÍS..." onkeyup="evaluarIntento(event)">
@@ -42,26 +67,28 @@
 
     <div class="dashboard-container">
         <div class="piso" id="piso-artista">
-            <div class="piso-header"><h2>01. Artista Intelligence & Bio</h2></div>
+            <div class="piso-header"><h2>01. Artista Intelligence</h2></div>
             <div class="artist-grid">
                 <div style="text-align: center;">
                     <img src="https://via.placeholder.com/220" id="art-img" class="artist-img">
                     <div style="display:flex; gap:10px; justify-content:center; margin-top:15px;">
-                        <div class="circle"><span id="art-eng">--</span><label style="font-size:0.5rem;">ENGAGEMENT</label></div>
-                        <div class="circle"><span id="art-status" style="color:var(--cyan)">--</span><label style="font-size:0.5rem;">STATUS</label></div>
+                        <div class="circle"><span id="art-pop">--</span><label style="font-size:0.5rem;">CANAL</label></div>
+                        <div class="circle"><span id="art-eng">--</span><label style="font-size:0.5rem;">ESTADO</label></div>
                     </div>
                 </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                    <div>
-                        <div class="nube-track"><span>OBJETIVO:</span> <b id="target-name">ESPERANDO...</b></div>
-                        <div class="nube-track"><span>MEGASTAR:</span> <b id="target-power">--</b></div>
-                        <div id="art-tags" style="margin-top:15px;"></div>
-                    </div>
-                    <div>
-                        <div class="piso-header" style="margin-bottom:10px; border:none;"><h2>CONQUISTA TERRITORIAL</h2></div>
-                        <div class="mapa-conquista" id="art-map"></div>
-                    </div>
+                <div id="art-tracks">
+                    <div class="nube-track"><span>OBJETIVO:</span> <b id="target-name">SIN INTERCEPTAR</b></div>
+                    <div class="nube-track"><span>TEMA:</span> <b id="target-song">--</b></div>
+                    <div class="nube-track"><span>SUBS:</span> <b id="target-subs">--</b></div>
                 </div>
+            </div>
+        </div>
+
+        <div class="piso" id="piso-global">
+            <div class="piso-header"><h2>02. Mercado Global Virus</h2></div>
+            <div style="text-align:center;">
+                <button class="btn-reactor" id="btnReactor" onclick="buscarYT('US')">REACTOR GLOBAL</button>
+                <div id="global-results" style="margin-top:20px; display:flex; justify-content:center; gap:20px;"></div>
             </div>
         </div>
 
@@ -70,72 +97,89 @@
             <div class="countries-scroll">
                 <div class="country-pill" onclick="buscarYT('RD')">🇩🇴 RD</div>
                 <div class="country-pill" onclick="buscarYT('PR')">🇵🇷 PR</div>
-                <div class="country-pill" onclick="buscarYT('USA')">🇺🇸 USA</div>
+                <div class="country-pill" onclick="buscarYT('US')">🇺🇸 USA</div>
                 <div class="country-pill" onclick="buscarYT('MEX')">🇲🇽 MEX</div>
                 <div class="country-pill" onclick="buscarYT('COL')">🇨🇴 COL</div>
                 <div class="country-pill" onclick="buscarYT('ARG')">🇦🇷 ARG</div>
                 <div class="country-pill" onclick="buscarYT('CHL')">🇨🇱 CHL</div>
                 <div class="country-pill" onclick="buscarYT('PAN')">🇵🇦 PAN</div>
                 <div class="country-pill" onclick="buscarYT('ES')">🇪🇸 ES</div>
-                <div class="country-pill" onclick="buscarYT('ECU')">🇪🇨 ECU</div>
-                <div class="country-pill" onclick="buscarYT('PER')">🇵🇪 PER</div>
             </div>
             <div class="yt-grid" id="yt-container"></div>
+        </div>
+
+        <div class="piso" id="piso-diag">
+            <div class="piso-header"><h2>04. Diagnóstico de Datos</h2></div>
+            <div id="nubecita" class="nubecita-box"></div>
+            <div id="piso-diag-content"></div>
         </div>
     </div>
 
     <script>
         const API_KEY_YT = 'AIzaSyBQwGNe8DsxIdvgyHKV374Do-xOYZ1qCu0';
-        const PAISES = { 'RD':'DO','PR':'PR','USA':'US','MEX':'MX','COL':'CO','ARG':'AR','CHL':'CL','PAN':'PA','ES':'ES','ECU':'EC','PER':'PE' };
+
+        window.onload = () => {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+            }, { threshold: 0.1 });
+            document.querySelectorAll('.piso').forEach(p => observer.observe(p));
+        };
 
         function evaluarIntento(e) {
             if (e.key === 'Enter') {
                 let val = e.target.value.trim();
                 const vId = val.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
-                if (vId) ejecutarEspionaje(vId[1]); else buscarYT(val.toUpperCase());
+                if (vId) { ejecutarEspionaje(vId[1]); } else { buscarYT(val.toUpperCase()); }
             }
         }
 
         async function buscarYT(sigla) {
-            const region = PAISES[sigla] || 'DO';
+            const codes = { 'RD': 'DO', 'PR': 'PR', 'US': 'US', 'ES': 'ES', 'MEX': 'MX', 'COL': 'CO', 'ARG': 'AR', 'CHL': 'CL', 'PAN': 'PA' };
+            const region = codes[sigla] || 'DO';
             try {
                 const res = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular&regionCode=${region}&videoCategoryId=10&maxResults=30&key=${API_KEY_YT}`);
                 const data = await res.json();
-                let htmlV = "";
+                let htmlV = ""; let htmlD = `<div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:10px;">`;
+                
                 data.items.forEach((v, i) => {
-                    htmlV += `<div class="yt-card" onclick="ejecutarEspionaje('${v.id}')"><div class="yt-thumb" style="background-image:url('${v.snippet.thumbnails.high.url}')"></div><div style="padding:15px;"><div style="font-size:0.75rem; font-weight:bold;">#${i+1} ${v.snippet.title.substring(0,25)}</div></div></div>`;
+                    const rank = i + 1;
+                    const color = rank <= 10 ? 'var(--red)' : 'var(--morado-neon)';
+                    htmlV += `<div class="yt-card"><div class="yt-thumb" style="background-image:url('${v.snippet.thumbnails.high.url}')"></div><div class="yt-info"><div style="font-size:0.7rem;">#${rank} ${v.snippet.title.substring(0,25)}</div><button class="btn-reactor" style="padding:5px; font-size:0.6rem; margin-top:10px; width:100%;" onclick="ejecutarEspionaje('${v.id}')">ESPIAR</button></div></div>`;
+                    htmlD += `<div class="diag-item" style="border:1px solid ${color}"><span><b style="color:${color}">#${rank}</b> ${v.snippet.channelTitle.substring(0,12)}</span> <b>${Number(v.statistics.viewCount).toLocaleString()}</b></div>`;
                 });
                 document.getElementById('yt-container').innerHTML = htmlV;
-            } catch(e) { console.log("Error"); }
+                document.getElementById('piso-diag-content').innerHTML = htmlD + "</div>";
+                document.getElementById('piso-youtube').scrollIntoView({behavior:'smooth'});
+            } catch(e) { console.log("Radar Error"); }
         }
 
         async function ejecutarEspionaje(vId) {
             try {
                 const resV = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id=${vId}&key=${API_KEY_YT}`);
-                const v = (await resV.json()).items[0];
-                const resC = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&id=${v.snippet.channelId}&key=${API_KEY_YT}`);
-                const c = (await resC.json()).items[0];
+                const dataV = await resV.json();
+                const v = dataV.items[0];
                 
+                // DATA DEL CANAL (PARA EL PISO 1)
+                const resC = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&id=${v.snippet.channelId}&key=${API_KEY_YT}`);
+                const dataC = await resC.json();
+                const c = dataC.items[0];
+
+                // LLENAR PISO 1
                 document.getElementById('art-img').src = c.snippet.thumbnails.high.url;
                 document.getElementById('target-name').innerText = c.snippet.title.toUpperCase();
-                const eng = ((v.statistics.likeCount / v.statistics.viewCount) * 100).toFixed(2);
-                document.getElementById('art-eng').innerText = eng + "%";
-                document.getElementById('art-tags').innerHTML = v.snippet.tags ? v.snippet.tags.slice(0,10).map(t => `<span class="tag">${t}</span>`).join('') : '';
+                document.getElementById('target-song').innerText = v.snippet.title.substring(0,30);
+                document.getElementById('target-subs').innerText = Number(c.statistics.subscriberCount).toLocaleString();
+                document.getElementById('art-pop').innerText = "LIVE";
+                document.getElementById('art-eng').innerText = "V-9";
 
-                let mapaHtml = ""; let cP = 0;
-                const promesas = Object.entries(PAISES).map(async ([nom, cod]) => {
-                    const r = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet&chart=mostPopular&regionCode=${cod}&videoCategoryId=10&maxResults=30&key=${API_KEY_YT}`);
-                    const d = await r.json();
-                    const idx = d.items.findIndex(item => item.snippet.channelId === v.snippet.channelId);
-                    if (idx !== -1) { cP++; return `<div class="flag-chip">${nom} #${idx + 1}</div>`; }
-                    return "";
-                });
-                const rMap = await Promise.all(promesas);
-                document.getElementById('art-map').innerHTML = rMap.join('') || "SIN TENDENCIA";
-                document.getElementById('target-power').innerText = cP >= 3 ? "CONFIRMADO" : "EN ASCENSO";
-                document.getElementById('art-status').innerText = cP >= 5 ? "GLOBAL" : "LOCAL";
+                // LLENAR NUBECITA (PISO 4)
+                const eng = ((Number(v.statistics.likeCount) / Number(v.statistics.viewCount)) * 100).toFixed(2);
+                const nube = document.getElementById('nubecita');
+                nube.style.display = "block";
+                nube.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center;"><div style="color:var(--cyan); font-weight:bold;">FICHA: ${v.snippet.title}</div><div style="color:var(--exito); font-weight:bold;">${eng}% ENGAGEMENT</div></div>`;
+                
                 document.getElementById('piso-artista').scrollIntoView({behavior:'smooth'});
-            } catch(e) { console.log("Falla"); }
+            } catch(e) { console.log("Espionaje Fallido"); }
         }
     </script>
 </body>
