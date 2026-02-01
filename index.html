@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NVVEX | CENTRAL DE INTELIGENCIA</title>
+    <title>NVVEX | FERRARI INTELLIGENCE</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -12,33 +12,25 @@
             --exito: #22c55e; --red: #ff3131; --cyan: #00f2ff;
         }
         body { background-color: var(--negro-mate); color: #e5e7eb; font-family: 'Inter', sans-serif; margin: 0; display: flex; flex-direction: column; align-items: center; overflow-x: hidden; scroll-behavior: smooth; }
-        .piso-entrada { height: 35vh; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; background: radial-gradient(circle at center, #1e0b3a 0%, var(--negro-mate) 70%); }
-        .logo-nvvex { font-size: 1.5rem; font-weight: 700; letter-spacing: 8px; color: var(--morado-neon); text-shadow: 0 0 20px var(--morado-glow); text-transform: uppercase; margin-bottom: 30px; }
+        .piso-entrada { height: 30vh; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; background: radial-gradient(circle at center, #1e0b3a 0%, var(--negro-mate) 70%); }
+        .logo-nvvex { font-size: 1.5rem; font-weight: 700; letter-spacing: 8px; color: var(--morado-neon); text-shadow: 0 0 20px var(--morado-glow); text-transform: uppercase; margin-bottom: 20px; }
         .main-input { width: 90%; max-width: 700px; padding: 20px 30px; background: var(--cristal); border: 1px solid var(--borde); border-radius: 100px; color: white; font-size: 1.1rem; text-align: center; backdrop-filter: blur(20px); outline: none; }
-        .dashboard-container { width: 95%; max-width: 1200px; display: flex; flex-direction: column; gap: 40px; padding-bottom: 100px; }
+        .dashboard-container { width: 95%; max-width: 1200px; display: flex; flex-direction: column; gap: 30px; padding-bottom: 100px; }
         .piso { background: var(--cristal); border: 1px solid var(--borde); border-radius: 40px; padding: 35px; backdrop-filter: blur(10px); }
         .piso-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--borde); padding-bottom: 10px; }
         .piso-header h2 { font-size: 0.8rem; letter-spacing: 3px; color: var(--morado-neon); text-transform: uppercase; }
-        
-        /* PISO 1: BIOGRAFÍA DE INTELIGENCIA */
         .artist-grid { display: grid; grid-template-columns: 280px 1fr; gap: 30px; }
         .artist-img { width: 220px; height: 220px; border-radius: 50%; border: 4px solid var(--morado-neon); box-shadow: 0 0 40px var(--morado-glow); object-fit: cover; }
         .circle { width: 85px; height: 85px; border-radius: 50%; border: 2px solid var(--morado-neon); display: flex; flex-direction: column; justify-content: center; align-items: center; background: rgba(168, 85, 247, 0.05); font-size: 0.9rem; font-weight: bold; }
         .nube-track { background: rgba(255,255,255,0.03); padding: 12px 20px; border-radius: 15px; border: 1px solid var(--borde); margin-bottom: 10px; display: flex; justify-content: space-between; font-size: 0.85rem; }
         .mapa-conquista { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
-        .flag-chip { background: #000; border: 1px solid var(--cyan); color: white; padding: 5px 12px; border-radius: 50px; font-size: 0.65rem; font-weight: bold; text-shadow: 0 0 5px var(--cyan); }
-        
-        /* PISO 3: TENDENCIAS */
+        .flag-chip { background: #000; border: 1px solid var(--cyan); color: white; padding: 5px 12px; border-radius: 50px; font-size: 0.65rem; font-weight: bold; }
         .countries-scroll { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 15px; width: 100%; scrollbar-width: none; }
         .country-pill { padding: 10px 20px; border-radius: 50px; background: var(--cristal); border: 1px solid var(--borde); cursor: pointer; white-space: nowrap; color: white; font-size: 0.8rem; }
-        .country-pill:hover { background: var(--morado-neon); }
         .yt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; }
         .yt-card { background: rgba(0,0,0,0.3); border-radius: 20px; overflow: hidden; border: 1px solid var(--borde); cursor: pointer; transition: 0.3s; }
         .yt-card:hover { border-color: var(--cyan); transform: translateY(-5px); }
         .yt-thumb { width: 100%; height: 125px; background-size: cover; background-position: center; }
-        
-        /* DIAGNÓSTICO */
-        .nubecita-box { background: linear-gradient(90deg, #1e0b3a, #050505); border: 1px solid var(--cyan); border-radius: 20px; padding: 20px; display: none; }
         .tag { display: inline-block; background: rgba(0,242,255,0.05); border: 1px solid var(--cyan); padding: 4px 8px; border-radius: 5px; margin: 3px; font-size: 0.6rem; color: var(--cyan); }
     </style>
 </head>
@@ -60,10 +52,10 @@
                     </div>
                 </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                    <div id="bio-tecnica">
-                        <div class="nube-track"><span>OBJETIVO:</span> <b id="target-name">ESPERANDO SEÑAL</b></div>
-                        <div class="nube-track"><span>MEGASTAR:</span> <b id="target-power">PENDIENTE</b></div>
-                        <div class="nube-track"><span>VISTAS:</span> <b id="target-views">--</b></div>
+                    <div>
+                        <div class="nube-track"><span>OBJETIVO:</span> <b id="target-name">ESPERANDO...</b></div>
+                        <div class="nube-track"><span>MEGASTAR:</span> <b id="target-power">--</b></div>
+                        <div id="art-tags" style="margin-top:15px;"></div>
                     </div>
                     <div>
                         <div class="piso-header" style="margin-bottom:10px; border:none;"><h2>CONQUISTA TERRITORIAL</h2></div>
@@ -90,11 +82,6 @@
             </div>
             <div class="yt-grid" id="yt-container"></div>
         </div>
-
-        <div class="piso" id="piso-diag">
-            <div class="piso-header"><h2>04. Diagnóstico de Inteligencia (Tags & Nube)</h2></div>
-            <div id="nubecita" class="nubecita-box"></div>
-        </div>
     </div>
 
     <script>
@@ -116,11 +103,10 @@
                 const data = await res.json();
                 let htmlV = "";
                 data.items.forEach((v, i) => {
-                    htmlV += `<div class="yt-card" onclick="ejecutarEspionaje('${v.id}')"><div class="yt-thumb" style="background-image:url('${v.snippet.thumbnails.high.url}')"></div><div style="padding:15px;"><div style="font-size:0.75rem; font-weight:bold;">#${i+1} ${v.snippet.title.substring(0,30)}</div></div></div>`;
+                    htmlV += `<div class="yt-card" onclick="ejecutarEspionaje('${v.id}')"><div class="yt-thumb" style="background-image:url('${v.snippet.thumbnails.high.url}')"></div><div style="padding:15px;"><div style="font-size:0.75rem; font-weight:bold;">#${i+1} ${v.snippet.title.substring(0,25)}</div></div></div>`;
                 });
                 document.getElementById('yt-container').innerHTML = htmlV;
-                document.getElementById('piso-youtube').scrollIntoView({behavior:'smooth'});
-            } catch(e) { console.log("Radar Error"); }
+            } catch(e) { console.log("Error"); }
         }
 
         async function ejecutarEspionaje(vId) {
@@ -130,35 +116,26 @@
                 const resC = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&id=${v.snippet.channelId}&key=${API_KEY_YT}`);
                 const c = (await resC.json()).items[0];
                 
-                // ACTUALIZACIÓN BIO (PISO 1)
                 document.getElementById('art-img').src = c.snippet.thumbnails.high.url;
                 document.getElementById('target-name').innerText = c.snippet.title.toUpperCase();
-                document.getElementById('target-views').innerText = Number(v.statistics.viewCount).toLocaleString();
                 const eng = ((v.statistics.likeCount / v.statistics.viewCount) * 100).toFixed(2);
                 document.getElementById('art-eng').innerText = eng + "%";
+                document.getElementById('art-tags').innerHTML = v.snippet.tags ? v.snippet.tags.slice(0,10).map(t => `<span class="tag">${t}</span>`).join('') : '';
 
-                // NUBECITA DE TAGS (PISO 4)
-                const nube = document.getElementById('nubecita'); nube.style.display = "block";
-                nube.innerHTML = `<div style="color:var(--cyan); font-weight:bold; margin-bottom:10px;">ETIQUETAS DETECTADAS:</div><div>${v.snippet.tags ? v.snippet.tags.map(t => `<span class="tag">${t}</span>`).join('') : 'SIN TAGS'}</div>`;
-                
-                // ESCÁNER DE MAPA
-                let mapaHtml = ""; let conteoPaises = 0;
-                const promesas = Object.entries(PAISES).map(async ([nombre, code]) => {
-                    const r = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet&chart=mostPopular&regionCode=${code}&videoCategoryId=10&maxResults=30&key=${API_KEY_YT}`);
+                let mapaHtml = ""; let cP = 0;
+                const promesas = Object.entries(PAISES).map(async ([nom, cod]) => {
+                    const r = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet&chart=mostPopular&regionCode=${cod}&videoCategoryId=10&maxResults=30&key=${API_KEY_YT}`);
                     const d = await r.json();
-                    const index = d.items.findIndex(item => item.snippet.channelId === v.snippet.channelId);
-                    if (index !== -1) { conteoPaises++; return `<div class="flag-chip">${nombre} #${index + 1}</div>`; }
+                    const idx = d.items.findIndex(item => item.snippet.channelId === v.snippet.channelId);
+                    if (idx !== -1) { cP++; return `<div class="flag-chip">${nom} #${idx + 1}</div>`; }
                     return "";
                 });
-                const resultados = await Promise.all(promesas);
-                document.getElementById('art-map').innerHTML = resultados.join('') || "SIN TENDENCIAS";
-                
-                // STATUS MEGASTAR
-                document.getElementById('target-power').innerText = conteoPaises >= 3 ? "CONFIRMADO" : "EN ASCENSO";
-                document.getElementById('art-status').innerText = conteoPaises >= 5 ? "GLOBAL" : "LOCAL";
-
+                const rMap = await Promise.all(promesas);
+                document.getElementById('art-map').innerHTML = rMap.join('') || "SIN TENDENCIA";
+                document.getElementById('target-power').innerText = cP >= 3 ? "CONFIRMADO" : "EN ASCENSO";
+                document.getElementById('art-status').innerText = cP >= 5 ? "GLOBAL" : "LOCAL";
                 document.getElementById('piso-artista').scrollIntoView({behavior:'smooth'});
-            } catch(e) { console.log("Error Intercepción"); }
+            } catch(e) { console.log("Falla"); }
         }
     </script>
 </body>
