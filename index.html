@@ -131,7 +131,6 @@
             cacheLoba[region] = data;
             localStorage.setItem('nvvex_loba', JSON.stringify(cacheLoba));
             
-            // INTELIGENCIA DE GÉNERO (BUSCA EN LOS 30)
             procesarGenerosGlobales(data.items, sigla);
 
             let htmlV = "";
@@ -173,6 +172,7 @@
             const views = Number(v.statistics.viewCount);
             const likes = Number(v.statistics.likeCount) || 0;
             const comments = Number(v.statistics.commentCount) || 0;
+            const subsTotal = Number(c.statistics.subscriberCount);
             const eng = (((likes + comments) / views) * 100).toFixed(2);
             
             const dias = Math.max(Math.ceil((new Date() - new Date(v.snippet.publishedAt)) / (1000*60*60*24)), 1);
@@ -187,7 +187,7 @@
             document.getElementById('art-pop').style.color = eng >= 10 ? 'var(--exito)' : 'var(--red)';
             document.getElementById('art-vpd').innerText = vpd.toLocaleString();
             document.getElementById('art-antiguedad').innerText = dias + " DÍAS";
-            document.getElementById('art-subs').innerText = Number(c.statistics.subscriberCount).toLocaleString();
+            document.getElementById('art-subs').innerText = subsTotal.toLocaleString();
             document.getElementById('art-total-views').innerText = Number(c.statistics.viewCount).toLocaleString();
             document.getElementById('presion-real').innerText = presionStr;
             document.getElementById('art-status-val').innerText = eng >= 10 ? "PRENDIDO" : "FRIO";
@@ -204,12 +204,25 @@
             }
             document.getElementById('global-map-link').innerHTML = mapaHtml || "<span style='font-size:0.6rem; color:var(--red)'>FUERA DE TENDENCIA GLOBAL</span>";
             
-            // CONEXIÓN REAL (FILTRO DE CALLE)
+            // INTELIGENCIA DE CONEXIÓN REAL (LA LÓGICA QUE ME PEDISTE)
+            const conversionFans = ((subsTotal / Number(c.statistics.viewCount)) * 100).toFixed(2);
+            const demandaOrganica = (likes / (views / 100)).toFixed(1);
             const calleRealPct = Math.min(((likes / views) * 1000), 100).toFixed(1);
+
             document.getElementById('target-debil').innerHTML = `
-                <div style="margin-bottom:10px;">LIKES REALES: <b style="color:var(--exito)">${likes.toLocaleString()}</b></div>
-                <div style="margin-bottom:10px;">COMENTARIOS: <b style="color:var(--cyan)">${comments.toLocaleString()}</b></div>
-                <div class="gen-burbuja" style="border-color:var(--cyan)">PODER DE CALLE: ${calleRealPct}%</div>
+                <div style="margin-bottom:12px; border-bottom:1px solid var(--borde); padding-bottom:8px;">
+                    LIKES REALES: <b style="color:var(--exito)">${likes.toLocaleString()}</b><br>
+                    COMENTARIOS: <b style="color:var(--cyan)">${comments.toLocaleString()}</b>
+                </div>
+                <div class="gen-burbuja" style="border-color:var(--cyan); margin-bottom:8px;">
+                    CONVERSIÓN: <span class="gen-pct">${conversionFans}%</span>
+                </div>
+                <div class="gen-burbuja" style="border-color:var(--morado-neon); margin-bottom:8px;">
+                    DEMANDA: <span class="gen-pct">${demandaOrganica}%</span>
+                </div>
+                <div class="gen-burbuja" style="background:var(--morado-glow); color:white; border:none;">
+                    PODER CALLE: <span class="gen-pct" style="color:white">${calleRealPct}%</span>
+                </div>
             `;
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
