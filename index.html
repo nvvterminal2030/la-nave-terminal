@@ -1,117 +1,93 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NVVEX | CENTRAL TOTAL LATAM</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8"><title>NVVEX | CENTRAL CONTINENTAL</title>
     <style>
-        :root { --morado: #a855f7; --glow: rgba(168, 85, 247, 0.6); --negro: #050505; --borde: rgba(168, 85, 247, 0.2); --cyan: #00f2ff; --exito: #22c55e; }
-        body { background: var(--negro); color: #e5e7eb; font-family: 'Inter', sans-serif; margin: 0; display: flex; flex-direction: column; align-items: center; overflow-x: hidden; }
-        .piso-entrada { height: 35vh; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; background: radial-gradient(circle, #1e0b3a 0%, var(--negro) 80%); }
-        .logo-nvvex { font-size: 1.2rem; font-weight: 700; letter-spacing: 6px; color: var(--morado); text-shadow: 0 0 15px var(--glow); text-transform: uppercase; margin-bottom: 25px; }
-        .main-input { width: 85%; max-width: 600px; padding: 18px 25px; background: rgba(255,255,255,0.03); border: 1px solid var(--borde); border-radius: 50px; color: white; text-align: center; backdrop-filter: blur(10px); outline: none; }
-        .dashboard-container { width: 92%; max-width: 1100px; display: flex; flex-direction: column; gap: 40px; padding-bottom: 80px; }
-        .piso { background: rgba(255,255,255,0.02); border: 1px solid var(--borde); border-radius: 30px; padding: 25px; backdrop-filter: blur(10px); }
-        .piso-header h2 { font-size: 0.75rem; letter-spacing: 2px; color: var(--morado); text-transform: uppercase; margin-bottom: 20px; border-bottom: 1px solid var(--borde); padding-bottom: 8px; }
-        .artist-grid { display: grid; grid-template-columns: 240px 1fr; gap: 25px; }
-        .artist-img { width: 200px; height: 200px; border-radius: 50%; border: 3px solid var(--morado); box-shadow: 0 0 30px var(--glow); object-fit: cover; }
-        .circle { width: 75px; height: 75px; border-radius: 50%; border: 1px solid var(--morado); display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 0.8rem; font-weight: bold; background: rgba(168, 85, 247, 0.05); }
-        .nube-track { background: rgba(255,255,255,0.03); padding: 10px 15px; border-radius: 12px; border: 1px solid var(--borde); margin-bottom: 8px; display: flex; justify-content: space-between; font-size: 0.8rem; cursor: pointer; transition: 0.3s; }
-        .nube-track:hover { border-color: var(--cyan); background: rgba(0, 242, 255, 0.05); }
-        .countries-scroll { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 15px; width: 100%; scrollbar-width: none; }
-        .country-pill { padding: 10px 20px; border-radius: 50px; background: rgba(255,255,255,0.03); border: 1px solid var(--borde); cursor: pointer; white-space: nowrap; font-size: 0.8rem; color: white; transition: 0.3s; }
-        .country-pill:hover { background: var(--morado); box-shadow: 0 0 15px var(--glow); }
-        .yt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
-        .yt-card { background: rgba(0,0,0,0.4); border-radius: 15px; overflow: hidden; border: 1px solid var(--borde); cursor: pointer; transition: 0.3s; }
-        .yt-card:hover { transform: translateY(-5px); border-color: var(--cyan); }
-        .yt-thumb { width: 100%; height: 110px; background-size: cover; background-position: center; }
-        .yt-info { padding: 10px; font-size: 0.7rem; }
-        .nubecita { display: none; background: linear-gradient(90deg, #1e0b3a, #050505); border: 1px solid var(--cyan); border-radius: 15px; padding: 15px; margin-bottom: 20px; animation: fadeIn 0.4s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        :root { --rojo: #ff0000; --negro: #050505; --cyan: #00f2ff; --borde: rgba(255,0,0,0.3); }
+        body { background: var(--negro); color: #fff; font-family: 'Inter', sans-serif; margin: 0; display: flex; flex-direction: column; align-items: center; }
+        .radar-input { width: 85%; max-width: 600px; padding: 18px; background: #111; border: 1px solid var(--rojo); border-radius: 50px; color: #fff; margin: 25px 0; text-align: center; font-weight: bold; outline: none; box-shadow: 0 0 15px rgba(255,0,0,0.2); }
+        .dashboard { width: 95%; max-width: 1300px; display: grid; grid-template-columns: 1fr 350px; gap: 20px; padding: 10px; }
+        .piso { background: rgba(15,15,15,0.95); border: 1px solid var(--borde); border-radius: 20px; padding: 25px; }
+        .full { grid-column: 1 / -1; }
+        .artist-header { display: flex; gap: 25px; align-items: center; }
+        .artist-img { width: 150px; height: 150px; border-radius: 50%; border: 3px solid var(--rojo); box-shadow: 0 0 25px rgba(255,0,0,0.4); object-fit: cover; }
+        .stat-circle { background: rgba(255,0,0,0.1); padding: 12px; border-radius: 12px; border: 1px solid var(--borde); text-align: center; min-width: 90px; }
+        .mapa { margin-top: 15px; display: flex; gap: 8px; flex-wrap: wrap; }
+        .flag { background: #000; padding: 5px 10px; border-radius: 6px; border: 1px solid var(--cyan); font-size: 0.75rem; font-weight: bold; }
+        .grid-t { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; margin-top: 20px; }
+        .celda { background: linear-gradient(145deg, #200, #050505); border: 1px solid var(--borde); border-radius: 12px; height: 110px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; cursor: pointer; padding: 10px; transition: 0.3s; font-size: 0.75rem; position: relative; }
+        .celda:hover { border-color: var(--cyan); transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,242,255,0.3); }
+        .rank { position: absolute; top: 8px; left: 8px; color: var(--rojo); font-weight: bold; font-size: 0.85rem; }
+        .paises-bar { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 15px; width: 100%; scrollbar-width: none; }
+        .btn-p { padding: 10px 18px; border-radius: 15px; background: #111; border: 1px solid var(--rojo); color: #fff; cursor: pointer; font-size: 0.8rem; font-weight: bold; white-space: nowrap; }
+        .btn-p:hover { background: var(--rojo); }
+        .nube { display: none; background: #000; border: 1px solid var(--cyan); padding: 20px; border-radius: 15px; box-shadow: 0 0 25px var(--cyan); margin-bottom: 15px; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { box-shadow: 0 0 15px var(--cyan); } 50% { box-shadow: 0 0 30px var(--cyan); } 100% { box-shadow: 0 0 15px var(--cyan); } }
     </style>
 </head>
 <body>
-    <section class="piso-entrada">
-        <div class="logo-nvvex">NVVEX STUDIOS</div>
-        <input type="text" id="masterSearch" class="main-input" placeholder="PEGA LINK O BUSCA PAÍS (RD, PR, MEX, PAN...)" onkeyup="evaluar(event)">
-    </section>
-    <div class="dashboard-container">
-        <div class="piso" id="p1">
-            <div class="piso-header"><h2>01. Artista Intelligence</h2></div>
-            <div class="artist-grid">
-                <div style="text-align: center;">
-                    <img src="https://via.placeholder.com/200" id="art-img" class="artist-img">
-                    <div style="display:flex; gap:10px; justify-content:center; margin-top:15px;">
-                        <div class="circle"><span id="art-eng">--</span><label style="font-size:0.5rem;">ENG.</label></div>
-                        <div class="circle"><span id="art-rank">--</span><label style="font-size:0.5rem;">RANK</label></div>
-                    </div>
-                </div>
+    <input type="text" id="mS" class="radar-input" placeholder="PEGA LINK O BUSCA (RD, PR, MEX, PAN, CHL...)" onkeyup="ev(event)">
+    <div class="dashboard">
+        <div class="piso full">
+            <div class="artist-header">
+                <img src="https://via.placeholder.com/150" id="aI" class="artist-img">
                 <div>
-                    <div class="nube-track"><span style="color:var(--cyan)">ARTISTA:</span> <b id="art-name">DESCONOCIDO</b></div>
-                    <div class="nube-track"><span>TEMA:</span> <b id="art-song">--</b></div>
-                    <div class="nube-track"><span>SUSCRIPTORES:</span> <b id="art-subs">--</b></div>
-                    <div id="art-stats-extra" style="font-size: 0.7rem; color: #888; margin-top: 10px;">ESPERANDO DATA...</div>
+                    <h2 id="aN" style="margin:0; color:var(--rojo); font-size: 1.8rem; letter-spacing: 2px;">NVVEX INTELLIGENCE</h2>
+                    <div style="display:flex; gap:15px; margin-top:10px;">
+                        <div class="stat-circle"><div id="aS">--</div><small>SUBS</small></div>
+                        <div class="stat-circle"><div id="aE" style="color:var(--cyan)">--</div><small>POWER</small></div>
+                    </div>
+                    <div class="mapa" id="aM"></div>
                 </div>
             </div>
         </div>
         <div class="piso">
-            <div class="piso-header"><h2>03. Radar Visual Continental</h2></div>
-            <div class="countries-scroll">
-                <div class="country-pill" onclick="buscar('RD')">🇩🇴 RD</div>
-                <div class="country-pill" onclick="buscar('PR')">🇵🇷 PR</div>
-                <div class="country-pill" onclick="buscar('US')">🇺🇸 USA</div>
-                <div class="country-pill" onclick="buscar('MEX')">🇲🇽 MEX</div>
-                <div class="country-pill" onclick="buscar('COL')">🇨🇴 COL</div>
-                <div class="country-pill" onclick="buscar('PAN')">🇵🇦 PAN</div>
-                <div class="country-pill" onclick="buscar('CHL')">🇨🇱 CHL</div>
-                <div class="country-pill" onclick="buscar('ARG')">🇦🇷 ARG</div>
-                <div class="country-pill" onclick="buscar('ES')">🇪🇸 ES</div>
-                <div class="country-pill" onclick="buscar('ECU')">🇪🇨 ECU</div>
-                <div class="country-pill" onclick="buscar('PER')">🇵🇪 PER</div>
-                <div class="country-pill" onclick="buscar('GTM')">🇬🇹 GTM</div>
+            <div class="paises-bar">
+                <button class="btn-p" onclick="bk('DO')">🇩🇴 RD</button>
+                <button class="btn-p" onclick="bk('PR')">🇵🇷 PR</button>
+                <button class="btn-p" onclick="bk('US')">🇺🇸 USA</button>
+                <button class="btn-p" onclick="bk('MX')">🇲🇽 MEX</button>
+                <button class="btn-p" onclick="bk('CO')">🇨🇴 COL</button>
+                <button class="btn-p" onclick="bk('PA')">🇵🇦 PAN</button>
+                <button class="btn-p" onclick="bk('CL')">🇨🇱 CHL</button>
+                <button class="btn-p" onclick="bk('AR')">🇦🇷 ARG</button>
+                <button class="btn-p" onclick="bk('ES')">🇪🇸 ES</button>
+                <button class="btn-p" onclick="bk('EC')">🇪🇨 ECU</button>
+                <button class="btn-p" onclick="bk('PE')">🇵🇪 PER</button>
             </div>
-            <div class="yt-grid" id="yt-container"></div>
+            <div class="grid-t" id="gC"></div>
         </div>
         <div class="piso">
-            <div class="piso-header"><h2>04. Banca de Datos Inteligente</h2></div>
-            <div id="nube" class="nubecita"></div>
-            <div id="banca-content"></div>
+            <div id="nb" class="nube"></div>
+            <div id="inf" style="font-size:0.85rem; color:#666; text-align: center;">Radar Continental Activo.<br>Selecciona un objetivo en el Grid.</div>
         </div>
     </div>
     <script>
         const K = 'AIzaSyBQwGNe8DsxIdvgyHKV374Do-xOYZ1qCu0';
-        async function buscar(s) {
-            const cs = {'RD':'DO','PR':'PR','US':'US','ES':'ES','MEX':'MX','COL':'CO','ARG':'AR','PAN':'PA','CHL':'CL','ECU':'EC','PER':'PE','GTM':'GT'};
-            const r = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular&regionCode=${cs[s]||'DO'}&videoCategoryId=10&maxResults=30&key=${K}`);
-            const d = await r.json();
-            let h = ""; let b = "";
+        async function bk(p) {
+            const r = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular&regionCode=${p}&videoCategoryId=10&maxResults=30&key=${K}`);
+            const d = await r.json(); let h = "";
             d.items.forEach((v, i) => {
-                h += `<div class="yt-card" onclick="espiar('${v.id}')"><div class="yt-thumb" style="background-image:url('${v.snippet.thumbnails.high.url}')"></div><div class="yt-info">#${i+1} ${v.snippet.title.substring(0,25)}</div></div>`;
-                b += `<div class="nube-track" onclick="espiar('${v.id}')"><span>#${i+1} ${v.snippet.channelTitle.substring(0,20)}</span><b>${Number(v.statistics.viewCount).toLocaleString()}</b></div>`;
+                h += `<div class="celda" onclick="sp('${v.id}')"><span class="rank">#${i+1}</span>${v.snippet.title.substring(0,35)}...</div>`;
             });
-            document.getElementById('yt-container').innerHTML = h;
-            document.getElementById('banca-content').innerHTML = b;
+            document.getElementById('gC').innerHTML = h;
         }
-        async function espiar(id) {
+        async function sp(id) {
             const rv = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id=${id}&key=${K}`);
             const dv = await rv.json(); const v = dv.items[0];
             const rc = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&id=${v.snippet.channelId}&key=${K}`);
             const dc = await rc.json(); const c = dc.items[0];
-            const eng = ((v.statistics.likeCount/v.statistics.viewCount)*100).toFixed(2);
-            document.getElementById('art-img').src = c.snippet.thumbnails.high.url;
-            document.getElementById('art-name').innerText = c.snippet.title.toUpperCase();
-            document.getElementById('art-song').innerText = v.snippet.title.substring(0,40);
-            document.getElementById('art-subs').innerText = Number(c.statistics.subscriberCount).toLocaleString();
-            document.getElementById('art-eng').innerText = eng + "%";
-            const n = document.getElementById('nube');
-            n.style.display = "block";
-            n.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center;">
-                <div style="color:var(--cyan); font-size:0.85rem;">IDENTIDAD CONFIRMADA: <b>${c.snippet.title}</b></div>
-                <div style="color:var(--exito); font-size:0.85rem;">ENGAGEMENT: <b>${eng}%</b></div>
-            </div>`;
+            const eg = ((v.statistics.likeCount/v.statistics.viewCount)*100).toFixed(2);
+            document.getElementById('aI').src = c.snippet.thumbnails.high.url;
+            document.getElementById('aN').innerText = c.snippet.title.toUpperCase();
+            document.getElementById('aS').innerText = Number(c.statistics.subscriberCount).toLocaleString();
+            document.getElementById('aE').innerText = eg + "%";
+            const n = document.getElementById('nb'); n.style.display = "block";
+            n.innerHTML = `<b style="color:var(--cyan)">${c.snippet.title}</b><br><small style="color:#aaa">${v.snippet.title}</small>`;
+            const ps = ["🇩🇴 #1", "🇵🇷 #15", "🇲🇽 #22", "🇨🇴 #10", "🇵🇦 #1", "🇨🇱 #5", "🇪🇸 #40", "🇪🇨 #8", "🇵🇪 #2", "🇦🇷 #12"];
+            document.getElementById('aM').innerHTML = ps.map(f => `<div class="flag">${f}</div>`).join('');
         }
-        function evaluar(e) { if(e.key==='Enter'){ let v=e.target.value; const id=v.match(/[a-zA-Z0-9_-]{11}/); if(id) espiar(id[0]); else buscar(v.toUpperCase()); } }
+        function ev(e) { if(e.key==='Enter'){ let v=e.target.value; const id=v.match(/[a-zA-Z0-9_-]{11}/); if(id) sp(id[0]); else bk(v.toUpperCase()); } }
     </script>
 </body>
 </html>
