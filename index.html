@@ -12,10 +12,16 @@
             --exito: #22c55e; --red: #ff3131; --cyan: #00f2ff;
         }
         body { background-color: var(--negro-mate); color: #e5e7eb; font-family: 'Inter', sans-serif; margin: 0; display: flex; flex-direction: column; align-items: center; }
+
+        /* BLOQUEO DE SEGURIDAD */
+        #bunker-lock { position: fixed; inset: 0; background: var(--negro-mate); z-index: 10000; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .lock-box { background: var(--cristal); border: 1px solid var(--morado-neon); padding: 40px; border-radius: 30px; text-align: center; backdrop-filter: blur(15px); }
+        .lock-input { background: rgba(0,0,0,0.5); border: 1px solid var(--borde); padding: 15px; border-radius: 15px; color: white; text-align: center; font-size: 1.5rem; outline: none; margin: 20px 0; }
+
         .piso-entrada { height: 20vh; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; background: radial-gradient(circle at center, #1e0b3a 0%, var(--negro-mate) 70%); }
         .logo-nvvex { font-size: 1.2rem; font-weight: 700; letter-spacing: 8px; color: var(--morado-neon); text-shadow: 0 0 20px var(--morado-glow); text-transform: uppercase; margin-bottom: 15px; }
         .main-input { width: 90%; max-width: 600px; padding: 15px 25px; background: var(--cristal); border: 1px solid var(--borde); border-radius: 100px; color: white; font-size: 1rem; text-align: center; outline: none; }
-        .dashboard-container { width: 95%; max-width: 1200px; display: flex; flex-direction: column; gap: 25px; padding-bottom: 50px; }
+        .dashboard-container { width: 95%; max-width: 1200px; display: none; flex-direction: column; gap: 25px; padding-bottom: 50px; }
         .piso { background: var(--cristal); border: 1px solid var(--borde); border-radius: 40px; padding: 35px; backdrop-filter: blur(10px); position: relative; }
         .piso-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--borde); padding-bottom: 10px; }
         .piso-header h2 { font-size: 0.8rem; letter-spacing: 3px; color: var(--morado-neon); text-transform: uppercase; }
@@ -29,15 +35,28 @@
         .btn-gatillo { position: absolute; top: 30px; right: 35px; background: var(--red); color: white; border: none; padding: 12px 25px; border-radius: 50px; font-size: 0.75rem; font-weight: bold; cursor: pointer; text-transform: uppercase; }
         .habladora-col { background: rgba(0,0,0,0.2); padding: 20px; border-radius: 20px; border: 1px solid var(--borde); }
         .tag-burbuja { display: inline-block; background: rgba(168, 85, 247, 0.1); border: 1px solid var(--morado-neon); padding: 5px 12px; border-radius: 50px; margin: 4px; font-size: 0.65rem; color: #fff; text-shadow: 0 0 5px var(--morado-glow); }
+        
+        /* ESTILO PARA EL MAPEO AZUL */
+        .pais-rank { display: inline-block; background: rgba(0, 242, 255, 0.1); border: 1px solid var(--cyan); color: var(--cyan); padding: 6px 14px; border-radius: 10px; margin: 5px; font-size: 0.75rem; font-weight: bold; text-shadow: 0 0 10px var(--cyan); border-bottom: 2px solid var(--cyan); }
     </style>
 </head>
 <body>
+
+    <div id="bunker-lock">
+        <div class="lock-box">
+            <div style="color:var(--morado-neon); letter-spacing:5px; font-weight:bold; margin-bottom:10px;">NVVEX STUDIOS</div>
+            <div style="font-size:0.7rem; color:#666;">BANCA DE INTELIGENCIA 2026</div>
+            <input type="password" id="passKey" class="lock-input" placeholder="PASSCODE">
+            <button onclick="unlock()" style="background:var(--morado-neon); color:white; border:none; padding:12px 40px; border-radius:50px; cursor:pointer; font-weight:bold;">ACCEDER</button>
+        </div>
+    </div>
+
     <section class="piso-entrada">
         <div class="logo-nvvex">NVVEX STUDIOS</div>
         <input type="text" id="masterSearch" class="main-input" placeholder="PEGA LINK O BUSCA PAÍS..." onkeyup="evaluarIntento(event)">
     </section>
 
-    <div class="dashboard-container">
+    <div class="dashboard-container" id="main-content">
         <div class="piso">
             <button class="btn-gatillo" onclick="publicarRadarTotal()">DISPARAR Y PUBLICAR</button>
             <div class="piso-header"><h2>01. Artista Intelligence & Bio (En Vivo)</h2></div>
@@ -62,7 +81,7 @@
                     <div>
                         <div class="piso-header" style="margin-bottom:10px; border:none;"><h2>TAGS EN BURBUJAS</h2></div>
                         <div id="art-tags-real" style="height:120px; overflow-y:auto; border:1px solid var(--borde); padding:10px; border-radius:15px;"></div>
-                        <div id="art-map" style="margin-top:10px;"></div>
+                        <div id="global-map-link" style="margin-top:15px; border-top: 1px solid var(--borde); padding-top: 10px;"></div>
                     </div>
                 </div>
             </div>
@@ -89,6 +108,13 @@
         const PAISES = { 'RD':'DO','PR':'PR','US':'US','MEX':'MX','COL':'CO','ARG':'AR','CHL':'CL','ES':'ES' };
         let cacheLoba = JSON.parse(localStorage.getItem('nvvex_loba')) || {};
         let lastVPD = 0;
+
+        function unlock() {
+            if(document.getElementById('passKey').value === "2026") {
+                document.getElementById('bunker-lock').style.display = 'none';
+                document.getElementById('main-content').style.display = 'flex';
+            } else { alert("ACCESO DENEGADO"); }
+        }
 
         document.getElementById('paises-scroll').innerHTML = Object.keys(PAISES).map(c => `
             <div style="padding:10px 20px; border-radius:50px; background:var(--cristal); border:1px solid var(--borde); cursor:pointer; color:white; font-size:0.75rem; white-space:nowrap;" onclick="buscarYT('${c}')">${c}</div>
@@ -143,8 +169,19 @@
             const tagArray = v.snippet.tags || ["SIN TAGS"];
             document.getElementById('art-tags-real').innerHTML = tagArray.map(t => `<span class="tag-burbuja">${t.toUpperCase()}</span>`).join('');
             
+            // EL INJERTO: VINCULACIÓN MULTIPAÍS (VIA CACHÉ LOBA)
+            let mapaHtml = "";
+            for (let [nom, cod] of Object.entries(PAISES)) {
+                if(cacheLoba[cod]) {
+                    const idx = cacheLoba[cod].items.findIndex(item => item.id === vId || item.snippet.channelId === v.snippet.channelId);
+                    if(idx !== -1) mapaHtml += `<span class="pais-rank">${nom} #${idx+1}</span>`;
+                }
+            }
+            document.getElementById('global-map-link').innerHTML = mapaHtml || "<span style='font-size:0.6rem; color:var(--red)'>FUERA DE TENDENCIA GLOBAL</span>";
+
             document.getElementById('market-strategy').innerText = `USAR TAGS: ${tagArray.slice(0,3).join(", ")}. ENGAGEMENT ${eng}%.`;
             document.getElementById('target-debil').innerText = eng < 5 ? "RIESGO: AUDIENCIA DORMIDA." : "FUERTE: NICHO ACTIVO.";
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         async function publicarRadarTotal() {
