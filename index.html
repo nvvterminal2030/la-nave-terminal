@@ -202,50 +202,98 @@
         }
 
         /* --- PISO 4: YOUTUBE PRO --- */
-        // [INSTRUCCIONES DE RECEPCIÓN: PISO 4]
+        /* --- LÓGICA DE INTELIGENCIA DE LA NAVE (PISO 4) --- */
+// 1. Detector Inteligente
+function detectIntent(event) {
+    if (event.key === 'Enter') {
+        let val = document.getElementById('masterSearch').value.trim();
+        if (val.length === 22) { scanArtist(val); } 
+        else if (val.toLowerCase().includes('global')) { toggleReactor(); }
+        else { triggerCountry(val.toUpperCase()); }
+    }
+}
+
+// 2. Función Espejo: Sube la info del Radar a la Cabecera
+function updateArtistIntel(titulo, canal, vistas, eng, img, id) {
+    // Actualizamos la cabecera del búnker
+    document.getElementById('artist-img').src = img;
+    document.getElementById('pop-val').innerText = vistas; // Vistas como Popularidad
+    document.getElementById('eng-val').innerText = eng;    // Likes como Engagement
+    
+    // Cambiamos el título del bloque para saber qué analizamos
+    document.querySelector('#block-artista h2').innerText = "Análisis: " + canal;
+    
+    // Inyectamos el track seleccionado como el #1 en la lista de abajo
+    document.getElementById('tracks-container').innerHTML = `
+        <div class="track-cloud" style="border-color:var(--morado-neon); background:rgba(168, 85, 247, 0.2);">
+            <span>🔥 ${titulo.substring(0,25)}...</span>
+            <div class="pop-badge" onclick="window.open('https://youtu.be/${id}')" style="cursor:pointer">VER AHORA</div>
+        </div>
+    `;
+}
+
+// 4. Radar Visual YouTube (LECTURA REAL DEL TXT)
 async function triggerCountry(iso) {
-    const SATELITE_KEY = "AIzaSyBQwGNe8DsxIdvgyHKV374Do-xOYZ1qCu0";
     const ytResults = document.getElementById('yt-results');
+    ytResults.innerHTML = "<p style='color:var(--morado-neon); animation:pulse 1s infinite;'>[ ESCANEANDO RADAR EN " + iso + "... ]</p>";
     
-    // 1. Limpiamos y mandamos señal de espera
-    ytResults.innerHTML = "<p style='color:var(--morado-neon)'>[ BUSCANDO FRECUENCIAS EN " + iso + "... ]</p>";
-    
-    const region = iso || 'DO';
-
     try {
-        // 2. Aquí le damos la ORDEN a Google de qué queremos recibir: snippet y statistics
-        const response = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular&regionCode=${region}&maxResults=8&videoCategoryId=10&key=${SATELITE_KEY}`);
-        const data = await response.json();
-
-        // 3. Si no hay señal, el búnker nos avisa por qué
-        if (data.error) {
-            ytResults.innerHTML = `<p style="color:red">ERROR DE RECEPCIÓN: ${data.error.message}</p>`;
-            return;
-        }
-
+        // Buscamos el archivo que el inyector llena
+        const response = await fetch('radar_visual.txt?v=' + Math.random());
+        const data = await response.text();
+        const lineas = data.trim().split('\n');
+        
         let html = "";
-        // 4. Procesamos cada bloque de data recibida
-        data.items.forEach((video) => {
-            const views = parseInt(video.statistics.viewCount).toLocaleString();
-            const title = video.snippet.title;
-            const channel = video.snippet.channelTitle;
-
-            // 5. Lo imprimimos en tu formato de "Nube" inteligente
-            html += `
-                <div class="track-cloud" style="flex-direction: column; align-items: flex-start; gap: 5px;">
-                    <span style="font-weight:bold; font-size:0.8rem;">${title.substring(0, 40)}...</span>
-                    <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
-                        <small style="color:var(--morado-neon); font-size:0.7rem;">${channel}</small>
-                        <div class="pop-badge">📈 ${views}</div>
+        lineas.forEach((linea, index) => {
+            // Formato: RANKING|TITULO|CANAL|VISTAS|LIKES|COMS|TAGS|ID|FOTO
+            const [rank, titulo, canal, vistas, likes, coms, tags, id, foto] = linea.split('|');
+            
+            if(titulo) {
+                html += `
+                    <div class="track-cloud" 
+                         onclick="updateArtistIntel('${titulo}','${canal}','${vistas}','${likes}','${foto}','${id}')"
+                         style="animation-delay: ${index * 0.05}s; flex-direction: column; align-items: flex-start; cursor:pointer; background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('${foto}'); background-size: cover; min-height: 120px; border: 1px solid var(--borde-glow);">
+                        
+                        <div style="font-weight: bold; font-size: 0.75rem; margin-bottom: 5px;">#${rank} ${titulo.substring(0,35)}</div>
+                        
+                        <div style="display: flex; justify-content: space-between; width: 100%; margin-top: auto;">
+                            <span style="font-size: 0.65rem; color: var(--morado-neon);">${canal}</span>
+                            <div class="pop-badge">📈 ${vistas}</div>
+                        </div>
+                        
+                        <div style="display: flex; gap: 4px; margin-top: 5px; width: 100%;">
+                            <small style="font-size: 0.5rem; color: #aaa; overflow: hidden; white-space: nowrap;">${tags.substring(0,30)}...</small>
+                        </div>
                     </div>
-                </div>
-            `;
+                `;
+            }
         });
         
-        ytResults.innerHTML = html;
+        ytResults.innerHTML = html || "<p>Radar vacío. Esperando inyección...</p>";
+        
+    } catch (e) {
+        ytResults.innerHTML = "<p style='color:red'>[ ERROR: NO SE ENCONTRÓ RADAR_VISUAL.TXT ]</p>";
+    }
+}
 
-    } catch (error) {
-        ytResults.innerHTML = `<p style="color:red">PUENTE CAÍDO: Revisa internet o la llave.</p>`;
+// Función para el botón del reactor (mantiene tu lógica)
+let reactorActive = false;
+function toggleReactor() {
+    const btn = document.getElementById('reactorBtn');
+    const status = document.getElementById('reactorStatus');
+    const block = document.getElementById('block-global');
+    if (!reactorActive) {
+        reactorActive = true;
+        btn.innerText = "DESACTIVAR RADAR";
+        btn.style.background = "#ff0055";
+        status.innerText = "ESTADO: ESCANEANDO MERCADO MUNDIAL...";
+        block.classList.add('active-pulse');
+    } else {
+        reactorActive = false;
+        btn.innerText = "Activar Radar Global";
+        btn.style.background = "var(--morado-oscuro)";
+        status.innerText = "Modo: Manual - Ahorro de Energía";
+        block.classList.remove('active-pulse');
     }
 }
         /* --- PISO 5: DIAGNÓSTICO --- */
