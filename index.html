@@ -205,14 +205,14 @@
             document.getElementById('global-map-link').innerHTML = mapaHtml || "<span style='font-size:0.6rem; color:var(--red)'>FUERA DE TENDENCIA GLOBAL</span>";
             
             // INTELIGENCIA DINÁMICA DE CONEXIÓN REAL (SEMÁFORO PICANTE/FRÍO)
-            const conversionEmpuje = ((subsTotal / views) * 100);
+            const conversionViral = ((subsTotal / views) * 100);
             const demandaOrganica = ((likes / views) * 100);
             const poderNombre = Math.min(((subsTotal / (Number(c.statistics.viewCount) / 100))), 100);
             const calleRealPct = Math.min(((likes / views) * 1000), 100);
 
-            // COLORES DINÁMICOS
-            const colViral = (conversionEmpuje >= 1 && conversionEmpuje <= 80) ? 'var(--red)' : 'var(--cyan)';
-            const txtViral = (conversionEmpuje > 200) ? 'FRÍO / DATA IRREAL' : (conversionEmpuje >= 1 ? 'PICANTE' : 'FRÍO');
+            // COLORES DINÁMICOS - TECHO VIRAL SUBIDO A 180%
+            const colViral = (conversionViral >= 1 && conversionViral <= 180) ? 'var(--red)' : 'var(--cyan)';
+            const txtViral = (conversionViral > 200) ? 'DATA IRREAL' : (conversionViral >= 1 ? 'PICANTE' : 'FRÍO');
             const colDemanda = (demandaOrganica >= 4) ? 'var(--red)' : 'var(--cyan)';
             const colNombre = (poderNombre >= 50) ? 'var(--red)' : 'var(--cyan)';
             const colCalle = (calleRealPct >= 20) ? 'var(--red)' : 'var(--cyan)';
@@ -223,7 +223,7 @@
                     COMENTARIOS: <b style="color:var(--cyan)">${comments.toLocaleString()}</b>
                 </div>
                 <div class="gen-burbuja" style="border-color:${colViral}; margin-bottom:8px;">
-                    VIRALIDAD: <span class="gen-pct" style="color:${colViral}">${conversionEmpuje.toFixed(2)}% [${txtViral}]</span>
+                    VIRALIDAD: <span class="gen-pct" style="color:${colViral}">${conversionViral.toFixed(2)}% [${txtViral}]</span>
                 </div>
                 <div class="gen-burbuja" style="border-color:${colDemanda}; margin-bottom:8px;">
                     DEMANDA: <span class="gen-pct" style="color:${colDemanda}">${demandaOrganica.toFixed(1)}%</span>
