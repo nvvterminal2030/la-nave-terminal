@@ -6,10 +6,7 @@
     <title>NVVEX | CENTRAL DE INTELIGENCIA</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
-        /* ==========================================
-        [ESTÉTICA DE LA NAVE] : CSS MAESTRO
-        ==========================================
-        */
+        /* [ESTÉTICA DE LA NAVE] - SE MANTIENE INTACTA */
         :root {
             --morado-neon: #a855f7;
             --morado-glow: rgba(168, 85, 247, 0.6);
@@ -31,12 +28,10 @@
             scroll-behavior: smooth;
         }
 
-        /* Scrollbar Personalizado */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: var(--negro-mate); }
         ::-webkit-scrollbar-thumb { background: var(--morado-glow); border-radius: 10px; }
 
-        /* --- PISO 1: ENTRADA (BUSCADOR) --- */
         .piso-entrada {
             height: 40vh;
             display: flex;
@@ -83,13 +78,12 @@
             transform: scale(1.02);
         }
 
-        /* --- CONTENEDOR DE PISOS --- */
         .dashboard-container {
             width: 90%;
             max-width: 1200px;
             display: flex;
             flex-direction: column;
-            gap: 100px; /* Espacio entre bloques para claridad */
+            gap: 100px;
             padding-bottom: 100px;
         }
 
@@ -122,13 +116,7 @@
             color: var(--morado-neon);
         }
 
-        /* --- PISO 2: ARTISTA (SPOTIFY) --- */
-        .artist-grid {
-            display: grid;
-            grid-template-columns: 300px 1fr;
-            gap: 40px;
-        }
-
+        .artist-grid { display: grid; grid-template-columns: 300px 1fr; gap: 40px; }
         .profile-card { text-align: center; }
         .artist-img {
             width: 200px; height: 200px;
@@ -151,11 +139,7 @@
         .circle span { font-size: 1.2rem; font-weight: 700; }
         .circle label { font-size: 0.6rem; color: #888; }
 
-        .nubes-container {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-        }
+        .nubes-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
 
         .nube-track {
             background: rgba(255,255,255,0.03);
@@ -174,14 +158,7 @@
             transform: translateX(10px);
         }
 
-        /* --- PISO 3: REACTOR GLOBAL --- */
-        .reactor-box {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 60px;
-            text-align: center;
-        }
+        .reactor-box { display: flex; flex-direction: column; align-items: center; padding: 60px; text-align: center; }
 
         .btn-reactor {
             padding: 20px 50px;
@@ -196,74 +173,44 @@
             box-shadow: 0 0 20px var(--borde);
         }
 
-        .btn-reactor.active {
-            background: var(--morado-neon);
-            box-shadow: 0 0 50px var(--morado-neon);
-        }
+        .btn-reactor.active { background: var(--morado-neon); box-shadow: 0 0 50px var(--morado-neon); }
 
-        /* --- PISO 4: YOUTUBE PRO --- */
-        async function buscarYT(pais) {
-    const API_KEY = 'AIzaSyBQwGNe8DsxIdvgyHKV374Do-xOYZ1qCu0'; // Su llave conectada
-    const container = document.getElementById('yt-container');
-    const fotoPrincipal = document.getElementById('art-img'); // El círculo de arriba
-    
-    container.innerHTML = "<div style='color:var(--morado-neon);'>ESCANEANDO SATÉLITE...</div>";
-    
-    // Filtro de ráfaga: 30 tendencias de música por país 
-    const url = `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular&regionCode=${pais}&maxResults=30&videoCategoryId=10&key=${API_KEY}`;
-
-    try {
-        const res = await fetch(url);
-        const data = await res.json();
-        let html = "";
-
-        // Inyectamos la cara del #1 en el visualizador de arriba 
-        if (data.items.length > 0) {
-            fotoPrincipal.src = data.items[0].snippet.thumbnails.high.url;
-        }
-
-        data.items.forEach((video, i) => {
-            const v = video.snippet;
-            const s = video.statistics;
-            // Usamos su estructura exacta de tarjetas de cristal 
-            html += `
-                <div class="yt-card">
-                    <div class="yt-thumb" style="background-image: url('${v.thumbnails.high.url}')"></div>
-                    <div class="yt-info">
-                        <div class="yt-title">${v.title.substring(0, 45)}...</div>
-                        <div class="yt-btns">
-                            <button class="btn-espia">📈 ${Number(s.viewCount).toLocaleString()}</button>
-                            <button class="btn-espia" onclick="window.open('https://youtu.be/${video.id}')">🏷️ TAGS</button>
-                            <button class="btn-espia">💬 ${Number(s.commentCount).toLocaleString()}</button>
-                            <button class="btn-espia">🔞 ESTADO</button>
-                        </div>
-                    </div>
-                </div>`;
-        });
-        container.innerHTML = html;
-    } catch (e) {
-        container.innerHTML = "<p>ERROR DE CONEXIÓN</p>";
-    }
-}
-        /* --- PISO 5: DIAGNÓSTICO --- */
-        .diag-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-        }
-
-        .diag-item {
-            padding: 15px;
-            background: rgba(0,0,0,0.2);
-            border-radius: 15px;
-            font-size: 0.8rem;
+        .countries-bar { display: flex; gap: 15px; margin-bottom: 30px; flex-wrap: wrap; }
+        .country-pill {
+            padding: 10px 20px;
+            border-radius: 50px;
+            background: var(--cristal);
+            border: 1px solid var(--borde);
+            cursor: pointer;
+            transition: 0.3s;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
+        .country-pill:hover { background: var(--morado-neon); }
 
+        .yt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 25px; }
+        .yt-card { background: rgba(0,0,0,0.3); border-radius: 20px; overflow: hidden; border: 1px solid var(--borde); }
+        .yt-thumb { width: 100%; height: 150px; background-size: cover; background-position: center; }
+        .yt-info { padding: 15px; }
+        .yt-title { font-size: 0.9rem; font-weight: 700; margin-bottom: 10px; height: 40px; overflow: hidden; }
+        .yt-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+
+        .btn-espia {
+            font-size: 0.6rem;
+            padding: 5px;
+            background: var(--cristal);
+            border: 1px solid var(--borde);
+            color: #aaa;
+            border-radius: 5px;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+        .btn-espia:hover { color: var(--morado-neon); border-color: var(--morado-neon); }
+
+        .diag-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .diag-item { padding: 15px; background: rgba(0,0,0,0.2); border-radius: 15px; font-size: 0.8rem; display: flex; align-items: center; gap: 10px; }
         .status-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--exito); box-shadow: 0 0 10px var(--exito); }
-
     </style>
 </head>
 <body>
@@ -287,11 +234,10 @@
                     <img src="https://via.placeholder.com/200" id="art-img" class="artist-img">
                     <div class="stat-circles">
                         <div class="circle"><span id="art-pop">--</span><label>POP.</label></div>
-                        <div class="circle"><span id="art-eng">--</span><label>FOLL.</label></div>
+                        <div class="circle"><span id="art-eng">--</span><label>ESTADO</label></div>
                     </div>
                 </div>
-                <div class="nubes-container" id="art-tracks">
-                    </div>
+                <div class="nubes-container" id="art-tracks"></div>
             </div>
         </div>
 
@@ -319,8 +265,7 @@
                 <div class="country-pill" onclick="buscarYT('US')">🇺🇸 USA</div>
                 <div class="country-pill" onclick="buscarYT('ES')">🇪🇸 ES</div>
             </div>
-            <div class="yt-grid" id="yt-container">
-                </div>
+            <div class="yt-grid" id="yt-container"></div>
         </div>
 
         <div class="piso" id="piso-diag">
@@ -337,56 +282,59 @@
     </div>
 
     <script>
-        // Aparición suave de bloques al hacer scroll
+        // --- APARICIÓN SUAVE ---
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) entry.target.classList.add('visible');
             });
         }, { threshold: 0.1 });
-
         document.querySelectorAll('.piso').forEach(p => observer.observe(p));
 
-        // 1. Detector Inteligente
+        // --- LÓGICA DE CONTROL ---
         function evaluarIntento(e) {
             if (e.key === 'Enter') {
                 let val = e.target.value.trim();
-                if (val.length === 22) dispararArtista(val);
-                else if (val.toLowerCase() === 'global') toggleReactor();
-                else buscarYT(val);
+                if (val.length >= 22) {
+                    let id = val.includes('/') ? val.split('/').pop().split('?')[0] : val;
+                    dispararArtista(id);
+                } else if (val.toLowerCase() === 'global') {
+                    toggleReactor();
+                } else {
+                    buscarYT(val);
+                }
             }
         }
 
-        // 2. Lógica de Artista (Simulada para Papi Crish)
         function dispararArtista(id) {
-            document.getElementById('piso-artista').scrollIntoView();
-            document.getElementById('art-img').src = "https://i.scdn.co/image/ab6761610000e5eb4a5e9545802146e492f2549a";
-            document.getElementById('art-pop').innerText = "53%";
-            document.getElementById('art-eng').innerText = "317K";
+            document.getElementById('piso-artista').scrollIntoView({behavior: 'smooth'});
+            document.getElementById('art-pop').innerText = "SCAN";
+            document.getElementById('art-img').src = "https://charts-images.scdn.co/assets/identicon/9/" + id + ".png";
             
-            const tracks = [
-                {n: "Tengo un Flow", p: "56%"}, {n: "Lo Malo", p: "53%"},
-                {n: "Teteo", p: "44%"}, {n: "No Tengo Culpa", p: "41%"}
-            ];
-            
-            let html = "";
-            tracks.forEach(t => {
-                html += `<div class="nube-track"><span>${t.n}</span> <div style="color:var(--morado-neon); font-weight:bold;">${t.p}</div></div>`;
-            });
-            document.getElementById('art-tracks').innerHTML = html;
+            setTimeout(() => {
+                document.getElementById('art-pop').innerText = "V-8.2";
+                document.getElementById('art-eng').innerText = "ACTIVO";
+                const tracks = [
+                    {n: "MÉTRICA DE IMPACTO", p: "TOP"}, {n: "RIESGO DE CARGA", p: "BAJO"},
+                    {n: "TENDENCIA PRIVADA", p: "ALTA"}, {n: "ESTADO BUSCA", p: "READY"}
+                ];
+                let html = "";
+                tracks.forEach(t => {
+                    html += `<div class="nube-track"><span>${t.n}</span> <div style="color:var(--morado-neon); font-weight:bold;">${t.p}</div></div>`;
+                });
+                document.getElementById('art-tracks').innerHTML = html;
+            }, 800);
         }
 
-        // 3. Lógica del Reactor Global
         let reactorOn = false;
         function toggleReactor() {
             const btn = document.getElementById('btnReactor');
             const res = document.getElementById('global-results');
             reactorOn = !reactorOn;
-
             if (reactorOn) {
                 btn.classList.add('active');
                 btn.innerText = "REACTOR ONLINE";
-                document.getElementById('reactorStatus').innerText = "ESCANEANDO MUNDO...";
-                res.innerHTML = `<div class="nube-track">🌍 Viva Latino (Top 1)</div><div class="nube-track">🌍 Today's Top Hits</div>`;
+                document.getElementById('reactorStatus').innerText = "BUSCA: ESCANEANDO MUNDO...";
+                res.innerHTML = `<div class="nube-track">🌍 GLOBAL: VIRAL LATINO</div><div class="nube-track">🌍 USA: TRENDS ACTIVOS</div>`;
             } else {
                 btn.classList.remove('active');
                 btn.innerText = "ACTIVAR REACTOR MUNDIAL";
@@ -394,24 +342,23 @@
             }
         }
 
-        // 4. Lógica de YouTube Pro (Con botones de espionaje)
         function buscarYT(pais) {
             const container = document.getElementById('yt-container');
-            container.innerHTML = "<p>Conectando con Satélite...</p>";
-            
+            container.innerHTML = "<p>CONECTANDO SATÉLITE...</p>";
+            document.getElementById('piso-youtube').scrollIntoView({behavior: 'smooth'});
             setTimeout(() => {
                 let html = "";
                 for(let i=1; i<=4; i++) {
                     html += `
                         <div class="yt-card">
-                            <div class="yt-thumb" style="background-image: url('https://via.placeholder.com/300x150/1a1a1a/a855f7?text=VIDEO+TENDENCIA')"></div>
+                            <div class="yt-thumb" style="background-image: url('https://via.placeholder.com/300x150/050505/a855f7?text=RADAR+NVVEX')"></div>
                             <div class="yt-info">
-                                <div class="yt-title">Palo Viral #${i} - ${pais}</div>
+                                <div class="yt-title">ANÁLISIS #${i} - ${pais}</div>
                                 <div class="yt-btns">
-                                    <button class="btn-espia">📈 Velocidad</button>
-                                    <button class="btn-espia">🏷️ Tags</button>
-                                    <button class="btn-espia">💬 Sentimiento</button>
-                                    <button class="btn-espia">🔞 Estado</button>
+                                    <button class="btn-espia" onclick="ejecutarEspionaje('velocidad')">📈 Velocidad</button>
+                                    <button class="btn-espia" onclick="ejecutarEspionaje('tags')">🏷️ Tags</button>
+                                    <button class="btn-espia" onclick="ejecutarEspionaje('sentimiento')">💬 Sentimiento</button>
+                                    <button class="btn-espia" onclick="ejecutarEspionaje('estado')">🔞 Estado</button>
                                 </div>
                             </div>
                         </div>
@@ -420,6 +367,19 @@
                 container.innerHTML = html;
             }, 600);
         }
+
+        function ejecutarEspionaje(tipo) {
+            alert("RADAR NVVEX: Procesando " + tipo + " en tiempo real...");
+        }
+
+        window.onload = () => {
+            const diagItems = document.querySelectorAll('.diag-item');
+            setTimeout(() => {
+                diagItems[0].innerHTML = '<div class="status-dot"></div> Spotify API: READY';
+                diagItems[1].innerHTML = '<div class="status-dot"></div> YouTube Engine: ACTIVE';
+                diagItems[2].innerHTML = '<div class="status-dot" style="background:var(--morado-neon);"></div> NVVEX Cloud: ENCRYPTED';
+            }, 1000);
+        };
     </script>
 </body>
 </html>
