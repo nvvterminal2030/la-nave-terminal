@@ -202,41 +202,50 @@
         }
 
         /* --- PISO 4: YOUTUBE PRO --- */
-        // 4. Radar Visual YouTube (Módulo Real con Savia Inyectada)
-        async function triggerCountry(iso) {
-            const SATELITE_KEY = "AIzaSyBQwGNe8DsxIdvgyHKV374Do-xOYZ1qCu0";
-            const ytResults = document.getElementById('yt-results');
-            ytResults.innerHTML = "<p style='color:var(--morado-neon)'>[ ESCANEANDO SATÉLITES EN " + iso + "... ]</p>";
-            
-            // Si el valor viene vacío del buscador, por defecto RD
-            const region = iso || 'DO';
+        // 4. Radar Visual YouTube (Módulo Pulido y Conectado)
+async function triggerCountry(iso) {
+    const SATELITE_KEY = "AIzaSyBQwGNe8DsxIdvgyHKV374Do-xOYZ1qCu0";
+    const ytResults = document.getElementById('yt-results');
+    ytResults.innerHTML = "<p style='color:var(--morado-neon)'>[ ESCANEANDO SATÉLITES EN " + iso + "... ]</p>";
+    
+    const region = iso || 'DO';
 
-            try {
-                // Buscamos tendencias reales en la categoría Música (ID 10)
-                const response = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular&regionCode=${region}&maxResults=8&videoCategoryId=10&key=${SATELITE_KEY}`);
-                const data = await response.json();
+    try {
+        const response = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics,contentDetails&chart=mostPopular&regionCode=${region}&maxResults=6&videoCategoryId=10&key=${SATELITE_KEY}`);
+        const data = await response.json();
 
-                if (data.error) throw new Error(data.error.message);
+        if (data.error) throw new Error(data.error.message);
 
-                let html = "";
-                data.items.forEach((video, index) => {
-                    const views = parseInt(video.statistics.viewCount).toLocaleString();
-                    html += `
-                        <div class="track-cloud" style="animation-delay: ${index * 0.1}s; flex-direction: column; align-items: flex-start; gap: 8px; cursor: pointer;" onclick="window.open('https://youtu.be/${video.id}')">
-                            <div style="font-size: 0.75rem; font-weight: bold; color: white;">${video.snippet.title.substring(0, 45)}...</div>
-                            <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
-                                <span style="font-size: 0.65rem; color: var(--morado-neon);">${video.snippet.channelTitle.substring(0, 15)}</span>
-                                <div class="pop-badge">👁️ ${views}</div>
-                            </div>
-                        </div>
-                    `;
-                });
-                ytResults.innerHTML = html;
+        let html = "";
+        data.items.forEach((video, index) => {
+            const views = parseInt(video.statistics.viewCount).toLocaleString();
+            const likes = video.statistics.likeCount ? parseInt(video.statistics.likeCount).toLocaleString() : 'Privado';
+            const channel = video.snippet.channelTitle;
+            const tags = video.snippet.tags ? video.snippet.tags.slice(0, 5).join(', ') : 'No detectados';
 
-            } catch (error) {
-                ytResults.innerHTML = `<p style="color:red; font-size: 0.7rem;">ERROR DE ENLACE: ${error.message}</p>`;
-            }
-        }
+            html += `
+                <div class="track-cloud" style="animation-delay: ${index * 0.1}s; flex-direction: column; align-items: flex-start; gap: 10px;">
+                    <div style="font-size: 0.8rem; font-weight: bold; color: white; border-bottom: 1px solid var(--borde-glow); width: 100%; padding-bottom: 5px;">
+                        ${video.snippet.title.substring(0, 40)}...
+                    </div>
+                    
+                    <div style="font-size: 0.7rem; color: var(--morado-neon);">CANAL: ${channel}</div>
+
+                    <div style="display: flex; gap: 5px; flex-wrap: wrap; margin-top: 5px;">
+                        <button class="pop-badge" style="cursor:pointer; border:none;" onclick="alert('📈 VELOCIDAD: ${views} vistas totales')">📊 Vistas</button>
+                        <button class="pop-badge" style="cursor:pointer; border:none;" onclick="alert('🏷️ TAGS: ${tags}')">🏷️ Tags</button>
+                        <button class="pop-badge" style="cursor:pointer; border:none;" onclick="alert('❤️ ENGAGEMENT: ${likes} likes registrados')">🔥 Like</button>
+                        <button class="pop-badge" style="cursor:pointer; border:none; background: #22c55e; color: black;" onclick="window.open('https://youtu.be/${video.id}')">👁️ Ver</button>
+                    </div>
+                </div>
+            `;
+        });
+        ytResults.innerHTML = html;
+
+    } catch (error) {
+        ytResults.innerHTML = `<p style="color:red; font-size: 0.7rem;">ERROR CRÍTICO: ${error.message}</p>`;
+    }
+}
 
         /* --- PISO 5: DIAGNÓSTICO --- */
         .diag-grid {
