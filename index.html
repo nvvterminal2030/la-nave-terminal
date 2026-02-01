@@ -35,9 +35,11 @@
         .btn-gatillo { position: absolute; top: 30px; right: 35px; background: var(--red); color: white; border: none; padding: 12px 25px; border-radius: 50px; font-size: 0.75rem; font-weight: bold; cursor: pointer; text-transform: uppercase; }
         .habladora-col { background: rgba(0,0,0,0.2); padding: 20px; border-radius: 20px; border: 1px solid var(--borde); }
         .tag-burbuja { display: inline-block; background: rgba(168, 85, 247, 0.1); border: 1px solid var(--morado-neon); padding: 5px 12px; border-radius: 50px; margin: 4px; font-size: 0.65rem; color: #fff; text-shadow: 0 0 5px var(--morado-glow); }
-        
-        /* ESTILO PARA EL MAPEO AZUL */
         .pais-rank { display: inline-block; background: rgba(0, 242, 255, 0.1); border: 1px solid var(--cyan); color: var(--cyan); padding: 6px 14px; border-radius: 10px; margin: 5px; font-size: 0.75rem; font-weight: bold; text-shadow: 0 0 10px var(--cyan); border-bottom: 2px solid var(--cyan); }
+        
+        /* BURBUJAS DE INTELIGENCIA DE GÉNERO */
+        .gen-burbuja { display: block; background: linear-gradient(90deg, rgba(168, 85, 247, 0.2), transparent); border-left: 4px solid var(--morado-neon); padding: 10px; margin-bottom: 10px; border-radius: 0 15px 15px 0; font-weight: bold; }
+        .gen-pct { float: right; color: var(--cyan); text-shadow: 0 0 10px var(--cyan); }
     </style>
 </head>
 <body>
@@ -91,8 +93,8 @@
             <div class="piso-header"><h2>02. Sala de Guerra & Habladora</h2></div>
             <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;">
                 <div class="habladora-col"><h3 style="font-size:0.7rem; color:var(--cyan)">SEO DE ASALTO</h3><div id="seo-tags">--</div></div>
-                <div class="habladora-col"><h3 style="font-size:0.7rem; color:var(--morado-neon)">ESTRATEGIA</h3><div id="market-strategy" style="font-size:0.65rem;">--</div></div>
-                <div class="habladora-col"><h3 style="font-size:0.7rem; color:var(--red)">OBJETIVO DÉBIL</h3><div id="target-debil" style="font-size:0.65rem;">--</div></div>
+                <div class="habladora-col"><h3 style="font-size:0.7rem; color:var(--morado-neon)">ESTRATEGIA GLOBAL (TOP 30)</h3><div id="market-strategy" style="font-size:0.65rem;">--</div></div>
+                <div class="habladora-col"><h3 style="font-size:0.7rem; color:var(--red)">CONEXIÓN REAL</h3><div id="target-debil" style="font-size:0.65rem;">--</div></div>
             </div>
         </div>
 
@@ -124,12 +126,16 @@
 
         async function buscarYT(sigla) {
             const region = PAISES[sigla] || 'DO';
-            const res = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular&regionCode=${region}&videoCategoryId=10&maxResults=24&key=${API_KEY_YT}`);
-            cacheLoba[region] = await res.json();
+            const res = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular&regionCode=${region}&videoCategoryId=10&maxResults=30&key=${API_KEY_YT}`);
+            const data = await res.json();
+            cacheLoba[region] = data;
             localStorage.setItem('nvvex_loba', JSON.stringify(cacheLoba));
             
+            // INTELIGENCIA DE GÉNERO (BUSCA EN LOS 30)
+            procesarGenerosGlobales(data.items, sigla);
+
             let htmlV = "";
-            cacheLoba[region].items.forEach((v, i) => {
+            data.items.slice(0,24).forEach((v, i) => {
                 htmlV += `<div class="yt-card" onclick="ejecutarEspionaje('${v.id}')">
                             <img src="${v.snippet.thumbnails.high.url}" style="width:100%; height:110px; object-fit:cover;">
                             <div class="view-badge">${Number(v.statistics.viewCount).toLocaleString()}</div>
@@ -139,6 +145,25 @@
             document.getElementById('yt-container').innerHTML = htmlV;
         }
 
+        function procesarGenerosGlobales(items, pais) {
+            const counts = { 'DEMBOW': 0, 'REGGAETÓN': 0, 'TRAP/DRILL': 0, 'BACHATA': 0, 'URBANO': 0 };
+            items.forEach(v => {
+                const txt = (v.snippet.title + (v.snippet.tags?.join(' ') || '')).toUpperCase();
+                if(txt.includes('DEMBOW')) counts['DEMBOW']++;
+                else if(txt.includes('REGGAETON') || txt.includes('REGGAETÓN')) counts['REGGAETÓN']++;
+                else if(txt.includes('TRAP') || txt.includes('DRILL')) counts['TRAP/DRILL']++;
+                else if(txt.includes('BACHATA')) counts['BACHATA']++;
+                else counts['URBANO']++;
+            });
+
+            const sorted = Object.entries(counts).sort((a,b) => b[1] - a[1]);
+            document.getElementById('market-strategy').innerHTML = sorted.map(([gen, val], i) => {
+                const pct = Math.round((val/30)*100);
+                const icon = i === 0 ? '🔥' : (i === sorted.length - 1 ? '📉' : '📈');
+                return `<div class="gen-burbuja">${icon} ${gen} <span class="gen-pct">${pct}%</span></div>`;
+            }).join('');
+        }
+
         async function ejecutarEspionaje(vId) {
             const resV = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id=${vId}&key=${API_KEY_YT}`);
             const v = (await resV.json()).items[0];
@@ -146,8 +171,9 @@
             const c = (await resC.json()).items[0];
 
             const views = Number(v.statistics.viewCount);
-            const interactions = (Number(v.statistics.likeCount) || 0) + (Number(v.statistics.commentCount) || 0);
-            const eng = ((interactions / views) * 100).toFixed(2);
+            const likes = Number(v.statistics.likeCount) || 0;
+            const comments = Number(v.statistics.commentCount) || 0;
+            const eng = (((likes + comments) / views) * 100).toFixed(2);
             
             const dias = Math.max(Math.ceil((new Date() - new Date(v.snippet.publishedAt)) / (1000*60*60*24)), 1);
             const vpd = Math.round(views / dias);
@@ -169,7 +195,6 @@
             const tagArray = v.snippet.tags || ["SIN TAGS"];
             document.getElementById('art-tags-real').innerHTML = tagArray.map(t => `<span class="tag-burbuja">${t.toUpperCase()}</span>`).join('');
             
-            // EL INJERTO: VINCULACIÓN MULTIPAÍS (VIA CACHÉ LOBA)
             let mapaHtml = "";
             for (let [nom, cod] of Object.entries(PAISES)) {
                 if(cacheLoba[cod]) {
@@ -178,9 +203,14 @@
                 }
             }
             document.getElementById('global-map-link').innerHTML = mapaHtml || "<span style='font-size:0.6rem; color:var(--red)'>FUERA DE TENDENCIA GLOBAL</span>";
-
-            document.getElementById('market-strategy').innerText = `USAR TAGS: ${tagArray.slice(0,3).join(", ")}. ENGAGEMENT ${eng}%.`;
-            document.getElementById('target-debil').innerText = eng < 5 ? "RIESGO: AUDIENCIA DORMIDA." : "FUERTE: NICHO ACTIVO.";
+            
+            // CONEXIÓN REAL (FILTRO DE CALLE)
+            const calleRealPct = Math.min(((likes / views) * 1000), 100).toFixed(1);
+            document.getElementById('target-debil').innerHTML = `
+                <div style="margin-bottom:10px;">LIKES REALES: <b style="color:var(--exito)">${likes.toLocaleString()}</b></div>
+                <div style="margin-bottom:10px;">COMENTARIOS: <b style="color:var(--cyan)">${comments.toLocaleString()}</b></div>
+                <div class="gen-burbuja" style="border-color:var(--cyan)">PODER DE CALLE: ${calleRealPct}%</div>
+            `;
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -198,10 +228,6 @@
             }
             const topTags = Object.entries(allTags.reduce((a,b)=>{a[b]=(a[b]||0)+1; return a;}, {})).sort((a,b)=>b[1]-a[1]).slice(0,12);
             document.getElementById('seo-tags').innerHTML = topTags.map(t => `<div class="tag-burbuja" style="border-color:var(--cyan)">#${t[0].toUpperCase()}</div>`).join('');
-
-            contenidoTxt += `\nOBJETIVO: ${document.getElementById('target-name').innerText}\n`;
-            contenidoTxt += `ESTRATEGIA: ${document.getElementById('market-strategy').innerText}\n`;
-            contenidoTxt += `SEO: ${topTags.map(t => t[0]).join(", ")}\n`;
 
             const blob = new Blob([contenidoTxt], {type: "text/plain"});
             const a = document.createElement("a");
