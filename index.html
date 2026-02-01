@@ -202,51 +202,62 @@
         }
 
         /* --- PISO 4: YOUTUBE PRO --- */
-        // 4. Radar Visual YouTube (Módulo Pulido y Conectado)
+        // [PUENTE BLINDADO: RADAR YOUTUBE P4]
 async function triggerCountry(iso) {
     const SATELITE_KEY = "AIzaSyBQwGNe8DsxIdvgyHKV374Do-xOYZ1qCu0";
     const ytResults = document.getElementById('yt-results');
-    ytResults.innerHTML = "<p style='color:var(--morado-neon)'>[ ESCANEANDO SATÉLITES EN " + iso + "... ]</p>";
+    
+    // Validar si el contenedor existe para evitar error de consola
+    if(!ytResults) {
+        console.error("Error: Contenedor 'yt-results' no encontrado.");
+        return;
+    }
+
+    ytResults.innerHTML = `<p style="color:var(--morado-neon); animation:pulse 1s infinite;">[ SINCRONIZANDO RADAR EN ${iso}... ]</p>`;
     
     const region = iso || 'DO';
 
+    // Construcción limpia de la URL de Google
+    const endpoint = `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular&regionCode=${region}&maxResults=8&videoCategoryId=10&key=${SATELITE_KEY}`;
+
     try {
-        const response = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics,contentDetails&chart=mostPopular&regionCode=${region}&maxResults=6&videoCategoryId=10&key=${SATELITE_KEY}`);
+        const response = await fetch(endpoint);
         const data = await response.json();
 
-        if (data.error) throw new Error(data.error.message);
+        // Si Google devuelve un error (ej. llave no activada), lo pillamos aquí
+        if (data.error) {
+            console.error("Error de API:", data.error.message);
+            ytResults.innerHTML = `<p style="color:red; font-size:0.7rem;">ERROR DE LLAVE: ${data.error.message}</p>`;
+            return;
+        }
+
+        if (!data.items || data.items.length === 0) {
+            ytResults.innerHTML = `<p style="color:white;">No hay tendencias musicales en ${iso} ahora mismo.</p>`;
+            return;
+        }
 
         let html = "";
         data.items.forEach((video, index) => {
             const views = parseInt(video.statistics.viewCount).toLocaleString();
-            const likes = video.statistics.likeCount ? parseInt(video.statistics.likeCount).toLocaleString() : 'Privado';
-            const channel = video.snippet.channelTitle;
-            const tags = video.snippet.tags ? video.snippet.tags.slice(0, 5).join(', ') : 'No detectados';
-
+            // Mantengo tu estética de nubes, pero con data real inyectada
             html += `
-                <div class="track-cloud" style="animation-delay: ${index * 0.1}s; flex-direction: column; align-items: flex-start; gap: 10px;">
-                    <div style="font-size: 0.8rem; font-weight: bold; color: white; border-bottom: 1px solid var(--borde-glow); width: 100%; padding-bottom: 5px;">
-                        ${video.snippet.title.substring(0, 40)}...
-                    </div>
-                    
-                    <div style="font-size: 0.7rem; color: var(--morado-neon);">CANAL: ${channel}</div>
-
-                    <div style="display: flex; gap: 5px; flex-wrap: wrap; margin-top: 5px;">
-                        <button class="pop-badge" style="cursor:pointer; border:none;" onclick="alert('📈 VELOCIDAD: ${views} vistas totales')">📊 Vistas</button>
-                        <button class="pop-badge" style="cursor:pointer; border:none;" onclick="alert('🏷️ TAGS: ${tags}')">🏷️ Tags</button>
-                        <button class="pop-badge" style="cursor:pointer; border:none;" onclick="alert('❤️ ENGAGEMENT: ${likes} likes registrados')">🔥 Like</button>
-                        <button class="pop-badge" style="cursor:pointer; border:none; background: #22c55e; color: black;" onclick="window.open('https://youtu.be/${video.id}')">👁️ Ver</button>
+                <div class="track-cloud" style="animation-delay: ${index * 0.1}s; display:flex; flex-direction:column; align-items:flex-start; cursor:pointer;" onclick="window.open('https://youtu.be/${video.id}')">
+                    <span style="font-weight:bold; font-size:0.8rem; margin-bottom:5px;">${video.snippet.title.substring(0, 45)}...</span>
+                    <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
+                        <small style="color:var(--morado-neon); font-size:0.65rem;">${video.snippet.channelTitle}</small>
+                        <div class="pop-badge">👁️ ${views}</div>
                     </div>
                 </div>
             `;
         });
+        
         ytResults.innerHTML = html;
 
-    } catch (error) {
-        ytResults.innerHTML = `<p style="color:red; font-size: 0.7rem;">ERROR CRÍTICO: ${error.message}</p>`;
+    } catch (err) {
+        console.error("Fallo de conexión:", err);
+        ytResults.innerHTML = `<p style="color:red; font-size:0.7rem;">PUENTE ROTO: Revisa tu conexión o la llave.</p>`;
     }
 }
-
         /* --- PISO 5: DIAGNÓSTICO --- */
         .diag-grid {
             display: grid;
