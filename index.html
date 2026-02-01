@@ -360,53 +360,138 @@
         }
 
         // --- BLOQUE 4: RADAR CHARTS REALES (LA BANCA) ---
-        async function buscarYT(pais) {
-            const container = document.getElementById('yt-container');
-            container.innerHTML = `<p style="color:var(--morado-neon); width:100%; text-align:center;">INTERCEPTANDO CHARTS EN ${pais}...</p>`;
-            document.getElementById('piso-youtube').scrollIntoView({behavior: 'smooth'});
+        // --- MOTOR DE INTELIGENCIA MAESTRO NVVEX STUDIOS ---
+// --- CONEXIÓN TOTAL: 4 BLOQUES + ESCÁNER DE LINKS ---
 
-            try {
-                const response = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular&regionCode=${pais}&maxResults=8&key=${API_KEY_YT}`);
-                const data = await response.json();
-                
-                let html = "";
-                data.items.forEach(video => {
-                    const info = video.snippet;
-                    const stats = video.statistics;
-                    html += `
-                        <div class="yt-card">
-                            <div class="yt-thumb" style="background-image: url('${info.thumbnails.high.url}')"></div>
-                            <div class="yt-info">
-                                <div class="yt-title">${info.channelTitle} - ${info.title.substring(0,35)}...</div>
-                                <div style="color:var(--morado-neon); font-size:0.75rem; margin-bottom:10px;">📈 Vistas: ${Number(stats.viewCount).toLocaleString()}</div>
-                                <div class="yt-btns">
-                                    <button class="btn-espia" onclick="ejecutarEspionaje('${video.id}')">🏷️ Nube Tags</button>
-                                    <button class="btn-espia" onclick="window.open('https://youtube.com/watch?v=${video.id}')">📺 Radar</button>
-                                </div>
-                            </div>
-                        </div>`;
-                });
-                container.innerHTML = html;
-            } catch (e) { container.innerHTML = "<p>Error de Radar. Verifica la API.</p>"; }
-        }
+const API_KEY_YT = 'AIzaSyBQwGNe8DsxIdvgyHKV374Do-xOYZ1qCu0';
 
-        async function ejecutarEspionaje(vId) {
-            const container = document.getElementById('yt-container');
-            container.innerHTML = `<h3 style="color:var(--morado-neon); width:100%; text-align:center;">DISECCIONANDO NUBE DE TAGS...</h3>
-                                   <div id="nube-data" style="display:flex; flex-wrap:wrap; justify-content:center; gap:10px; padding:20px;"></div>`;
-            
-            try {
-                const response = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${vId}&key=${API_KEY_YT}`);
-                const data = await response.json();
-                const tags = data.items[0].snippet.tags || ["Viral", "NVVEX", "Calle", "Tendencia"];
-                
-                let htmlTags = "";
-                tags.slice(0, 12).forEach((t, i) => {
-                    htmlTags += `<div class="nube-track" style="animation-delay:${i*0.2}s">${t}</div>`;
-                });
-                document.getElementById('nube-data').innerHTML = htmlTags;
-            } catch (e) { console.log("Error extrayendo tags"); }
-        }
+// 1. ESCÁNER DE LINKS (Buscador Inteligente)
+async function ejecutarBusqueda() {
+    const query = document.getElementById('search-input').value;
+    if (!query) return;
+
+    // Detectar si es un link de YouTube
+    const vId = query.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+    
+    if (vId) {
+        ejecutarEspionajeReal(vId[1]); // Escanear video específico
+    } else {
+        // Si es texto, buscar tendencias o artistas (lógica futura)
+        console.log("Búsqueda por texto activa");
+    }
+}
+
+// 2. MOTOR DEL RADAR (30 TENDENCIAS + GLOBAL + 4 BLOQUES)
+async function buscarYT(sigla) {
+    const container = document.getElementById('yt-container'); // Piso 3
+    const diagContainer = document.getElementById('piso-diag'); // Piso 4
+    const codes = { 'RD': 'DO', 'PR': 'PR', 'MEX': 'MX', 'COL': 'CO', 'ARG': 'AR', 'CHL': 'CL', 'US': 'US', 'ES': 'ES' };
+    const region = codes[sigla] || 'DO';
+
+    container.innerHTML = `<p style="color:var(--morado-neon); text-align:center; width:100%;">INTERCEPTANDO DATOS EN ${sigla}...</p>`;
+    document.getElementById('piso-youtube').scrollIntoView({behavior: 'smooth'});
+
+    try {
+        // INTERCEPTACIÓN GLOBAL (EL TRONO)
+        const resGlobal = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular&regionCode=US&videoCategoryId=10&maxResults=1&key=${API_KEY_YT}`);
+        const dataGlobal = await resGlobal.json();
+        const globalTop = dataGlobal.items[0];
+
+        // INTERCEPTACIÓN REGIONAL (30 TEMAS)
+        const resRegion = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular&regionCode=${region}&videoCategoryId=10&maxResults=30&key=${API_KEY_YT}`);
+        const dataRegion = await resRegion.json();
+        
+        // PISO 1: PERFIL DEL #1 LOCAL
+        const topLocal = dataRegion.items[0];
+        document.getElementById('art-img').src = topLocal.snippet.thumbnails.high.url;
+        document.getElementById('art-pop').innerText = "TOP 1 " + sigla;
+        document.getElementById('art-tracks').innerHTML = `
+            <div class="nube-track"><span>TEMA:</span> <b>${topLocal.snippet.title.substring(0,25)}</b></div>
+            <div class="nube-track"><span>CANAL:</span> <b>${topLocal.snippet.channelTitle}</b></div>
+        `;
+
+        // PISO 2: INTELIGENCIA DE MERCADO (DATOS DE CRUCE)
+        const localEng = ((Number(topLocal.statistics.likeCount) / Number(topLocal.statistics.viewCount)) * 100).toFixed(2);
+        document.getElementById('reactorStatus').innerText = `CRUCE DE DATOS: ${sigla}`;
+        document.getElementById('global-results').innerHTML = `
+            <div class="nube-track" style="color:var(--exito)">ENGAGEMENT: ${localEng}%</div>
+            <div class="nube-track" style="color:var(--cyan)">VISTAS: ${Number(topLocal.statistics.viewCount).toLocaleString()}</div>
+        `;
+
+        // PISO 3: GRID DE VIDEOS
+        let htmlVideos = "";
+        // PISO 4: BANCA DE FILAS ESTÉTICAS
+        let htmlFilas = `
+            <div class="diag-item" style="border: 2px solid var(--cyan); background: rgba(0, 242, 255, 0.05); margin-bottom: 20px; grid-column: 1 / -1; padding:15px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="color:var(--cyan); font-weight:bold;">👑 TRONO GLOBAL: ${globalTop.snippet.title.toUpperCase()}</span>
+                    <span style="font-size:0.7rem;">${Number(globalTop.statistics.viewCount).toLocaleString()} VIEWS</span>
+                </div>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px; width: 100%;">
+        `;
+
+        dataRegion.items.forEach((video, i) => {
+            const rank = i + 1;
+            const colorStatus = rank <= 10 ? 'var(--red)' : 'var(--morado-neon)';
+            const glowStatus = rank <= 10 ? 'rgba(255, 49, 49, 0.1)' : 'rgba(168, 85, 247, 0.05)';
+
+            htmlVideos += `
+                <div class="yt-card">
+                    <div class="yt-thumb" style="background-image: url('${video.snippet.thumbnails.high.url}')"></div>
+                    <div class="yt-info">
+                        <div class="yt-title"><span style="color:${colorStatus}">#${rank}</span> ${video.snippet.title.substring(0,30)}</div>
+                        <div class="yt-btns"><button class="btn-espia" onclick="ejecutarEspionajeReal('${video.id}')">🏷️ DATA INTERNA</button></div>
+                    </div>
+                </div>`;
+
+            htmlFilas += `
+                <div class="diag-item" style="border: 1px solid ${colorStatus}; background: ${glowStatus}; padding: 12px; display:flex; justify-content:space-between;">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <b style="color:${colorStatus}; font-size:1.2rem;">#${rank}</b>
+                        <div style="font-size:0.65rem;">
+                            <div style="color:#fff; font-weight:bold;">${video.snippet.channelTitle.substring(0,20)}</div>
+                            <div style="color:#888;">${video.snippet.title.substring(0,20)}...</div>
+                        </div>
+                    </div>
+                    <div style="text-align:right; font-size:0.7rem; color:${colorStatus}; font-weight:bold;">
+                        ${Number(video.statistics.viewCount).toLocaleString()}
+                    </div>
+                </div>`;
+        });
+
+        container.innerHTML = htmlVideos;
+        diagContainer.innerHTML = htmlFilas + "</div>";
+
+    } catch (e) { console.log("Error en el radar maestro."); }
+}
+
+// 3. DISECCIÓN DE DATA INTERNA (PUESTA EN BLOQUES)
+async function ejecutarEspionajeReal(vId) {
+    try {
+        const res = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id=${vId}&key=${API_KEY_YT}`);
+        const data = await res.json();
+        const v = data.items[0];
+        
+        // Inyectamos la data en los bloques para no dejar nada vacío
+        document.getElementById('art-img').src = v.snippet.thumbnails.high.url;
+        document.getElementById('art-pop').innerText = "DATA SCAN";
+        
+        const eng = ((Number(v.statistics.likeCount) / Number(v.statistics.viewCount)) * 100).toFixed(2);
+        document.getElementById('global-results').innerHTML = `
+            <div class="nube-track" style="color:var(--exito)">ENGAGEMENT: ${eng}%</div>
+            <div class="nube-track" style="color:var(--cyan)">TAGS DETECTADOS: ${(v.snippet.tags || []).length}</div>
+        `;
+        
+        document.getElementById('piso-diag').innerHTML = `
+            <div class="piso-header"><h2>04. METADATA DETALLADA (ESCÁNER)</h2></div>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; padding:20px;">
+                ${(v.snippet.tags || ["Sin Tags"]).slice(0,20).map(t => `<div class="nube-track">${t}</div>`).join('')}
+            </div>
+            <button class="btn-espia" style="width:100%; margin-top:20px;" onclick="buscarYT('RD')">⬅️ VOLVER AL RADAR</button>
+        `;
+    } catch (e) { console.log("Error en el escáner."); }
+}
     </script>
 </body>
 </html>
