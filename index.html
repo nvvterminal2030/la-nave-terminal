@@ -204,28 +204,35 @@
             }
             document.getElementById('global-map-link').innerHTML = mapaHtml || "<span style='font-size:0.6rem; color:var(--red)'>FUERA DE TENDENCIA GLOBAL</span>";
             
-            // INTELIGENCIA DE CONEXIÓN REAL (AUDITORÍA DE EMPUJE ACTUAL)
-            const conversionEmpuje = ((subsTotal / views) * 100).toFixed(2);
-            const demandaOrganica = ((likes / views) * 100).toFixed(1);
-            const poderNombre = Math.min(((subsTotal / (Number(c.statistics.viewCount) / 100))), 100).toFixed(1);
-            const calleRealPct = Math.min(((likes / views) * 1000), 100).toFixed(1);
+            // INTELIGENCIA DINÁMICA DE CONEXIÓN REAL (SEMÁFORO PICANTE/FRÍO)
+            const conversionEmpuje = ((subsTotal / views) * 100);
+            const demandaOrganica = ((likes / views) * 100);
+            const poderNombre = Math.min(((subsTotal / (Number(c.statistics.viewCount) / 100))), 100);
+            const calleRealPct = Math.min(((likes / views) * 1000), 100);
+
+            // COLORES DINÁMICOS
+            const colViral = (conversionEmpuje >= 1 && conversionEmpuje <= 80) ? 'var(--red)' : 'var(--cyan)';
+            const txtViral = (conversionEmpuje > 200) ? 'FRÍO / DATA IRREAL' : (conversionEmpuje >= 1 ? 'PICANTE' : 'FRÍO');
+            const colDemanda = (demandaOrganica >= 4) ? 'var(--red)' : 'var(--cyan)';
+            const colNombre = (poderNombre >= 50) ? 'var(--red)' : 'var(--cyan)';
+            const colCalle = (calleRealPct >= 20) ? 'var(--red)' : 'var(--cyan)';
 
             document.getElementById('target-debil').innerHTML = `
                 <div style="margin-bottom:12px; border-bottom:1px solid var(--borde); padding-bottom:8px;">
                     LIKES REALES: <b style="color:var(--exito)">${likes.toLocaleString()}</b><br>
                     COMENTARIOS: <b style="color:var(--cyan)">${comments.toLocaleString()}</b>
                 </div>
-                <div class="gen-burbuja" style="border-color:var(--cyan); margin-bottom:8px;">
-                    CONVERSIÓN (EMPUJE): <span class="gen-pct">${conversionEmpuje}%</span>
+                <div class="gen-burbuja" style="border-color:${colViral}; margin-bottom:8px;">
+                    VIRALIDAD: <span class="gen-pct" style="color:${colViral}">${conversionEmpuje.toFixed(2)}% [${txtViral}]</span>
                 </div>
-                <div class="gen-burbuja" style="border-color:var(--morado-neon); margin-bottom:8px;">
-                    DEMANDA: <span class="gen-pct">${demandaOrganica}%</span>
+                <div class="gen-burbuja" style="border-color:${colDemanda}; margin-bottom:8px;">
+                    DEMANDA: <span class="gen-pct" style="color:${colDemanda}">${demandaOrganica.toFixed(1)}%</span>
                 </div>
-                <div class="gen-burbuja" style="border-color:var(--exito); margin-bottom:8px;">
-                    PODER DE NOMBRE: <span class="gen-pct">${poderNombre}%</span>
+                <div class="gen-burbuja" style="border-color:${colNombre}; margin-bottom:8px;">
+                    PODER DE NOMBRE: <span class="gen-pct" style="color:${colNombre}">${poderNombre.toFixed(1)}%</span>
                 </div>
-                <div class="gen-burbuja" style="background:var(--morado-glow); color:white; border:none;">
-                    PODER CALLE: <span class="gen-pct" style="color:white">${calleRealPct}%</span>
+                <div class="gen-burbuja" style="background:${colCalle === 'var(--red)' ? 'var(--red)' : 'var(--morado-glow)'}; border:none;">
+                    PODER CALLE: <span class="gen-pct" style="color:white">${calleRealPct.toFixed(1)}%</span>
                 </div>
             `;
             window.scrollTo({ top: 0, behavior: 'smooth' });
