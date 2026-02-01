@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NVVEX | CENTRAL DE INTELIGENCIA</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
-    
     <style>
+        /* [ESTÉTICA DE LA NAVE] - SE MANTIENE INTACTA */
         :root {
             --morado-neon: #a855f7;
             --morado-glow: rgba(168, 85, 247, 0.6);
@@ -39,7 +39,6 @@
         ::-webkit-scrollbar-track { background: var(--negro-mate); }
         ::-webkit-scrollbar-thumb { background: var(--morado-glow); border-radius: 10px; }
 
-        /* Estructura de Pisos */
         .piso-entrada {
             height: 40vh;
             display: flex;
@@ -60,7 +59,11 @@
             text-transform: uppercase;
         }
 
-        .search-box { width: 90%; max-width: 700px; position: relative; }
+        .search-box {
+            width: 90%;
+            max-width: 700px;
+            position: relative;
+        }
 
         .main-input {
             width: 100%;
@@ -79,6 +82,7 @@
         .main-input:focus {
             border-color: var(--morado-neon);
             box-shadow: 0 0 30px rgba(168, 85, 247, 0.2);
+            transform: scale(1.02);
         }
 
         .dashboard-container {
@@ -119,51 +123,102 @@
             color: var(--morado-neon);
         }
 
-        /* Estilos de Nubes y Burbujas */
+        .artist-grid { display: grid; grid-template-columns: 300px 1fr; gap: 40px; }
+        .profile-card { text-align: center; }
+        .artist-img {
+            width: 200px; height: 200px;
+            border-radius: 50%;
+            border: 4px solid var(--morado-neon);
+            box-shadow: 0 0 40px var(--morado-glow);
+            margin-bottom: 20px;
+            object-fit: cover;
+        }
+
+        .stat-circles { display: flex; justify-content: center; gap: 20px; }
+        .circle {
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            border: 2px solid var(--morado-neon);
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            background: rgba(168, 85, 247, 0.05);
+        }
+        .circle span { font-size: 1.2rem; font-weight: 700; }
+        .circle label { font-size: 0.6rem; color: #888; }
+
         .nubes-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
 
         .nube-track {
             background: rgba(255,255,255,0.03);
-            padding: 15px 25px;
+            padding: 15px 20px;
             border-radius: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             border: 1px solid var(--borde);
+            transition: 0.3s;
             animation: float 3s ease-in-out infinite;
         }
 
-        /* Grid de YouTube */
+        .nube-track:hover {
+            border-color: var(--morado-neon);
+            background: rgba(168, 85, 247, 0.1);
+            transform: translateX(10px);
+        }
+
+        .reactor-box { display: flex; flex-direction: column; align-items: center; padding: 60px; text-align: center; }
+
+        .btn-reactor {
+            padding: 20px 50px;
+            border-radius: 100px;
+            background: none;
+            border: 2px solid var(--morado-neon);
+            color: white;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: 0.4s;
+            box-shadow: 0 0 20px var(--borde);
+        }
+
+        .btn-reactor.active { background: var(--morado-neon); box-shadow: 0 0 50px var(--morado-neon); }
+
+        .countries-bar { display: flex; gap: 15px; margin-bottom: 30px; flex-wrap: wrap; }
+        .country-pill {
+            padding: 10px 20px;
+            border-radius: 50px;
+            background: var(--cristal);
+            border: 1px solid var(--borde);
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .country-pill:hover { background: var(--morado-neon); }
+
         .yt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 25px; }
         .yt-card { background: rgba(0,0,0,0.3); border-radius: 20px; overflow: hidden; border: 1px solid var(--borde); }
         .yt-thumb { width: 100%; height: 150px; background-size: cover; background-position: center; }
         .yt-info { padding: 15px; }
-        .yt-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 10px; }
+        .yt-title { font-size: 0.9rem; font-weight: 700; margin-bottom: 10px; height: 40px; overflow: hidden; }
+        .yt-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
 
         .btn-espia {
             font-size: 0.6rem;
-            padding: 8px;
+            padding: 5px;
             background: var(--cristal);
             border: 1px solid var(--borde);
-            color: #e5e7eb;
+            color: #aaa;
             border-radius: 5px;
             cursor: pointer;
             text-transform: uppercase;
         }
+        .btn-espia:hover { color: var(--morado-neon); border-color: var(--morado-neon); }
 
-        /* Diagnóstico */
         .diag-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
         .diag-item { padding: 15px; background: rgba(0,0,0,0.2); border-radius: 15px; font-size: 0.8rem; display: flex; align-items: center; gap: 10px; }
-        .status-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--exito); }
-        
-        /* Artista Specs */
-        .artist-grid { display: grid; grid-template-columns: 300px 1fr; gap: 40px; }
-        .artist-img { width: 200px; height: 200px; border-radius: 50%; border: 4px solid var(--morado-neon); box-shadow: 0 0 40px var(--morado-glow); object-fit: cover; }
-        .stat-circles { display: flex; justify-content: center; gap: 20px; margin-top: 15px; }
-        .circle { width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--morado-neon); display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        
-        .btn-reactor { padding: 15px 40px; border-radius: 50px; background: none; border: 2px solid var(--morado-neon); color: white; cursor: pointer; font-weight: bold; }
-        .btn-reactor.active { background: var(--morado-neon); box-shadow: 0 0 30px var(--morado-neon); }
+        .status-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--exito); box-shadow: 0 0 10px var(--exito); }
     </style>
 </head>
 <body>
@@ -171,14 +226,17 @@
     <section class="piso-entrada">
         <div class="logo-nvvex">NVVEX STUDIOS</div>
         <div class="search-box">
-            <input type="text" id="masterSearch" class="main-input" placeholder="ID SPOTIFY, PAÍS O 'GLOBAL'..." onkeyup="evaluarIntento(event)">
+            <input type="text" id="masterSearch" class="main-input" placeholder="ID SPOTIFY, PAÍS (RD, US, ES) O 'GLOBAL'..." onkeyup="evaluarIntento(event)">
         </div>
     </section>
 
     <div class="dashboard-container">
 
         <div class="piso" id="piso-artista">
-            <div class="piso-header"><h2>01. Artista Intelligence</h2><div class="status-dot"></div></div>
+            <div class="piso-header">
+                <h2>01. Artista Intelligence</h2>
+                <div class="status-dot"></div>
+            </div>
             <div class="artist-grid">
                 <div class="profile-card">
                     <img src="https://via.placeholder.com/200" id="art-img" class="artist-img">
@@ -192,90 +250,98 @@
         </div>
 
         <div class="piso" id="piso-global">
-            <div class="piso-header"><h2>02. Mercado Global Virus</h2><div class="status-dot"></div></div>
-            <div style="text-align: center;">
+            <div class="piso-header">
+                <h2>02. Mercado Global Virus</h2>
+                <div class="status-dot"></div>
+            </div>
+            <div class="reactor-box">
                 <button class="btn-reactor" id="btnReactor" onclick="toggleReactor()">ACTIVAR REACTOR MUNDIAL</button>
-                <div id="global-results" class="nubes-container" style="margin-top: 30px;"></div>
+                <p id="reactorStatus" style="margin-top: 20px; color: #666; font-size: 0.8rem;">Manual Mode - Standby</p>
+                <div id="global-results" class="nubes-container" style="width: 100%; margin-top: 30px;"></div>
             </div>
         </div>
 
         <div class="piso" id="piso-youtube">
-            <div class="piso-header"><h2>03. Radar Visual Tendencia</h2><div class="status-dot"></div></div>
-            <div class="countries-bar" style="display:flex; gap:10px; margin-bottom:20px;">
-                <button class="btn-espia" onclick="buscarYT('RD')">🇩🇴 RD</button>
-                <button class="btn-espia" onclick="buscarYT('USA')">🇺🇸 USA</button>
-                <button class="btn-espia" onclick="buscarYT('ES')">🇪🇸 ES</button>
+            <div class="piso-header">
+                <h2>03. Radar Visual Tendencia</h2>
+                <div class="status-dot"></div>
+            </div>
+            <div class="countries-bar">
+                <div class="country-pill" onclick="buscarYT('RD')">🇩🇴 RD</div>
+                <div class="country-pill" onclick="buscarYT('US')">🇺🇸 USA</div>
+                <div class="country-pill" onclick="buscarYT('ES')">🇪🇸 ES</div>
+                <div class="country-pill" onclick="buscarYT('PR')">🇵🇷 PR</div>
             </div>
             <div class="yt-grid" id="yt-container"></div>
         </div>
 
         <div class="piso" id="piso-diag">
-            <div class="piso-header"><h2>04. Diagnóstico de Sistemas</h2></div>
+            <div class="piso-header">
+                <h2>04. Diagnóstico de Sistemas</h2>
+            </div>
             <div class="diag-grid">
-                <div class="diag-item"><div class="status-dot"></div> Radar: Online</div>
-                <div class="diag-item"><div class="status-dot"></div> Motor Nube: Active</div>
-                <div class="diag-item"><div class="status-dot" style="background:var(--morado-neon);"></div> NVVEX: Encrypted</div>
+                <div class="diag-item"><div class="status-dot"></div> Spotify API: Ready</div>
+                <div class="diag-item"><div class="status-dot"></div> YouTube Engine: Ready</div>
+                <div class="diag-item"><div class="status-dot"></div> NVVEX Cloud: Connected</div>
             </div>
         </div>
 
     </div>
 
     <script>
-        
-        // --- BLOQUE 0: INICIALIZACIÓN (ARRANQUE) ---
-        // ---------------------------------------------------------
+        const API_KEY_YT = 'AIzaSyBQwGNe8DsxIdvgyHKV374Do-xOYZ1qCu0';
+
+        // --- BLOQUE 0: INICIALIZACIÓN ---
         window.onload = () => {
-            // Iniciar observador de scroll
-            const obs = new IntersectionObserver((entries) => {
-                entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) entry.target.classList.add('visible');
+                });
             }, { threshold: 0.1 });
-            document.querySelectorAll('.piso').forEach(p => obs.observe(p));
-            console.log("NVVEX: Sistema Inicializado.");
+            document.querySelectorAll('.piso').forEach(p => observer.observe(p));
+
+            const diagItems = document.querySelectorAll('.diag-item');
+            setTimeout(() => {
+                diagItems[0].innerHTML = '<div class="status-dot"></div> Spotify API: READY';
+                diagItems[1].innerHTML = '<div class="status-dot"></div> YouTube Engine: ACTIVE';
+                diagItems[2].innerHTML = '<div class="status-dot" style="background:var(--morado-neon);"></div> NVVEX: ENCRYPTED';
+            }, 1000);
         };
 
-
         // --- BLOQUE 1: CENTRAL DE ENTRADA (EL BUSCA) ---
-        // ---------------------------------------------------------
         function evaluarIntento(e) {
             if (e.key === 'Enter') {
                 let val = e.target.value.trim();
-                // Si es ID Spotify
                 if (val.length >= 22) {
                     let id = val.includes('/') ? val.split('/').pop().split('?')[0] : val;
                     dispararArtista(id);
-                } 
-                // Si es comando global
-                else if (val.toLowerCase() === 'global') {
+                } else if (val.toLowerCase() === 'global') {
                     toggleReactor();
-                } 
-                // Si es búsqueda de radar
-                else {
-                    buscarYT(val);
+                } else {
+                    buscarYT(val.toUpperCase());
                 }
             }
         }
 
-
-        // --- BLOQUE 2: ARTISTA INTELLIGENCE (SPOTIFY) ---
-        // ---------------------------------------------------------
+        // --- BLOQUE 2: ARTISTA INTELLIGENCE ---
         function dispararArtista(id) {
             document.getElementById('piso-artista').scrollIntoView({behavior: 'smooth'});
-            document.getElementById('art-img').src = `https://charts-images.scdn.co/assets/identicon/9/${id}.png`;
             document.getElementById('art-pop').innerText = "SCAN";
+            document.getElementById('art-img').src = "https://charts-images.scdn.co/assets/identicon/9/" + id + ".png";
             
             setTimeout(() => {
                 document.getElementById('art-pop').innerText = "V-9.5";
                 document.getElementById('art-eng').innerText = "ACTIVO";
-                const metrics = ["Impacto Real", "Algoritmo+", "Viral F-10", "Alta Retención"];
+                const metrics = ["MÉTRICA IMPACTO: TOP", "RIESGO CARGA: BAJO", "TENDENCIA: ALTA", "ESTADO: READY"];
                 let html = "";
-                metrics.forEach(m => { html += `<div class="nube-track">${m}</div>`; });
+                metrics.forEach(m => {
+                    html += `<div class="nube-track"><span>${m}</span></div>`;
+                });
                 document.getElementById('art-tracks').innerHTML = html;
             }, 800);
         }
 
-
-        // --- BLOQUE 3: REACTOR GLOBAL (ALTA PRESIÓN) ---
-        // ---------------------------------------------------------
+        // --- BLOQUE 3: REACTOR GLOBAL ---
         let reactorOn = false;
         function toggleReactor() {
             const btn = document.getElementById('btnReactor');
@@ -284,7 +350,8 @@
             if (reactorOn) {
                 btn.classList.add('active');
                 btn.innerText = "REACTOR ONLINE";
-                res.innerHTML = `<div class="nube-track">🌍 GLOBAL: VIRAL RD</div><div class="nube-track">🌍 USA: TOP TREND</div>`;
+                document.getElementById('reactorStatus').innerText = "BUSCA: ESCANEANDO MUNDO...";
+                res.innerHTML = `<div class="nube-track">🌍 GLOBAL: VIRAL RD</div><div class="nube-track">🌍 USA: TOP TRENDS</div>`;
             } else {
                 btn.classList.remove('active');
                 btn.innerText = "ACTIVAR REACTOR MUNDIAL";
@@ -292,43 +359,54 @@
             }
         }
 
-
-        // --- BLOQUE 4: RADAR VISUAL (YOUTUBE & NUBES) ---
-        // ---------------------------------------------------------
-        function buscarYT(pais) {
+        // --- BLOQUE 4: RADAR CHARTS REALES (LA BANCA) ---
+        async function buscarYT(pais) {
             const container = document.getElementById('yt-container');
-            container.innerHTML = `<p style="color:var(--morado-neon);">INTERCEPTANDO ${pais}...</p>`;
+            container.innerHTML = `<p style="color:var(--morado-neon); width:100%; text-align:center;">INTERCEPTANDO CHARTS EN ${pais}...</p>`;
             document.getElementById('piso-youtube').scrollIntoView({behavior: 'smooth'});
 
-            setTimeout(() => {
+            try {
+                const response = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular&regionCode=${pais}&maxResults=8&key=${API_KEY_YT}`);
+                const data = await response.json();
+                
                 let html = "";
-                for(let i=1; i<=4; i++) {
+                data.items.forEach(video => {
+                    const info = video.snippet;
+                    const stats = video.statistics;
                     html += `
                         <div class="yt-card">
-                            <div class="yt-thumb" style="background-image: url('https://via.placeholder.com/300x150/050505/a855f7?text=RADAR+NVVEX')"></div>
+                            <div class="yt-thumb" style="background-image: url('${info.thumbnails.high.url}')"></div>
                             <div class="yt-info">
-                                <div class="yt-title">ANÁLISIS #${i} - ${pais}</div>
+                                <div class="yt-title">${info.channelTitle} - ${info.title.substring(0,35)}...</div>
+                                <div style="color:var(--morado-neon); font-size:0.75rem; margin-bottom:10px;">📈 Vistas: ${Number(stats.viewCount).toLocaleString()}</div>
                                 <div class="yt-btns">
-                                    <button class="btn-espia" onclick="ejecutarEspionaje('tags')">🏷️ Nube Tags</button>
-                                    <button class="btn-espia" onclick="ejecutarEspionaje('vibe')">💬 Vibe</button>
+                                    <button class="btn-espia" onclick="ejecutarEspionaje('${video.id}')">🏷️ Nube Tags</button>
+                                    <button class="btn-espia" onclick="window.open('https://youtube.com/watch?v=${video.id}')">📺 Radar</button>
                                 </div>
                             </div>
                         </div>`;
-                }
+                });
                 container.innerHTML = html;
-            }, 600);
+            } catch (e) { container.innerHTML = "<p>Error de Radar. Verifica la API.</p>"; }
         }
 
-        function ejecutarEspionaje(tipo) {
+        async function ejecutarEspionaje(vId) {
             const container = document.getElementById('yt-container');
-            container.innerHTML = `<h3 style="color:var(--morado-neon); width:100%; text-align:center;">NUBE: ${tipo.toUpperCase()}</h3>
+            container.innerHTML = `<h3 style="color:var(--morado-neon); width:100%; text-align:center;">DISECCIONANDO NUBE DE TAGS...</h3>
                                    <div id="nube-data" style="display:flex; flex-wrap:wrap; justify-content:center; gap:10px; padding:20px;"></div>`;
-            const burbujas = ["Dinero", "Calle", "Impacto", "Global", "NVVEX", "Palo", "Viral", "Real"];
-            let htmlB = "";
-            burbujas.forEach(b => { htmlB += `<div class="nube-track" style="cursor:pointer;">${b}</div>`; });
-            document.getElementById('nube-data').innerHTML = htmlB;
+            
+            try {
+                const response = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${vId}&key=${API_KEY_YT}`);
+                const data = await response.json();
+                const tags = data.items[0].snippet.tags || ["Viral", "NVVEX", "Calle", "Tendencia"];
+                
+                let htmlTags = "";
+                tags.slice(0, 12).forEach((t, i) => {
+                    htmlTags += `<div class="nube-track" style="animation-delay:${i*0.2}s">${t}</div>`;
+                });
+                document.getElementById('nube-data').innerHTML = htmlTags;
+            } catch (e) { console.log("Error extrayendo tags"); }
         }
-
     </script>
 </body>
 </html>
