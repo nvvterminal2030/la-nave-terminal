@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NVVEX | DASHBOARD INTELIGENCIA</title>
+    <title>NVVEX | BANCA DE INTELIGENCIA</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -21,12 +21,11 @@
         .piso-header h2 { font-size: 0.8rem; letter-spacing: 3px; color: var(--morado-neon); text-transform: uppercase; }
         .artist-grid { display: grid; grid-template-columns: 250px 1fr; gap: 30px; }
         .artist-img { width: 220px; height: 220px; border-radius: 50%; border: 4px solid var(--morado-neon); box-shadow: 0 0 40px var(--morado-glow); object-fit: cover; }
-        .circle { width: 85px; height: 85px; border-radius: 50%; border: 2px solid var(--morado-neon); display: flex; flex-direction: column; justify-content: center; align-items: center; background: rgba(168, 85, 247, 0.05); font-size: 0.9rem; font-weight: bold; }
         .nube-track { background: rgba(255,255,255,0.03); padding: 10px 18px; border-radius: 12px; border: 1px solid var(--borde); margin-bottom: 8px; display: flex; justify-content: space-between; font-size: 0.8rem; }
         .flag-chip { background: #000; border: 1px solid var(--cyan); color: white; padding: 5px 12px; border-radius: 50px; font-size: 0.65rem; font-weight: bold; margin: 3px; display: inline-block; }
-        .yt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; }
-        .yt-card { background: rgba(0,0,0,0.3); border-radius: 20px; overflow: hidden; border: 1px solid var(--borde); cursor: pointer; transition: 0.3s; }
-        .yt-card:hover { border-color: var(--cyan); transform: translateY(-5px); }
+        .yt-grid { display: flex; flex-direction: column; gap: 10px; }
+        .yt-card { display: flex; align-items: center; background: rgba(0,0,0,0.3); padding: 10px 20px; border-radius: 15px; border: 1px solid var(--borde); cursor: pointer; justify-content: space-between; }
+        .yt-card:hover { border-color: var(--cyan); }
         .btn-gatillo { position: absolute; top: 30px; right: 35px; background: var(--red); color: white; border: none; padding: 12px 25px; border-radius: 50px; font-size: 0.75rem; font-weight: bold; cursor: pointer; text-transform: uppercase; box-shadow: 0 0 20px rgba(255,49,49,0.4); z-index: 10; }
         .habladora-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
         .habladora-col { background: rgba(0,0,0,0.2); padding: 20px; border-radius: 20px; border: 1px solid var(--borde); }
@@ -47,22 +46,23 @@
                 <div style="text-align: center;">
                     <img src="https://via.placeholder.com/220" id="art-img" class="artist-img">
                     <div style="display:flex; gap:10px; justify-content:center; margin-top:15px;">
-                        <div class="circle"><span id="art-pop" style="color:var(--exito)">--</span><label style="font-size:0.5rem;">ENG REAL</label></div>
-                        <div class="circle"><span id="art-eng">--</span><label style="font-size:0.5rem;">STATUS</label></div>
+                        <div style="text-align:center"><span id="art-pop" style="color:var(--exito); font-weight:bold;">--</span><br><label style="font-size:0.5rem;">ENG %</label></div>
+                        <div style="text-align:center"><span id="art-status-val" style="color:var(--cyan); font-weight:bold;">ESPERANDO</span><br><label style="font-size:0.5rem;">STATUS</label></div>
                     </div>
                 </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                     <div id="art-tracks">
-                        <div class="nube-track"><span>OBJETIVO:</span> <b id="target-name">ESPERANDO...</b></div>
-                        <div class="nube-track"><span>VISTAS/DÍA:</span> <b id="art-vpd">--</b></div>
+                        <div class="nube-track"><span>OBJETIVO:</span> <b id="target-name">--</b></div>
+                        <div class="nube-track"><span>VISTAS/DÍA (VPD):</span> <b id="art-vpd">--</b></div>
                         <div class="nube-track"><span>ANTIGÜEDAD:</span> <b id="art-antiguedad">--</b></div>
                         <div class="nube-track"><span>SUBS:</span> <b id="art-subs">--</b></div>
                         <div class="nube-track"><span>TOTAL CANAL:</span> <b id="art-total-views">--</b></div>
-                        <div class="nube-track" style="background:rgba(0,242,255,0.05)"><span>ULTIMO VIDEO:</span> <b id="last-views-val">--</b></div>
+                        <div class="nube-track" style="background:rgba(168, 85, 247, 0.1)"><span>MÁS POPULAR:</span> <b id="most-popular-val">--</b></div>
                     </div>
                     <div>
-                        <div class="piso-header" style="margin-bottom:10px; border:none;"><h2>CONQUISTA REAL (TRENDS)</h2></div>
-                        <div class="mapa-conquista" id="art-map"></div>
+                        <div class="piso-header" style="margin-bottom:10px; border:none;"><h2>TAGS REALES DEL ARTISTA</h2></div>
+                        <div id="art-tags-real" style="height:120px; overflow-y:auto; border:1px solid var(--borde); padding:10px; border-radius:15px;"></div>
+                        <div id="art-map" style="margin-top:10px;"></div>
                     </div>
                 </div>
             </div>
@@ -87,7 +87,9 @@
     <script>
         const API_KEY_YT = 'AIzaSyBQwGNe8DsxIdvgyHKV374Do-xOYZ1qCu0';
         const PAISES = { 'RD':'DO','PR':'PR','US':'US','MEX':'MX','COL':'CO','ARG':'AR','CHL':'CL','PAN':'PA','ES':'ES' };
-        let cacheRadar = {};
+        
+        // RECUPERAR CACHÉ "LOBA" AL CARGAR
+        let cacheLoba = JSON.parse(localStorage.getItem('nvvex_cache')) || {};
 
         document.getElementById('paises-scroll').innerHTML = Object.keys(PAISES).map(c => `
             <div class="country-pill" style="padding:10px 20px; border-radius:50px; background:var(--cristal); border:1px solid var(--borde); cursor:pointer; color:white; font-size:0.75rem; white-space:nowrap;" onclick="buscarYT('${c}')">${c}</div>
@@ -97,11 +99,18 @@
 
         async function buscarYT(sigla) {
             const region = PAISES[sigla] || 'DO';
-            const res = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular&regionCode=${region}&videoCategoryId=10&maxResults=30&key=${API_KEY_YT}`);
-            cacheRadar[region] = await res.json();
+            if (!cacheLoba[region]) {
+                const res = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular&regionCode=${region}&videoCategoryId=10&maxResults=30&key=${API_KEY_YT}`);
+                cacheLoba[region] = await res.json();
+                localStorage.setItem('nvvex_cache', JSON.stringify(cacheLoba));
+            }
             let htmlV = "";
-            cacheRadar[region].items.forEach((v, i) => {
-                htmlV += `<div class="yt-card" onclick="ejecutarEspionaje('${v.id}')"><img src="${v.snippet.thumbnails.high.url}" style="width:100%; height:110px; object-fit:cover;"><div style="padding:10px; font-size:0.7rem;">#${i+1} ${v.snippet.title.substring(0,25)}</div></div>`;
+            cacheLoba[region].items.forEach((v, i) => {
+                const views = Number(v.statistics.viewCount).toLocaleString();
+                htmlV += `<div class="yt-card" onclick="ejecutarEspionaje('${v.id}')">
+                            <span style="font-size:0.8rem; font-weight:bold;">#${i+1} ${v.snippet.title.substring(0,40)}...</span>
+                            <span style="color:var(--cyan); font-size:0.7rem; font-weight:bold;">${views} VISTAS</span>
+                          </div>`;
             });
             document.getElementById('yt-container').innerHTML = htmlV;
         }
@@ -112,70 +121,74 @@
             const resC = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&id=${v.snippet.channelId}&key=${API_KEY_YT}`);
             const c = (await resC.json()).items[0];
 
-            const resL = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${v.snippet.channelId}&maxResults=2&order=date&type=video&key=${API_KEY_YT}`);
-            const lData = await resL.json();
-            const lastId = lData.items[1] ? lData.items[1].id.videoId : null;
-            let lViews = "N/A";
-            if(lastId) {
-                const resLV = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${lastId}&key=${API_KEY_YT}`);
-                lViews = Number((await resLV.json()).items[0].statistics.viewCount).toLocaleString();
-            }
+            // BUSCAR EL MÁS POPULAR (TECHO REAL)
+            const resPop = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${v.snippet.channelId}&maxResults=1&order=viewCount&type=video&key=${API_KEY_YT}`);
+            const pData = await resPop.json();
+            const popId = pData.items[0].id.videoId;
+            const resPopV = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=statistics,snippet&id=${popId}&key=${API_KEY_YT}`);
+            const popV = (await resPopV.json()).items[0];
 
             const dias = Math.max(Math.ceil((new Date() - new Date(v.snippet.publishedAt)) / (1000*60*60*24)), 1);
             const vpd = Math.round(Number(v.statistics.viewCount) / dias);
-            
+            const eng = (((Number(v.statistics.likeCount)||0) / Number(v.statistics.viewCount)) * 100).toFixed(2);
+
             document.getElementById('art-img').src = c.snippet.thumbnails.high.url;
             document.getElementById('target-name').innerText = c.snippet.title.toUpperCase();
             document.getElementById('art-vpd').innerText = vpd.toLocaleString();
             document.getElementById('art-antiguedad').innerText = dias + " DÍAS";
             document.getElementById('art-subs').innerText = Number(c.statistics.subscriberCount).toLocaleString();
             document.getElementById('art-total-views').innerText = Number(c.statistics.viewCount).toLocaleString();
-            document.getElementById('last-views-val').innerText = lViews;
-            document.getElementById('art-pop').innerText = (((Number(v.statistics.likeCount)||0) / Number(v.statistics.viewCount)) * 100).toFixed(2) + "%";
-            
+            document.getElementById('most-popular-val').innerText = Number(popV.statistics.viewCount).toLocaleString();
+            document.getElementById('art-pop').innerText = eng + "%";
+            document.getElementById('art-status-val').innerText = vpd > 50000 ? "FUEGO" : "ESTABLE";
+
+            // TAGS REALES
+            const tags = v.snippet.tags ? v.snippet.tags.map(t => `<span class="tag">${t}</span>`).join('') : "SIN TAGS";
+            document.getElementById('art-tags-real').innerHTML = tags;
+
+            // MAPA DE TENDENCIAS
             let mapaHtml = "";
             for (let [nom, cod] of Object.entries(PAISES)) {
-                if(cacheRadar[cod]) {
-                    const idx = cacheRadar[cod].items.findIndex(item => item.snippet.channelId === v.snippet.channelId);
+                if(cacheLoba[cod]) {
+                    const idx = cacheLoba[cod].items.findIndex(item => item.snippet.channelId === v.snippet.channelId);
                     if(idx !== -1) mapaHtml += `<div class="flag-chip">${nom} #${idx+1}</div>`;
                 }
             }
-            document.getElementById('art-map').innerHTML = mapaHtml || "LOCAL";
+            document.getElementById('art-map').innerHTML = mapaHtml;
+            
+            // LLENAR HABLADORA (ESTRATEGIA)
+            document.getElementById('market-strategy').innerHTML = `<p style="font-size:0.6rem;">ARTISTA CON BASE DE ${Number(c.statistics.viewCount).toLocaleString()} VISTAS TOTALES. EL TAG MÁS REPETIDO ES "${v.snippet.tags ? v.snippet.tags[0] : 'N/A'}". ATACAR ESTE NICHO.</p>`;
+            document.getElementById('target-debil').innerText = "OBJETIVO EN " + (vpd < 20000 ? "BAJA" : "ALTA") + " PRESIÓN.";
         }
 
         async function publicarRadarTotal() {
             const btn = document.getElementById('btnGatillo');
-            btn.innerText = "PUBLICANDO...";
-            let allTags = [];
-            let contenidoTxt = "--- RADAR VISUAL NVVEX ---\n\n";
+            btn.innerText = "ACTUALIZANDO CACHÉ...";
+            let contenidoTxt = "--- RADAR VISUAL NVVEX (CACHÉ ACTUALIZADA) ---\n\n";
 
             for (const [nom, cod] of Object.entries(PAISES)) {
                 const res = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular&regionCode=${cod}&videoCategoryId=10&maxResults=50&key=${API_KEY_YT}`);
-                const data = await res.json();
-                cacheRadar[cod] = data;
-                contenidoTxt += `PAIS: ${nom}\n`;
-                data.items.slice(0,5).forEach((v,i) => {
-                    contenidoTxt += `#${i+1} ${v.snippet.title} | ${v.snippet.channelTitle}\n`;
-                    if(v.snippet.tags) allTags.push(...v.snippet.tags);
+                cacheLoba[cod] = await res.json();
+                contenidoTxt += `PAIS: ${nom} | TOP 5\n`;
+                cacheLoba[cod].items.slice(0,5).forEach((v,i) => {
+                    contenidoTxt += `#${i+1} ${v.snippet.title} [${v.statistics.viewCount} views]\n`;
                 });
                 contenidoTxt += "--------------------------\n";
             }
+            localStorage.setItem('nvvex_cache', JSON.stringify(cacheLoba));
 
-            const top = Object.entries(allTags.reduce((a,b)=>{a[b]=(a[b]||0)+1; return a;}, {})).sort((a,b)=>b[1]-a[1]).slice(0,10);
-            document.getElementById('seo-tags').innerHTML = top.map(t => `<div class="tag"># ${t[0].toUpperCase()}</div>`).join('');
-            
-            contenidoTxt += `\nBIO OBJETIVO: ${document.getElementById('target-name').innerText}\n`;
-            contenidoTxt += `VPD: ${document.getElementById('art-vpd').innerText} | SUBS: ${document.getElementById('art-subs').innerText}\n`;
-            contenidoTxt += `TOTAL CANAL: ${document.getElementById('art-total-views').innerText}\n`;
-            contenidoTxt += `RANKING: ${document.getElementById('art-map').innerText}\n`;
+            contenidoTxt += `\nINTELIGENCIA DEL OBJETIVO: ${document.getElementById('target-name').innerText}\n`;
+            contenidoTxt += `STATUS: ${document.getElementById('art-status-val').innerText}\n`;
+            contenidoTxt += `ESTRATEGIA: ${document.getElementById('market-strategy').innerText}\n`;
+            contenidoTxt += `OBJETIVO DEBIL: ${document.getElementById('target-debil').innerText}\n`;
+            contenidoTxt += `TAGS: ${document.getElementById('art-tags-real').innerText}\n`;
 
             const blob = new Blob([contenidoTxt], {type: "text/plain"});
             const a = document.createElement("a");
             a.href = URL.createObjectURL(blob);
             a.download = "radar_visual.txt";
             a.click();
-
-            btn.innerText = "PUBLICADO"; btn.style.background = "var(--exito)";
+            btn.innerText = "PUBLICADO Y GUARDADO";
         }
     </script>
 </body>
