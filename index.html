@@ -260,25 +260,14 @@
             a.click();
         }
         <script>
-    // Desactivar click derecho
-    document.addEventListener('contextmenu', function(e) {
-        e.preventDefault();
-    });
-
-    // Bloquear teclas de inspección (F12, Ctrl+Shift+I, J, U)
+    document.addEventListener('contextmenu', e => e.preventDefault());
     document.onkeydown = function(e) {
-        if (e.keyCode == 123) { // F12
-            return false;
-        }
-        if (e.ctrlKey && e.shiftKey && (e.keyCode == 'I'.charCodeAt(0) || e.keyCode == 'J'.charCodeAt(0))) {
-            return false;
-        }
-        if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { // Ver código fuente
+        if (e.keyCode == 123 || 
+           (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74)) || 
+           (e.ctrlKey && e.keyCode == 85)) {
             return false;
         }
     };
-
-    console.log("%c SECURITY ACTIVE: RADAR NVVEX PROTECTED ", "color: red; font-weight: bold; font-size: 20px;");
-    </script>
+</script>
 </body>
 </html>
