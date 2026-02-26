@@ -303,63 +303,77 @@
         }
 
         async function ejecutarEspionaje(vId) {
-            const resV = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id=${vId}&key=${API_KEY_YT}`);
-            const v = (await resV.json()).items[0];
-            const resC = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&id=${v.snippet.channelId}&key=${API_KEY_YT}`);
-            const c = (await resC.json()).items[0];
+    const resV = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id=${vId}&key=${API_KEY_YT}`);
+    const v = (await resV.json()).items[0];
+    const resC = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&id=${v.snippet.channelId}&key=${API_KEY_YT}`);
+    const c = (await resC.json()).items[0];
 
-            const views = Number(v.statistics.viewCount);
-            const likes = Number(v.statistics.likeCount) || 0;
-            const comments = Number(v.statistics.commentCount) || 0;
-            const subsTotal = Number(c.statistics.subscriberCount);
-            const eng = (((likes + comments) / views) * 100).toFixed(2);
-            
-            const dias = Math.max(Math.ceil((new Date() - new Date(v.snippet.publishedAt)) / (1000*60*60*24)), 1);
-            const vpd = Math.round(views / dias);
-            const presionStr = vpd > lastVPD ? "ALTA (↑)" : "BAJA (↓)";
-            lastVPD = vpd;
+    const views = Number(v.statistics.viewCount);
+    const likes = Number(v.statistics.likeCount) || 0;
+    const comments = Number(v.statistics.commentCount) || 0;
+    const subsTotal = Number(c.statistics.subscriberCount);
+    const eng = (((likes + comments) / views) * 100).toFixed(2);
+    
+    const dias = Math.max(Math.ceil((new Date() - new Date(v.snippet.publishedAt)) / (1000*60*60*24)), 1);
+    const vpd = Math.round(views / dias);
+    const presionStr = vpd > lastVPD ? "ALTA (↑)" : "BAJA (↓)";
+    lastVPD = vpd;
 
-            document.getElementById('vid-img').src = v.snippet.thumbnails.high.url;
-            document.getElementById('target-name').innerText = c.snippet.title.toUpperCase();
-            document.getElementById('vid-title').innerText = v.snippet.title.toUpperCase();
-            document.getElementById('art-pop').innerText = eng + "%";
-            document.getElementById('art-pop').style.color = eng >= 10 ? 'var(--exito)' : 'var(--red)';
-            document.getElementById('art-vpd').innerText = vpd.toLocaleString();
-            document.getElementById('art-antiguedad').innerText = dias + " DÍAS";
-            document.getElementById('art-subs').innerText = subsTotal.toLocaleString();
-            document.getElementById('art-total-views').innerText = Number(c.statistics.viewCount).toLocaleString();
-            document.getElementById('presion-real').innerText = presionStr;
-            document.getElementById('art-status-val').innerText = eng >= 10 ? "PRENDIDO" : "FRIO";
+    document.getElementById('vid-img').src = v.snippet.thumbnails.high.url;
+    document.getElementById('target-name').innerText = c.snippet.title.toUpperCase();
+    document.getElementById('vid-title').innerText = v.snippet.title.toUpperCase();
+    document.getElementById('art-pop').innerText = eng + "%";
+    document.getElementById('art-pop').style.color = eng >= 10 ? 'var(--exito)' : 'var(--red)';
+    document.getElementById('art-vpd').innerText = vpd.toLocaleString();
+    document.getElementById('art-antiguedad').innerText = dias + " DÍAS";
+    document.getElementById('art-subs').innerText = subsTotal.toLocaleString();
+    document.getElementById('art-total-views').innerText = Number(c.statistics.viewCount).toLocaleString();
+    document.getElementById('presion-real').innerText = presionStr;
+    document.getElementById('art-status-val').innerText = eng >= 10 ? "PRENDIDO" : "FRIO";
 
-            const tagArray = v.snippet.tags || ["SIN TAGS"];
-            document.getElementById('art-tags-real').innerHTML = tagArray.map(t => `<span class="tag-burbuja">${t.toUpperCase()}</span>`).join('');
-            
-            let mapaHtml = "";
-            for (let [nom, cod] of Object.entries(PAISES)) {
-                if(cacheLoba[cod]) {
-                    const idx = cacheLoba[cod].items.findIndex(item => item.id === vId || item.snippet.channelId === v.snippet.channelId);
-                    if(idx !== -1) mapaHtml += `<span class="pais-rank">${nom} #${idx+1}</span>`;
-                }
-            }
-            document.getElementById('global-map-link').innerHTML = mapaHtml || "<span style='font-size:0.6rem; color:var(--red)'>FUERA DE TENDENCIA GLOBAL</span>";
-            
-            const conversionViral = ((subsTotal / views) * 100);
-            const demandaOrganica = ((likes / views) * 100);
-            const poderNombre = Math.min(((subsTotal / (Number(c.statistics.viewCount) / 100))), 100);
-            const calleRealPct = Math.min(((likes / views) * 1000), 100);
-
-            document.getElementById('target-debil').innerHTML = `
-                <div style="margin-bottom:12px; border-bottom:1px solid var(--borde); padding-bottom:8px;">
-                    LIKES REALES: <b style="color:var(--exito)">${likes.toLocaleString()}</b><br>
-                    COMENTARIOS: <b style="color:var(--cyan)">${comments.toLocaleString()}</b>
-                </div>
-                <div class="gen-burbuja">VIRALIDAD: <span class="gen-pct">${conversionViral.toFixed(2)}%</span></div>
-                <div class="gen-burbuja">DEMANDA: <span class="gen-pct">${demandaOrganica.toFixed(1)}%</span></div>
-                <div class="gen-burbuja">PODER CALLE: <span class="gen-pct">${calleRealPct.toFixed(1)}%</span></div>
-            `;
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+    const tagArray = v.snippet.tags || ["SIN TAGS"];
+    document.getElementById('art-tags-real').innerHTML = tagArray.map(t => `<span class="tag-burbuja">${t.toUpperCase()}</span>`).join('');
+    
+    let mapaHtml = "";
+    for (let [nom, cod] of Object.entries(PAISES)) {
+        if(cacheLoba[cod]) {
+            const idx = cacheLoba[cod].items.findIndex(item => item.id === vId || item.snippet.channelId === v.snippet.channelId);
+            if(idx !== -1) mapaHtml += `<span class="pais-rank">${nom} #${idx+1}</span>`;
         }
+    }
+    document.getElementById('global-map-link').innerHTML = mapaHtml || "<span style='font-size:0.6rem; color:var(--red)'>FUERA DE TENDENCIA GLOBAL</span>";
+    
+    // --- RESTAURACIÓN LÓGICA ORIGIN CORE (ESTO ES LA NAVE) ---
+    const conversionViral = ((views / subsTotal) * 100); // Viralidad Real (Vistas vs Subs)
+    const demandaOrganica = ((likes / views) * 100); // Engagement
+    const poderNombre = (subsTotal / (Number(c.statistics.viewCount) / 100)); // Fidelidad de marca sin topes
+    const calleRealPct = ((likes / views) * 100); // Ratio de éxito en calle
 
+    // SEMÁFORO DE AUDITORÍA FEBRERO-2026
+    const colViral = (conversionViral >= 100) ? 'var(--red)' : 'var(--cyan)';
+    const txtViral = (conversionViral > 300) ? 'VIRALIDAD AGRESIVA' : (conversionViral >= 100 ? 'ROMPIENDO' : 'ORGÁNICO');
+    const colCalle = (calleRealPct >= 5) ? 'var(--red)' : 'var(--cyan)';
+
+    document.getElementById('target-debil').innerHTML = `
+        <div style="margin-bottom:12px; border-bottom:1px solid var(--borde); padding-bottom:8px;">
+            LIKES REALES: <b style="color:var(--exito)">${likes.toLocaleString()}</b><br>
+            COMENTARIOS: <b style="color:var(--cyan)">${comments.toLocaleString()}</b>
+        </div>
+        <div class="gen-burbuja" style="border-left-color:${colViral};">
+            VIRALIDAD: <span class="gen-pct" style="color:${colViral}">${conversionViral.toFixed(2)}% [${txtViral}]</span>
+        </div>
+        <div class="gen-burbuja">
+            DEMANDA: <span class="gen-pct">${demandaOrganica.toFixed(1)}%</span>
+        </div>
+        <div class="gen-burbuja">
+            PODER DE NOMBRE: <span class="gen-pct">${poderNombre.toFixed(3)}%</span>
+        </div>
+        <div class="gen-burbuja" style="background:${calleRealPct >= 5 ? 'rgba(255, 49, 49, 0.1)' : 'transparent'}; border-left-color:${colCalle};">
+            PODER CALLE: <span class="gen-pct" style="color:${colCalle === 'var(--red)' ? 'white' : 'var(--cyan)'}">${calleRealPct.toFixed(1)}%</span>
+        </div>
+    `;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
         async function publicarRadarTotal() {
             let contenidoTxt = "--- NVVEX: REPORTE TOTAL ---\n\n";
             let allTags = [];
