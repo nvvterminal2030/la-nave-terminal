@@ -137,21 +137,25 @@
         }
 
         async function dispararIntelGlobal() {
+            console.log("🛰️ Activando Radar...");
             const query = "Ozuna";
-            const url = `https://serpapi.com/search.json?engine=google_trends&q=${query}&data_type=GEO_MAP&api_key=${API_KEY_SERP}`;
+            const proxy = "https://corsproxy.io/?"; 
+            const targetUrl = `https://serpapi.com/search.json?engine=google_trends&q=${encodeURIComponent(query)}&data_type=GEO_MAP&api_key=${API_KEY_SERP}`;
             
             try {
-                const response = await fetch(url);
+                const response = await fetch(proxy + encodeURIComponent(targetUrl));
                 const data = await response.json();
-                const regiones = data.interest_by_region;
+                
+                if(data.error) { alert("Error: " + data.error); return; }
 
+                const regiones = data.interest_by_region;
                 let mapaData = [["Country", "Hype"]];
                 let listaHtml = "";
 
                 regiones.sort((a,b) => b.extracted_value - a.extracted_value).forEach(reg => {
                     mapaData.push([reg.location, reg.extracted_value]);
-                    listaHtml += `<div class="gen-burbuja" style="font-size: 0.7rem;">
-                        ${reg.location} <span class="gen-pct">${reg.extracted_value}%</span>
+                    listaHtml += `<div class="gen-burbuja" style="font-size: 0.7rem; border-color:${reg.extracted_value > 70 ? 'var(--cyan)' : 'var(--morado-neon)'}">
+                        ${reg.location.toUpperCase()} <span class="gen-pct">${reg.extracted_value}%</span>
                     </div>`;
                 });
 
@@ -170,7 +174,7 @@
                 chart.draw(chartData, options);
 
             } catch (error) {
-                alert("Error extrayendo satélite. Verifica API o conexión.");
+                alert("Paii, el satélite sigue bloqueado. Intenta subir los cambios a GitHub o usa modo Incógnito.");
             }
         }
 
