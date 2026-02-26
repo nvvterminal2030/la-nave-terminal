@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NVVEX | INTELIGENCIA TOTAL</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <style>
         :root {
             --morado-neon: #a855f7; --morado-glow: rgba(168, 85, 247, 0.6); --negro-mate: #050505;
@@ -32,12 +33,11 @@
         .yt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
         .yt-card { background: rgba(0,0,0,0.3); border-radius: 20px; overflow: hidden; border: 1px solid var(--borde); cursor: pointer; position: relative; transition: 0.3s; }
         .view-badge { position: absolute; top: 10px; right: 10px; background: rgba(0,242,255,0.9); color: black; padding: 2px 8px; border-radius: 5px; font-size: 0.65rem; font-weight: bold; }
-        .btn-gatillo { position: absolute; top: 30px; right: 35px; background: var(--red); color: white; border: none; padding: 12px 25px; border-radius: 50px; font-size: 0.75rem; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+        .btn-gatillo { background: var(--red); color: white; border: none; padding: 12px 25px; border-radius: 50px; font-size: 0.75rem; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-left: 10px; }
+        .btn-intel { background: var(--cyan); color: black; border: none; padding: 12px 25px; border-radius: 50px; font-size: 0.75rem; font-weight: bold; cursor: pointer; text-transform: uppercase; }
         .habladora-col { background: rgba(0,0,0,0.2); padding: 20px; border-radius: 20px; border: 1px solid var(--borde); }
         .tag-burbuja { display: inline-block; background: rgba(168, 85, 247, 0.1); border: 1px solid var(--morado-neon); padding: 5px 12px; border-radius: 50px; margin: 4px; font-size: 0.65rem; color: #fff; text-shadow: 0 0 5px var(--morado-glow); }
         .pais-rank { display: inline-block; background: rgba(0, 242, 255, 0.1); border: 1px solid var(--cyan); color: var(--cyan); padding: 6px 14px; border-radius: 10px; margin: 5px; font-size: 0.75rem; font-weight: bold; text-shadow: 0 0 10px var(--cyan); border-bottom: 2px solid var(--cyan); }
-        
-        /* BURBUJAS DE INTELIGENCIA DE GÉNERO */
         .gen-burbuja { display: block; background: linear-gradient(90deg, rgba(168, 85, 247, 0.2), transparent); border-left: 4px solid var(--morado-neon); padding: 10px; margin-bottom: 10px; border-radius: 0 15px 15px 0; font-weight: bold; }
         .gen-pct { float: right; color: var(--cyan); text-shadow: 0 0 10px var(--cyan); }
     </style>
@@ -59,8 +59,12 @@
     </section>
 
     <div class="dashboard-container" id="main-content">
+        
         <div class="piso">
-            <button class="btn-gatillo" onclick="publicarRadarTotal()">DISPARAR Y PUBLICAR</button>
+            <div style="position: absolute; top: 30px; right: 35px; display: flex;">
+                <button class="btn-intel" onclick="dispararIntelGlobal()">DISPARAR INTELIGENCIA GLOBAL</button>
+                <button class="btn-gatillo" onclick="publicarRadarTotal()">PUBLICAR REPORTE</button>
+            </div>
             <div class="piso-header"><h2>01. Artista Intelligence & Bio (En Vivo)</h2></div>
             <div class="artist-grid">
                 <div style="text-align: center;">
@@ -90,7 +94,18 @@
         </div>
 
         <div class="piso">
-            <div class="piso-header"><h2>02. Sala de Guerra & Habladora</h2></div>
+            <div class="piso-header"><h2>02. Mapa de Calor Satelital (Hype de Ozuna)</h2></div>
+            <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 25px;">
+                <div id="geochart_ozuna" style="width: 100%; height: 400px; border-radius: 25px; background: rgba(0,0,0,0.2);"></div>
+                <div class="habladora-col" style="overflow-y: auto; max-height: 400px;">
+                    <h3 style="font-size:0.7rem; color:var(--cyan); letter-spacing: 2px;">RANKING DE INTERÉS REAL</h3>
+                    <div id="lista-paises-intel">--</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="piso">
+            <div class="piso-header"><h2>03. Sala de Guerra & Habladora</h2></div>
             <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;">
                 <div class="habladora-col"><h3 style="font-size:0.7rem; color:var(--cyan)">SEO DE ASALTO</h3><div id="seo-tags">--</div></div>
                 <div class="habladora-col"><h3 style="font-size:0.7rem; color:var(--morado-neon)">ESTRATEGIA GLOBAL (TOP 30)</h3><div id="market-strategy" style="font-size:0.65rem;">--</div></div>
@@ -99,7 +114,7 @@
         </div>
 
         <div class="piso">
-            <div class="piso-header"><h2>03. Radar Visual (Portadas Reales)</h2></div>
+            <div class="piso-header"><h2>04. Radar Visual (Portadas Reales)</h2></div>
             <div style="display:flex; gap:10px; overflow-x:auto; padding-bottom:15px; margin-bottom:15px;" id="paises-scroll"></div>
             <div class="yt-grid" id="yt-container"></div>
         </div>
@@ -107,15 +122,56 @@
 
     <script>
         const API_KEY_YT = 'AIzaSyBQwGNe8DsxIdvgyHKV374Do-xOYZ1qCu0';
+        const API_KEY_SERP = '32fbeb3cd8b8519cff30caf600950d1bae7629551e89ec0b680b3d2b048b766f';
         const PAISES = { 'RD':'DO','PR':'PR','US':'US','MEX':'MX','COL':'CO','ARG':'AR','CHL':'CL','ES':'ES' };
         let cacheLoba = JSON.parse(localStorage.getItem('nvvex_loba')) || {};
         let lastVPD = 0;
+
+        google.charts.load('current', { 'packages':['geochart'] });
 
         function unlock() {
             if(document.getElementById('passKey').value === "2026") {
                 document.getElementById('bunker-lock').style.display = 'none';
                 document.getElementById('main-content').style.display = 'flex';
             } else { alert("ACCESO DENEGADO"); }
+        }
+
+        async function dispararIntelGlobal() {
+            const query = "Ozuna";
+            const url = `https://serpapi.com/search.json?engine=google_trends&q=${query}&data_type=GEO_MAP&api_key=${API_KEY_SERP}`;
+            
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                const regiones = data.interest_by_region;
+
+                let mapaData = [["Country", "Hype"]];
+                let listaHtml = "";
+
+                regiones.sort((a,b) => b.extracted_value - a.extracted_value).forEach(reg => {
+                    mapaData.push([reg.location, reg.extracted_value]);
+                    listaHtml += `<div class="gen-burbuja" style="font-size: 0.7rem;">
+                        ${reg.location} <span class="gen-pct">${reg.extracted_value}%</span>
+                    </div>`;
+                });
+
+                document.getElementById('lista-paises-intel').innerHTML = listaHtml;
+
+                const chartData = google.visualization.arrayToDataTable(mapaData);
+                const options = {
+                    colorAxis: {colors: ['#1e0b3a', '#a855f7', '#00f2ff']},
+                    backgroundColor: 'transparent',
+                    datalessRegionColor: '#1a1a1a',
+                    defaultColor: '#333',
+                    legend: 'none'
+                };
+
+                const chart = new google.visualization.GeoChart(document.getElementById('geochart_ozuna'));
+                chart.draw(chartData, options);
+
+            } catch (error) {
+                alert("Error extrayendo satélite. Verifica API o conexión.");
+            }
         }
 
         document.getElementById('paises-scroll').innerHTML = Object.keys(PAISES).map(c => `
@@ -130,7 +186,6 @@
             const data = await res.json();
             cacheLoba[region] = data;
             localStorage.setItem('nvvex_loba', JSON.stringify(cacheLoba));
-            
             procesarGenerosGlobales(data.items, sigla);
 
             let htmlV = "";
@@ -154,7 +209,6 @@
                 else if(txt.includes('BACHATA')) counts['BACHATA']++;
                 else counts['URBANO']++;
             });
-
             const sorted = Object.entries(counts).sort((a,b) => b[1] - a[1]);
             document.getElementById('market-strategy').innerHTML = sorted.map(([gen, val], i) => {
                 const pct = Math.round((val/30)*100);
@@ -204,13 +258,11 @@
             }
             document.getElementById('global-map-link').innerHTML = mapaHtml || "<span style='font-size:0.6rem; color:var(--red)'>FUERA DE TENDENCIA GLOBAL</span>";
             
-            // INTELIGENCIA DINÁMICA DE CONEXIÓN REAL (SEMÁFORO PICANTE/FRÍO)
             const conversionViral = ((subsTotal / views) * 100);
             const demandaOrganica = ((likes / views) * 100);
             const poderNombre = Math.min(((subsTotal / (Number(c.statistics.viewCount) / 100))), 100);
             const calleRealPct = Math.min(((likes / views) * 1000), 100);
 
-            // COLORES DINÁMICOS - TECHO VIRAL SUBIDO A 180%
             const colViral = (conversionViral >= 1 && conversionViral <= 180) ? 'var(--red)' : 'var(--cyan)';
             const txtViral = (conversionViral > 200) ? 'DATA IRREAL' : (conversionViral >= 1 ? 'PICANTE' : 'FRÍO');
             const colDemanda = (demandaOrganica >= 4) ? 'var(--red)' : 'var(--cyan)';
@@ -252,14 +304,12 @@
             }
             const topTags = Object.entries(allTags.reduce((a,b)=>{a[b]=(a[b]||0)+1; return a;}, {})).sort((a,b)=>b[1]-a[1]).slice(0,12);
             document.getElementById('seo-tags').innerHTML = topTags.map(t => `<div class="tag-burbuja" style="border-color:var(--cyan)">#${t[0].toUpperCase()}</div>`).join('');
-
             const blob = new Blob([contenidoTxt], {type: "text/plain"});
             const a = document.createElement("a");
             a.href = URL.createObjectURL(blob);
             a.download = "radar_visual.txt";
             a.click();
         }
-        
-</script>
+    </script>
 </body>
 </html>
