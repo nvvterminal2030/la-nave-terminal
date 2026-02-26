@@ -40,6 +40,11 @@
         .pais-rank { display: inline-block; background: rgba(0, 242, 255, 0.1); border: 1px solid var(--cyan); color: var(--cyan); padding: 6px 14px; border-radius: 10px; margin: 5px; font-size: 0.75rem; font-weight: bold; text-shadow: 0 0 10px var(--cyan); border-bottom: 2px solid var(--cyan); }
         .gen-burbuja { display: block; background: linear-gradient(90deg, rgba(168, 85, 247, 0.2), transparent); border-left: 4px solid var(--morado-neon); padding: 10px; margin-bottom: 10px; border-radius: 0 15px 15px 0; font-weight: bold; }
         .gen-pct { float: right; color: var(--cyan); text-shadow: 0 0 10px var(--cyan); }
+        
+        /* ESTILOS ESPECÍFICOS BLOQUE 05 */
+        @keyframes pulse-red { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        .card-debil { background: rgba(255,49,49,0.05); border: 1px solid rgba(255,49,49,0.2); border-radius: 15px; padding: 12px; margin-bottom: 10px; }
+        .badge-alerta { background: var(--red); color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.6rem; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -117,6 +122,28 @@
             <div style="display:flex; gap:10px; overflow-x:auto; padding-bottom:15px; margin-bottom:15px;" id="paises-scroll"></div>
             <div class="yt-grid" id="yt-container"></div>
         </div>
+
+        <div class="piso" id="piso-auditoria-FEB">
+            <div class="piso-header">
+                <h2>05. Radar de Penetración: ¿Dónde apretar?</h2>
+                <div id="alert-prioridad-FEB" style="font-size: 0.6rem; color: var(--red); border: 1px solid var(--red); padding: 5px 12px; border-radius: 50px; animation: pulse-red 2s infinite; font-weight: bold;">ANÁLISIS DE BRECHA ACTIVO</div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 25px;">
+                <div class="habladora-col">
+                    <h3 style="font-size:0.7rem; color:var(--red); letter-spacing: 2px;">TERRITORIOS FLOJOS (AUDITORÍA GOOGLE)</h3>
+                    <div id="lista-debilidades-FEB" style="max-height: 350px; overflow-y: auto;">
+                        <p style="font-size:0.7rem; color:#666;">Dispara el satélite para identificar brechas...</p>
+                    </div>
+                </div>
+                <div class="habladora-col" style="border-color: var(--cyan);">
+                    <h3 style="font-size:0.7rem; color:var(--cyan); letter-spacing: 2px;">ORDEN DE INYECCIÓN (ADS/PR)</h3>
+                    <div id="orden-ejecucion-FEB">
+                        <p style="font-size:0.7rem; color:#666;">Esperando data de penetración...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script>
@@ -135,12 +162,10 @@
             } else { alert("ACCESO DENEGADO"); }
         }
 
-        // FUNCIÓN DEL MAPA CORREGIDA CON GEO_MAP_0
         async function dispararIntelGlobal() {
             console.log("🛰️ Apuntando Satélite...");
             const query = "Ozuna";
             const proxy = "https://corsproxy.io/?";
-            // CAMBIO CLAVE: data_type=GEO_MAP_0 para evitar error de múltiples queries
             const url = `https://serpapi.com/search.json?engine=google_trends&q=${encodeURIComponent(query)}&data_type=GEO_MAP_0&api_key=${API_KEY_SERP}`;
             
             try {
@@ -170,6 +195,9 @@
 
                 document.getElementById('lista-paises-intel').innerHTML = listaHtml;
 
+                // ACTUALIZACIÓN BLOQUE 05: PROCESAR DEBILIDADES
+                procesarPuntosFlojos(regiones);
+
                 const chartData = google.visualization.arrayToDataTable(mapaData);
                 const options = {
                     colorAxis: {colors: ['#1e0b3a', '#a855f7', '#00f2ff']},
@@ -186,6 +214,45 @@
                 console.error(error);
                 alert("Error de conexión. Revisa el proxy o la API KEY.");
             }
+        }
+
+        function procesarPuntosFlojos(regiones) {
+            let debilHtml = "";
+            let inversionHtml = "";
+            
+            // Filtramos y ordenamos por los que tienen MENOS impacto (donde hay que apretar)
+            const puntosDebiles = [...regiones]
+                .filter(r => r.extracted_value < 65)
+                .sort((a, b) => a.extracted_value - b.extracted_value);
+
+            puntosDebiles.forEach((reg, index) => {
+                const hype = reg.extracted_value;
+                const brecha = 100 - hype;
+
+                debilHtml += `
+                    <div class="card-debil">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+                            <b style="font-size:0.75rem;">${reg.location.toUpperCase()}</b>
+                            <span class="badge-alerta">GAP: ${brecha}%</span>
+                        </div>
+                        <div style="font-size:0.6rem; color:#aaa;">
+                            INTERÉS ACTUAL: ${hype}% | STATUS: <span style="color:var(--red)">DÉBIL</span>
+                        </div>
+                    </div>
+                `;
+
+                if (index < 6) {
+                    inversionHtml += `
+                        <div class="gen-burbuja" style="border-left-color: var(--cyan); margin-bottom:8px; font-size:0.65rem;">
+                            <span style="color:var(--cyan)">PRIORIDAD #${index + 1}:</span> ${reg.location.toUpperCase()}<br>
+                            <small style="color:#888;">INYECTAR: Campaña de refuerzo local</small>
+                        </div>
+                    `;
+                }
+            });
+
+            document.getElementById('lista-debilidades-FEB').innerHTML = debilHtml || "<p>MARCA SÓLIDA EN TODOS LOS FRENTES</p>";
+            document.getElementById('orden-ejecucion-FEB').innerHTML = inversionHtml || "<p>MANTENER FLUJO ORGÁNICO</p>";
         }
 
         document.getElementById('paises-scroll').innerHTML = Object.keys(PAISES).map(c => `
