@@ -33,8 +33,10 @@
         .yt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
         .yt-card { background: rgba(0,0,0,0.3); border-radius: 20px; overflow: hidden; border: 1px solid var(--borde); cursor: pointer; position: relative; transition: 0.3s; }
         .view-badge { position: absolute; top: 10px; right: 10px; background: rgba(0,242,255,0.9); color: black; padding: 2px 8px; border-radius: 5px; font-size: 0.65rem; font-weight: bold; }
+        
         .btn-gatillo { background: var(--red); color: white; border: none; padding: 12px 25px; border-radius: 50px; font-size: 0.75rem; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-left: 10px; }
         .btn-intel { background: var(--cyan); color: black; border: none; padding: 12px 25px; border-radius: 50px; font-size: 0.75rem; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+        
         .habladora-col { background: rgba(0,0,0,0.2); padding: 20px; border-radius: 20px; border: 1px solid var(--borde); }
         .tag-burbuja { display: inline-block; background: rgba(168, 85, 247, 0.1); border: 1px solid var(--morado-neon); padding: 5px 12px; border-radius: 50px; margin: 4px; font-size: 0.65rem; color: #fff; text-shadow: 0 0 5px var(--morado-glow); }
         .pais-rank { display: inline-block; background: rgba(0, 242, 255, 0.1); border: 1px solid var(--cyan); color: var(--cyan); padding: 6px 14px; border-radius: 10px; margin: 5px; font-size: 0.75rem; font-weight: bold; text-shadow: 0 0 10px var(--cyan); border-bottom: 2px solid var(--cyan); }
@@ -59,10 +61,9 @@
     </section>
 
     <div class="dashboard-container" id="main-content">
-        
         <div class="piso">
             <div style="position: absolute; top: 30px; right: 35px; display: flex;">
-                <button class="btn-intel" onclick="dispararIntelGlobal()">DISPARAR INTELIGENCIA GLOBAL</button>
+                <button class="btn-intel" onclick="dispararIntelGlobal()">DISPARAR SATÉLITE</button>
                 <button class="btn-gatillo" onclick="publicarRadarTotal()">PUBLICAR REPORTE</button>
             </div>
             <div class="piso-header"><h2>01. Artista Intelligence & Bio (En Vivo)</h2></div>
@@ -99,7 +100,7 @@
                 <div id="geochart_ozuna" style="width: 100%; height: 400px; border-radius: 25px; background: rgba(0,0,0,0.2);"></div>
                 <div class="habladora-col" style="overflow-y: auto; max-height: 400px;">
                     <h3 style="font-size:0.7rem; color:var(--cyan); letter-spacing: 2px;">RANKING DE INTERÉS REAL</h3>
-                    <div id="lista-paises-intel">--</div>
+                    <div id="lista-paises-intel">Esperando disparo...</div>
                 </div>
             </div>
         </div>
@@ -127,6 +128,7 @@
         let cacheLoba = JSON.parse(localStorage.getItem('nvvex_loba')) || {};
         let lastVPD = 0;
 
+        // REPARACIÓN: CARGA DE GOOGLE CHARTS
         google.charts.load('current', { 'packages':['geochart'] });
 
         function unlock() {
@@ -136,26 +138,24 @@
             } else { alert("ACCESO DENEGADO"); }
         }
 
+        // REPARACIÓN: FUNCIÓN DE INTELIGENCIA GLOBAL CON PROXY
         async function dispararIntelGlobal() {
-            console.log("🛰️ Activando Radar...");
             const query = "Ozuna";
-            const proxy = "https://corsproxy.io/?"; 
-            const targetUrl = `https://serpapi.com/search.json?engine=google_trends&q=${encodeURIComponent(query)}&data_type=GEO_MAP&api_key=${API_KEY_SERP}`;
+            const proxy = "https://corsproxy.io/?";
+            const url = `https://serpapi.com/search.json?engine=google_trends&q=${encodeURIComponent(query)}&data_type=GEO_MAP&api_key=${API_KEY_SERP}`;
             
             try {
-                const response = await fetch(proxy + encodeURIComponent(targetUrl));
+                const response = await fetch(proxy + encodeURIComponent(url));
                 const data = await response.json();
-                
-                if(data.error) { alert("Error: " + data.error); return; }
-
                 const regiones = data.interest_by_region;
+
                 let mapaData = [["Country", "Hype"]];
                 let listaHtml = "";
 
                 regiones.sort((a,b) => b.extracted_value - a.extracted_value).forEach(reg => {
                     mapaData.push([reg.location, reg.extracted_value]);
-                    listaHtml += `<div class="gen-burbuja" style="font-size: 0.7rem; border-color:${reg.extracted_value > 70 ? 'var(--cyan)' : 'var(--morado-neon)'}">
-                        ${reg.location.toUpperCase()} <span class="gen-pct">${reg.extracted_value}%</span>
+                    listaHtml += `<div class="gen-burbuja" style="font-size: 0.7rem;">
+                        ${reg.location} <span class="gen-pct">${reg.extracted_value}%</span>
                     </div>`;
                 });
 
@@ -174,7 +174,7 @@
                 chart.draw(chartData, options);
 
             } catch (error) {
-                alert("Paii, el satélite sigue bloqueado. Intenta subir los cambios a GitHub o usa modo Incógnito.");
+                alert("Error de conexión con el satélite. Intenta de nuevo.");
             }
         }
 
@@ -308,6 +308,7 @@
             }
             const topTags = Object.entries(allTags.reduce((a,b)=>{a[b]=(a[b]||0)+1; return a;}, {})).sort((a,b)=>b[1]-a[1]).slice(0,12);
             document.getElementById('seo-tags').innerHTML = topTags.map(t => `<div class="tag-burbuja" style="border-color:var(--cyan)">#${t[0].toUpperCase()}</div>`).join('');
+
             const blob = new Blob([contenidoTxt], {type: "text/plain"});
             const a = document.createElement("a");
             a.href = URL.createObjectURL(blob);
