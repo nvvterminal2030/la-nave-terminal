@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NVVEX | OPEN CORE V2.8</title>
+    <title>NVVEX | BÚNKER DE INTELIGENCIA</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <style>
@@ -14,38 +14,36 @@
         }
         body { background-color: var(--negro-mate); color: #e5e7eb; font-family: 'Inter', sans-serif; margin: 0; display: flex; flex-direction: column; align-items: center; overflow-x: hidden; }
 
-        /* HEADER & SEARCH */
-        .piso-entrada { height: 20vh; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; background: radial-gradient(circle at center, #1e0b3a 0%, var(--negro-mate) 75%); border-bottom: 1px solid var(--borde); }
-        .logo-nvvex { font-size: 1.2rem; font-weight: 700; letter-spacing: 10px; color: var(--morado-neon); text-shadow: 0 0 20px var(--morado-glow); text-transform: uppercase; margin-bottom: 15px; }
-        .main-input { width: 90%; max-width: 600px; padding: 15px 25px; background: var(--cristal); border: 1px solid var(--borde); border-radius: 100px; color: white; font-size: 0.9rem; text-align: center; outline: none; transition: 0.3s; }
-        .main-input:focus { border-color: var(--cyan); box-shadow: 0 0 15px rgba(0, 242, 255, 0.1); }
+        /* HEADER ESTRATÉGICO */
+        .piso-entrada { height: 22vh; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; background: radial-gradient(circle at center, #1e0b3a 0%, var(--negro-mate) 85%); border-bottom: 1px solid var(--borde); }
+        .logo-nvvex { font-size: 1.3rem; font-weight: 700; letter-spacing: 12px; color: var(--morado-neon); text-shadow: 0 0 20px var(--morado-glow); text-transform: uppercase; margin-bottom: 20px; }
+        .main-input { width: 90%; max-width: 650px; padding: 18px 30px; background: var(--cristal); border: 1px solid var(--borde); border-radius: 100px; color: white; font-size: 1rem; text-align: center; outline: none; transition: 0.3s; backdrop-filter: blur(5px); }
+        .main-input:focus { border-color: var(--cyan); box-shadow: 0 0 20px rgba(0, 242, 255, 0.15); }
 
-        /* DASHBOARD LAYOUT */
-        .dashboard-container { width: 95%; max-width: 1300px; display: flex; flex-direction: column; gap: 25px; padding: 30px 0 80px 0; }
-        .piso { background: var(--cristal); border: 1px solid var(--borde); border-radius: 30px; padding: 35px; backdrop-filter: blur(10px); position: relative; }
-        .piso-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--borde); padding-bottom: 10px; }
-        .piso-header h2 { font-size: 0.8rem; letter-spacing: 3px; color: var(--morado-neon); text-transform: uppercase; margin: 0; }
+        /* CONTENEDOR DE LA NAVE */
+        .dashboard-container { width: 95%; max-width: 1300px; display: flex; flex-direction: column; gap: 30px; padding: 40px 0 100px 0; }
+        .piso { background: var(--cristal); border: 1px solid var(--borde); border-radius: 40px; padding: 40px; backdrop-filter: blur(15px); position: relative; transition: 0.4s; }
+        .piso:hover { border-color: rgba(168, 85, 247, 0.4); }
+        .piso-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1px solid var(--borde); padding-bottom: 15px; }
+        .piso-header h2 { font-size: 0.9rem; letter-spacing: 4px; color: var(--morado-neon); text-transform: uppercase; margin: 0; }
         
-        /* ANALYTICS GRID */
-        .artist-grid { display: grid; grid-template-columns: 300px 1fr; gap: 30px; }
-        .video-cover { width: 100%; height: 180px; border-radius: 20px; border: 1px solid var(--morado-neon); object-fit: cover; }
-        .circle-stat { text-align:center; padding: 12px; border-radius: 20px; background: rgba(255,255,255,0.02); border: 1px solid var(--borde); flex: 1; }
-        .nube-track { background: rgba(255,255,255,0.03); padding: 10px 18px; border-radius: 12px; border: 1px solid var(--borde); margin-bottom: 8px; display: flex; justify-content: space-between; font-size: 0.8rem; }
+        /* GRIDS DE INTELIGENCIA */
+        .artist-grid { display: grid; grid-template-columns: 320px 1fr; gap: 40px; }
+        .video-cover { width: 100%; height: 200px; border-radius: 25px; border: 1px solid var(--morado-neon); object-fit: cover; box-shadow: 0 0 30px rgba(168, 85, 247, 0.1); }
+        .circle-stat { text-align:center; padding: 15px; border-radius: 25px; background: rgba(255,255,255,0.02); border: 1px solid var(--borde); flex: 1; }
+        .nube-track { background: rgba(255,255,255,0.03); padding: 12px 20px; border-radius: 15px; border: 1px solid var(--borde); margin-bottom: 10px; display: flex; justify-content: space-between; font-size: 0.85rem; }
         
-        /* EXPLORER GRID */
-        .yt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
-        .yt-card { background: rgba(0,0,0,0.4); border-radius: 20px; overflow: hidden; border: 1px solid var(--borde); cursor: pointer; transition: 0.3s; position: relative; }
-        .yt-card:hover { border-color: var(--cyan); transform: scale(1.02); }
-        .view-badge { position: absolute; top: 10px; right: 10px; background: var(--cyan); color: black; padding: 3px 8px; border-radius: 6px; font-size: 0.6rem; font-weight: 800; }
+        .yt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+        .yt-card { background: rgba(0,0,0,0.4); border-radius: 25px; overflow: hidden; border: 1px solid var(--borde); cursor: pointer; transition: 0.4s; position: relative; }
+        .yt-card:hover { transform: translateY(-10px); border-color: var(--cyan); }
+        .view-badge { position: absolute; top: 15px; right: 15px; background: var(--cyan); color: black; padding: 4px 10px; border-radius: 8px; font-size: 0.7rem; font-weight: 800; }
 
-        /* BUTTONS */
-        .btn-ui { padding: 12px 25px; border-radius: 50px; font-size: 0.7rem; font-weight: bold; cursor: pointer; text-transform: uppercase; border: none; transition: 0.2s; }
-        .btn-cyan { background: var(--cyan); color: black; margin-right: 10px; }
+        .btn-ui { padding: 14px 30px; border-radius: 50px; font-size: 0.8rem; font-weight: bold; cursor: pointer; text-transform: uppercase; border: none; transition: 0.3s; }
+        .btn-cyan { background: var(--cyan); color: black; margin-right: 15px; }
         .btn-red { background: var(--red); color: white; }
 
-        .habladora-col { background: rgba(0,0,0,0.2); padding: 20px; border-radius: 20px; border: 1px solid var(--borde); }
-        .tag-burbuja { display: inline-block; background: rgba(168, 85, 247, 0.1); border: 1px solid var(--morado-neon); padding: 5px 12px; border-radius: 50px; margin: 4px; font-size: 0.65rem; }
-        .gen-burbuja { display: block; background: rgba(255,255,255,0.02); border-left: 3px solid var(--morado-neon); padding: 10px; margin-bottom: 10px; font-size: 0.75rem; }
+        .habladora-col { background: rgba(0,0,0,0.3); padding: 25px; border-radius: 25px; border: 1px solid var(--borde); }
+        .tag-burbuja { display: inline-block; background: rgba(168, 85, 247, 0.05); border: 1px solid var(--morado-neon); padding: 6px 14px; border-radius: 50px; margin: 5px; font-size: 0.7rem; color: #fff; }
     </style>
 </head>
 <body>
@@ -55,49 +53,55 @@
         <input type="text" id="masterSearch" class="main-input" placeholder="INGRESA TÉRMINO DE BÚSQUEDA O ID DE VIDEO..." onkeyup="evaluarEntrada(event)">
     </section>
 
-    <div class="dashboard-container">
+    <div class="dashboard-container" id="main-content">
         
         <div class="piso">
-            <div style="position: absolute; top: 30px; right: 35px;">
-                <button class="btn-ui btn-cyan" onclick="dispararRadar()">REFRESH RADAR</button>
-                <button class="btn-ui btn-red" onclick="descargarLog()">EXPORT DATA -MAR</button>
+            <div style="position: absolute; top: 35px; right: 40px; display: flex;">
+                <button class="btn-ui btn-cyan" onclick="dispararRadar()">ACTUALIZAR SATÉLITE</button>
+                <button class="btn-ui btn-red" onclick="descargarLog()">REPORTE -MAR</button>
             </div>
-            <div class="piso-header"><h2>01. Métrica de Impacto Global</h2></div>
+            <div class="piso-header"><h2>01. Análisis de Impacto (Origin Core)</h2></div>
             <div class="artist-grid">
                 <div style="text-align: center;">
-                    <img src="https://via.placeholder.com/300x180/1a1a1a/a855f7?text=NVVEX+MEDIA" id="vid-img" class="video-cover">
-                    <div style="display:flex; gap:10px; justify-content:center; margin-top:20px;">
-                        <div class="circle-stat"><span id="stat-1" style="color:var(--exito); font-weight:bold;">--</span><br><small style="font-size:0.5rem; color:#888;">ENGAGEMENT</small></div>
-                        <div class="circle-stat"><span id="stat-2" style="color:var(--cyan); font-weight:bold;">--</span><br><small style="font-size:0.5rem; color:#888;">VPD INDEX</small></div>
+                    <img src="https://via.placeholder.com/320x200/1a1a1a/a855f7?text=VIDEO+ANALYSIS" id="vid-img" class="video-cover">
+                    <div style="display:flex; gap:15px; justify-content:center; margin-top:25px;">
+                        <div class="circle-stat"><span id="stat-eng" style="color:var(--exito); font-size: 1.2rem; font-weight:bold;">--</span><br><label style="font-size:0.6rem; color: #888;">ENGAGEMENT</label></div>
+                        <div class="circle-stat"><span id="stat-vpd" style="color:var(--cyan); font-size: 1.2rem; font-weight:bold;">--</span><br><label style="font-size:0.6rem; color: #888;">PRESIÓN VPD</label></div>
                     </div>
                 </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
                     <div id="data-fields">
-                        <div class="nube-track"><span>ID:</span> <b id="target-id" style="color:var(--cyan)">--</b></div>
-                        <div class="nube-track"><span>NAME:</span> <b id="target-name">--</b></div>
-                        <div class="nube-track"><span>DAILY:</span> <b id="target-daily">--</b></div>
-                        <div class="nube-track"><span>ENGINE:</span> <b style="color:var(--exito)">V2.8-MAR</b></div>
+                        <div class="nube-track"><span>CANAL:</span> <b id="target-name">--</b></div>
+                        <div class="nube-track"><span>ID VIDEO:</span> <b id="target-id" style="color: var(--cyan);">--</b></div>
+                        <div class="nube-track"><span>DIAS ACTIVOS:</span> <b id="target-days">--</b></div>
+                        <div class="nube-track"><span>VERSION:</span> <b style="color: var(--morado-neon);">2.8-MAR</b></div>
                     </div>
-                    <div class="habladora-col" id="tags-container" style="overflow-y:auto; max-height:160px;">
-                        <span style="color:#666; font-size:0.7rem;">ESPERANDO METADATOS...</span>
+                    <div>
+                        <div class="piso-header" style="margin-bottom:15px; border:none;"><h2>TAGS DETECTADOS</h2></div>
+                        <div id="tags-container" style="height:150px; overflow-y:auto; border:1px solid var(--borde); padding:15px; border-radius:20px; background: rgba(0,0,0,0.2);">
+                            <p style="font-size:0.7rem; color:#555;">Esperando inyección de metadatos...</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="piso">
-            <div class="piso-header"><h2>02. Distribución Geográfica de Tendencia</h2></div>
-            <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 25px;">
-                <div id="geochart_div" style="width: 100%; height: 400px; border-radius: 20px; background: #000;"></div>
-                <div class="habladora-col" id="geo-list" style="overflow-y: auto; max-height: 400px;">
-                    <p style="color:#555; text-align:center; margin-top:50%;">CONECTE API KEY PARA ACTIVAR MAPA</p>
+            <div class="piso-header"><h2>02. Geovisor de Tendencias Globales</h2></div>
+            <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 30px;">
+                <div id="geochart_div" style="width: 100%; height: 450px; border-radius: 30px; background: rgba(0,0,0,0.3); border: 1px solid var(--borde);"></div>
+                <div class="habladora-col" style="overflow-y: auto; max-height: 450px;">
+                    <h3 style="font-size:0.8rem; color:var(--cyan); letter-spacing: 3px; margin-bottom: 20px;">RANKING TERRITORIAL</h3>
+                    <div id="geo-list">
+                        <p style="font-size:0.75rem; color:#888; text-align:center; margin-top:50%;">CONECTE API_S PARA ACTIVAR MAPA</p>
+                    </div>
                 </div>
             </div>
         </div>
 
         <div class="piso">
-            <div class="piso-header"><h2>03. Explorador de Mercados (YouTube Popular)</h2></div>
-            <div style="display:flex; gap:10px; overflow-x:auto; padding-bottom:15px; margin-bottom:15px;" id="selector-paises"></div>
+            <div class="piso-header"><h2>03. Radar de Mercados Populares</h2></div>
+            <div style="display:flex; gap:12px; overflow-x:auto; padding-bottom:20px; margin-bottom:20px;" id="selector-paises"></div>
             <div class="yt-grid" id="yt-grid"></div>
         </div>
 
@@ -105,20 +109,19 @@
 
     <script>
         /**
-         * NVVEX OPEN CORE - CONFIGURACIÓN DE SERVIDOR 
-    .
+         * NVVEX OPEN CORE V2.8
+         * SERVIDOR 
          */
-        const API_Y = ''; 
-        const API_S = ''; 
+        const API_Y = ''; // YouTube Data API Key
+        const API_S = ''; // SerpApi/Trends API Key
         
-        const REGIONS = { 'RD':'DO','PR':'PR','US':'US','MX':'MX','CO':'CO','ES':'ES','AR':'AR' };
+        const REGIONS = { 'RD':'DO','PR':'PR','US':'US','MX':'MX','CO':'CO','ES':'ES','AR':'AR','CL':'CL' };
 
         google.charts.load('current', { 'packages':['geochart'] });
 
-        // Inicialización automática
         window.onload = () => {
             renderPaises();
-            console.log("NVVEX CORE: Ready for API injection.");
+            console.log("NVVEX CORE: Sistema listo para recibir llaves.");
         };
 
         function renderPaises() {
@@ -129,13 +132,13 @@
         }
 
         async function fetchYT(sigla) {
-            if(!API_Y) return alert("API_Y_MISSING: Inyecte su Google API Key en el script.");
+            if(!API_Y) return alert("NVVEX_SECURITY: API_Y no detectada.");
             const region = REGIONS[sigla];
             try {
                 const res = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular&regionCode=${region}&videoCategoryId=10&maxResults=12&key=${API_Y}`);
                 const data = await res.json();
                 renderGrid(data.items);
-            } catch (e) { console.error("YT_FETCH_ERROR"); }
+            } catch (e) { console.error("RADAR_ERROR: Fallo en la conexión."); }
         }
 
         function renderGrid(items) {
@@ -144,7 +147,7 @@
                 <div class="yt-card" onclick="analizarVideo('${v.id}')">
                     <img src="${v.snippet.thumbnails.medium.url}" style="width:100%;">
                     <div class="view-badge">${Number(v.statistics.viewCount).toLocaleString()}</div>
-                    <div style="padding:10px; font-size:0.6rem;"><b>#${i+1}</b> ${v.snippet.title.substring(0,40)}</div>
+                    <div style="padding:15px; font-size:0.7rem; font-weight:bold;">#${i+1} ${v.snippet.title.substring(0,40)}...</div>
                 </div>
             `).join('');
         }
@@ -152,33 +155,41 @@
         async function analizarVideo(id) {
             if(!API_Y) return;
             const res = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id=${id}&key=${API_Y}`);
-            const v = (await res.json()).items[0];
+            const data = await res.json();
+            const v = data.items[0];
+            
+            const views = Number(v.statistics.viewCount);
+            const dias = Math.max(Math.ceil((new Date() - new Date(v.snippet.publishedAt)) / (1000*60*60*24)), 1);
             
             document.getElementById('vid-img').src = v.snippet.thumbnails.high.url;
             document.getElementById('target-id').innerText = v.id;
-            document.getElementById('target-name').innerText = v.snippet.channelTitle;
-            document.getElementById('stat-1').innerText = "CALC...";
+            document.getElementById('target-name').innerText = v.snippet.channelTitle.toUpperCase();
+            document.getElementById('target-days').innerText = dias;
+            document.getElementById('stat-vpd').innerText = Math.round(views/dias).toLocaleString();
+            document.getElementById('stat-eng').innerText = "CALC...";
             
-            const tags = v.snippet.tags ? v.snippet.tags.map(t => `<span class="tag-burbuja">${t}</span>`).join('') : "NO TAGS";
+            const tags = v.snippet.tags ? v.snippet.tags.map(t => `<span class="tag-burbuja">${t.toUpperCase()}</span>`).join('') : "SIN METADATOS";
             document.getElementById('tags-container').innerHTML = tags;
-        }
-
-        async function dispararRadar() {
-            console.log("Iniciando búsqueda de tendencias externas...");
-            // Lógica de Google Trends (Requiere API Key de SerpApi o similar en API_S)
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function evaluarEntrada(e) {
             if (e.key === 'Enter') {
                 const val = e.target.value;
-                if(val.length > 5) analizarVideo(val);
+                const vId = val.match(/[a-zA-Z0-9_-]{11}/);
+                if(vId) analizarVideo(vId[0]); else alert("Formato de ID no reconocido por Origin Core.");
             }
         }
 
-        function descargarLog() {
-            alert("Generando reporte de sesión NVVEX-MAR...");
+        async function dispararRadar() {
+            console.log("Busca: Escaneando tendencias globales...");
+            // Espacio reservado para lógica de Google Trends
         }
 
+        function descargarLog() {
+            alert("Reporte NVVEX-MAR generado en memoria local.");
+        }
     </script>
 </body>
 </html>
