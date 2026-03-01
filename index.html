@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NVVEX | BÚNKER DE INTELIGENCIA V2.8</title>
+    <title>NVVEX | OPEN CORE V2.8</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <style>
@@ -14,258 +14,171 @@
         }
         body { background-color: var(--negro-mate); color: #e5e7eb; font-family: 'Inter', sans-serif; margin: 0; display: flex; flex-direction: column; align-items: center; overflow-x: hidden; }
 
-        /* BLOQUEO DE SEGURIDAD NVVEX */
-        #bunker-lock { position: fixed; inset: 0; background: var(--negro-mate); z-index: 10000; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .lock-box { background: var(--cristal); border: 1px solid var(--morado-neon); padding: 40px; border-radius: 30px; text-align: center; backdrop-filter: blur(15px); box-shadow: 0 0 50px rgba(168, 85, 247, 0.2); }
-        .lock-input { background: rgba(0,0,0,0.5); border: 1px solid var(--borde); padding: 15px; border-radius: 15px; color: white; text-align: center; font-size: 1.5rem; outline: none; margin: 20px 0; width: 200px; }
+        /* HEADER & SEARCH */
+        .piso-entrada { height: 20vh; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; background: radial-gradient(circle at center, #1e0b3a 0%, var(--negro-mate) 75%); border-bottom: 1px solid var(--borde); }
+        .logo-nvvex { font-size: 1.2rem; font-weight: 700; letter-spacing: 10px; color: var(--morado-neon); text-shadow: 0 0 20px var(--morado-glow); text-transform: uppercase; margin-bottom: 15px; }
+        .main-input { width: 90%; max-width: 600px; padding: 15px 25px; background: var(--cristal); border: 1px solid var(--borde); border-radius: 100px; color: white; font-size: 0.9rem; text-align: center; outline: none; transition: 0.3s; }
+        .main-input:focus { border-color: var(--cyan); box-shadow: 0 0 15px rgba(0, 242, 255, 0.1); }
 
-        /* HEADER & TICKER */
-        .piso-entrada { height: 25vh; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; background: radial-gradient(circle at center, #1e0b3a 0%, var(--negro-mate) 75%); }
-        .logo-nvvex { font-size: 1.5rem; font-weight: 700; letter-spacing: 10px; color: var(--morado-neon); text-shadow: 0 0 20px var(--morado-glow); text-transform: uppercase; margin-bottom: 20px; }
-        .main-input { width: 90%; max-width: 650px; padding: 18px 30px; background: var(--cristal); border: 1px solid var(--borde); border-radius: 100px; color: white; font-size: 1rem; text-align: center; outline: none; transition: 0.3s; }
-        .main-input:focus { border-color: var(--cyan); box-shadow: 0 0 20px rgba(0, 242, 255, 0.2); }
-
-        /* CONTENEDOR PRINCIPAL */
-        .dashboard-container { width: 95%; max-width: 1300px; display: none; flex-direction: column; gap: 30px; padding-bottom: 80px; }
-        .piso { background: var(--cristal); border: 1px solid var(--borde); border-radius: 40px; padding: 40px; backdrop-filter: blur(12px); position: relative; transition: 0.3s; }
-        .piso:hover { border-color: var(--morado-neon); }
-        .piso-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1px solid var(--borde); padding-bottom: 15px; }
-        .piso-header h2 { font-size: 0.9rem; letter-spacing: 4px; color: var(--morado-neon); text-transform: uppercase; margin: 0; }
+        /* DASHBOARD LAYOUT */
+        .dashboard-container { width: 95%; max-width: 1300px; display: flex; flex-direction: column; gap: 25px; padding: 30px 0 80px 0; }
+        .piso { background: var(--cristal); border: 1px solid var(--borde); border-radius: 30px; padding: 35px; backdrop-filter: blur(10px); position: relative; }
+        .piso-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--borde); padding-bottom: 10px; }
+        .piso-header h2 { font-size: 0.8rem; letter-spacing: 3px; color: var(--morado-neon); text-transform: uppercase; margin: 0; }
         
-        /* GRIDS DE INTELIGENCIA */
-        .artist-grid { display: grid; grid-template-columns: 320px 1fr; gap: 40px; }
-        .video-cover { width: 100%; height: 200px; border-radius: 25px; border: 2px solid var(--morado-neon); object-fit: cover; box-shadow: 0 0 40px var(--morado-glow); }
-        .circle-stat { text-align:center; padding: 15px; border-radius: 25px; background: rgba(255,255,255,0.02); border: 1px solid var(--borde); flex: 1; }
-        .nube-track { background: rgba(255,255,255,0.03); padding: 12px 20px; border-radius: 15px; border: 1px solid var(--borde); margin-bottom: 10px; display: flex; justify-content: space-between; font-size: 0.85rem; }
+        /* ANALYTICS GRID */
+        .artist-grid { display: grid; grid-template-columns: 300px 1fr; gap: 30px; }
+        .video-cover { width: 100%; height: 180px; border-radius: 20px; border: 1px solid var(--morado-neon); object-fit: cover; }
+        .circle-stat { text-align:center; padding: 12px; border-radius: 20px; background: rgba(255,255,255,0.02); border: 1px solid var(--borde); flex: 1; }
+        .nube-track { background: rgba(255,255,255,0.03); padding: 10px 18px; border-radius: 12px; border: 1px solid var(--borde); margin-bottom: 8px; display: flex; justify-content: space-between; font-size: 0.8rem; }
         
-        .yt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
-        .yt-card { background: rgba(0,0,0,0.4); border-radius: 25px; overflow: hidden; border: 1px solid var(--borde); cursor: pointer; position: relative; transition: 0.4s; }
-        .yt-card:hover { transform: translateY(-10px); border-color: var(--cyan); }
-        .view-badge { position: absolute; top: 15px; right: 15px; background: var(--cyan); color: black; padding: 4px 10px; border-radius: 8px; font-size: 0.7rem; font-weight: 800; }
+        /* EXPLORER GRID */
+        .yt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
+        .yt-card { background: rgba(0,0,0,0.4); border-radius: 20px; overflow: hidden; border: 1px solid var(--borde); cursor: pointer; transition: 0.3s; position: relative; }
+        .yt-card:hover { border-color: var(--cyan); transform: scale(1.02); }
+        .view-badge { position: absolute; top: 10px; right: 10px; background: var(--cyan); color: black; padding: 3px 8px; border-radius: 6px; font-size: 0.6rem; font-weight: 800; }
 
-        .btn-gatillo { background: var(--red); color: white; border: none; padding: 14px 30px; border-radius: 50px; font-size: 0.8rem; font-weight: bold; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
-        .btn-intel { background: var(--cyan); color: black; border: none; padding: 14px 30px; border-radius: 50px; font-size: 0.8rem; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-right: 15px; }
-        
-        .habladora-col { background: rgba(0,0,0,0.3); padding: 25px; border-radius: 25px; border: 1px solid var(--borde); }
-        .tag-burbuja { display: inline-block; background: rgba(168, 85, 247, 0.05); border: 1px solid var(--morado-neon); padding: 6px 14px; border-radius: 50px; margin: 5px; font-size: 0.7rem; color: #fff; }
-        .gen-burbuja { display: block; background: linear-gradient(90deg, rgba(168, 85, 247, 0.15), transparent); border-left: 5px solid var(--morado-neon); padding: 12px; margin-bottom: 12px; border-radius: 0 20px 20px 0; font-weight: bold; font-size: 0.8rem; }
-        .gen-pct { float: right; color: var(--cyan); text-shadow: 0 0 10px var(--cyan); }
+        /* BUTTONS */
+        .btn-ui { padding: 12px 25px; border-radius: 50px; font-size: 0.7rem; font-weight: bold; cursor: pointer; text-transform: uppercase; border: none; transition: 0.2s; }
+        .btn-cyan { background: var(--cyan); color: black; margin-right: 10px; }
+        .btn-red { background: var(--red); color: white; }
 
-        .card-debil { background: rgba(255,255,255,0.02); border: 1px solid var(--borde); border-radius: 20px; padding: 15px; margin-bottom: 12px; transition: 0.3s; }
-        .badge-alerta { color: white; padding: 4px 10px; border-radius: 6px; font-size: 0.65rem; font-weight: bold; text-transform: uppercase; }
-        @keyframes pulse-red { 0% { box-shadow: 0 0 0px var(--red); } 50% { box-shadow: 0 0 15px var(--red); } 100% { box-shadow: 0 0 0px var(--red); } }
+        .habladora-col { background: rgba(0,0,0,0.2); padding: 20px; border-radius: 20px; border: 1px solid var(--borde); }
+        .tag-burbuja { display: inline-block; background: rgba(168, 85, 247, 0.1); border: 1px solid var(--morado-neon); padding: 5px 12px; border-radius: 50px; margin: 4px; font-size: 0.65rem; }
+        .gen-burbuja { display: block; background: rgba(255,255,255,0.02); border-left: 3px solid var(--morado-neon); padding: 10px; margin-bottom: 10px; font-size: 0.75rem; }
     </style>
 </head>
 <body>
 
-    <div id="bunker-lock">
-        <div class="lock-box">
-            <div class="logo-nvvex" style="font-size: 1rem;">NVVEX ORIGIN CORE</div>
-            <div style="font-size:0.65rem; color:#aaa; letter-spacing: 2px; margin-bottom: 20px;">ACCESO RESTRINGIDO - SOCIOS SOLAMENTE</div>
-            <input type="password" id="passKey" class="lock-input" placeholder="PASSCODE">
-            <br>
-            <button onclick="unlock()" style="background:var(--morado-neon); color:white; border:none; padding:15px 50px; border-radius:50px; cursor:pointer; font-weight:bold; letter-spacing: 2px;">DESBLOQUEAR RADAR</button>
-        </div>
-    </div>
-
     <section class="piso-entrada">
-        <div class="logo-nvvex">LA NAVE</div>
-        <input type="text" id="masterSearch" class="main-input" placeholder="BUSCA TENDENCIAS O PEGA LINK DE YOUTUBE..." onkeyup="evaluarIntento(event)">
+        <div class="logo-nvvex">NVVEX STUDIOS</div>
+        <input type="text" id="masterSearch" class="main-input" placeholder="INGRESA TÉRMINO DE BÚSQUEDA O ID DE VIDEO..." onkeyup="evaluarEntrada(event)">
     </section>
 
-    <div class="dashboard-container" id="main-content">
+    <div class="dashboard-container">
         
         <div class="piso">
-            <div style="position: absolute; top: 35px; right: 40px; display: flex;">
-                <button class="btn-intel" onclick="dispararIntelGlobal()">ACTUALIZAR SATÉLITE</button>
-                <button class="btn-gatillo" onclick="descargarReporte()">REPORTE -MAR</button>
+            <div style="position: absolute; top: 30px; right: 35px;">
+                <button class="btn-ui btn-cyan" onclick="dispararRadar()">REFRESH RADAR</button>
+                <button class="btn-ui btn-red" onclick="descargarLog()">EXPORT DATA -MAR</button>
             </div>
-            <div class="piso-header"><h2>01. Análisis de Impacto & Viralidad (Deep Scan)</h2></div>
+            <div class="piso-header"><h2>01. Métrica de Impacto Global</h2></div>
             <div class="artist-grid">
                 <div style="text-align: center;">
-                    <img src="https://via.placeholder.com/320x200" id="vid-img" class="video-cover">
-                    <div style="display:flex; gap:15px; justify-content:center; margin-top:25px;">
-                        <div class="circle-stat"><span id="art-pop" style="color:var(--exito); font-size: 1.2rem; font-weight:bold;">--</span><br><label style="font-size:0.6rem; color: #888;">ENGAGEMENT</label></div>
-                        <div class="circle-stat"><span id="presion-real" style="color:var(--cyan); font-size: 1.2rem; font-weight:bold;">--</span><br><label style="font-size:0.6rem; color: #888;">PRESIÓN VPD</label></div>
+                    <img src="https://via.placeholder.com/300x180/1a1a1a/a855f7?text=NVVEX+MEDIA" id="vid-img" class="video-cover">
+                    <div style="display:flex; gap:10px; justify-content:center; margin-top:20px;">
+                        <div class="circle-stat"><span id="stat-1" style="color:var(--exito); font-weight:bold;">--</span><br><small style="font-size:0.5rem; color:#888;">ENGAGEMENT</small></div>
+                        <div class="circle-stat"><span id="stat-2" style="color:var(--cyan); font-weight:bold;">--</span><br><small style="font-size:0.5rem; color:#888;">VPD INDEX</small></div>
                     </div>
                 </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
-                    <div id="art-tracks">
-                        <div class="nube-track"><span>CANAL:</span> <b id="target-name">--</b></div>
-                        <div class="nube-track"><span>TRACK:</span> <b id="vid-title" style="font-size:0.7rem; color: var(--cyan);">--</b></div>
-                        <div class="nube-track"><span>VISTAS/DÍA:</span> <b id="art-vpd">--</b></div>
-                        <div class="nube-track"><span>SUBS:</span> <b id="art-subs">--</b></div>
-                        <div class="nube-track"><span>STATUS:</span> <b id="art-status-val" style="color: var(--exito);">ORIGIN ACTIVE</b></div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div id="data-fields">
+                        <div class="nube-track"><span>ID:</span> <b id="target-id" style="color:var(--cyan)">--</b></div>
+                        <div class="nube-track"><span>NAME:</span> <b id="target-name">--</b></div>
+                        <div class="nube-track"><span>DAILY:</span> <b id="target-daily">--</b></div>
+                        <div class="nube-track"><span>ENGINE:</span> <b style="color:var(--exito)">V2.8-MAR</b></div>
                     </div>
-                    <div>
-                        <div class="piso-header" style="margin-bottom:15px; border:none;"><h2>TAGS DE ASALTO</h2></div>
-                        <div id="art-tags-real" style="height:150px; overflow-y:auto; border:1px solid var(--borde); padding:15px; border-radius:20px; background: rgba(0,0,0,0.2);"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="piso">
-            <div class="piso-header"><h2>02. Geovisor de Hype (Banca de Inteligencia)</h2></div>
-            <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 30px;">
-                <div id="geochart_main" style="width: 100%; height: 450px; border-radius: 30px; background: rgba(0,0,0,0.3); border: 1px solid var(--borde);"></div>
-                <div class="habladora-col" style="overflow-y: auto; max-height: 450px;">
-                    <h3 style="font-size:0.8rem; color:var(--cyan); letter-spacing: 3px; margin-bottom: 20px;">MERCADOS CALIENTES</h3>
-                    <div id="lista-paises-intel">Esperando data del radar...</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="piso" id="piso-auditoria-MAR">
-            <div class="piso-header">
-                <h2>03. Auditoría de Conversión: Cruzado de Plataformas (-MAR)</h2>
-                <div style="font-size: 0.65rem; color: var(--red); border: 1px solid var(--red); padding: 6px 15px; border-radius: 50px; animation: pulse-red 2s infinite; font-weight: bold;">ESCANER MULTI-PLATAFORMA ACTIVO</div>
-            </div>
-            <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 30px;">
-                <div class="habladora-col">
-                    <h3 style="font-size:0.8rem; color:var(--red); letter-spacing: 3px;">MARKET GAP (SPOTIFY VS GOOGLE)</h3>
-                    <div id="lista-debilidades-MAR" style="max-height: 400px; overflow-y: auto;">
-                        <p style="font-size:0.75rem; color:#888; text-align:center;">Analizando fugas de streams...</p>
-                    </div>
-                </div>
-                <div class="habladora-col" style="border-color: var(--cyan);">
-                    <h3 style="font-size:0.8rem; color:var(--cyan); letter-spacing: 3px;">EJECUCIÓN DE CAPITAL</h3>
-                    <div id="orden-ejecucion-MAR">
-                        <p style="font-size:0.75rem; color:#888; text-align:center;">Calculando ROI por territorio...</p>
+                    <div class="habladora-col" id="tags-container" style="overflow-y:auto; max-height:160px;">
+                        <span style="color:#666; font-size:0.7rem;">ESPERANDO METADATOS...</span>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="piso">
-            <div class="piso-header"><h2>04. Radar de Tendencias (Explorador Global)</h2></div>
-            <div style="display:flex; gap:12px; overflow-x:auto; padding-bottom:20px; margin-bottom:20px;" id="paises-scroll"></div>
-            <div class="yt-grid" id="yt-container"></div>
+            <div class="piso-header"><h2>02. Distribución Geográfica de Tendencia</h2></div>
+            <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 25px;">
+                <div id="geochart_div" style="width: 100%; height: 400px; border-radius: 20px; background: #000;"></div>
+                <div class="habladora-col" id="geo-list" style="overflow-y: auto; max-height: 400px;">
+                    <p style="color:#555; text-align:center; margin-top:50%;">CONECTE API KEY PARA ACTIVAR MAPA</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="piso">
+            <div class="piso-header"><h2>03. Explorador de Mercados (YouTube Popular)</h2></div>
+            <div style="display:flex; gap:10px; overflow-x:auto; padding-bottom:15px; margin-bottom:15px;" id="selector-paises"></div>
+            <div class="yt-grid" id="yt-grid"></div>
         </div>
 
     </div>
 
     <script>
-        /* AVISO DE SEGURIDAD NVVEX: 
-           Las API Keys se cargan dinámicamente desde el servidor de producción.
-        */
-        const __NVVEX_Y = ''; // INYECTADO POR SERVIDOR CENTRAL
-        const __NVVEX_S = ''; // INYECTADO POR SERVIDOR CENTRAL
+        /**
+         * NVVEX OPEN CORE - CONFIGURACIÓN DE SERVIDOR 
+    .
+         */
+        const API_Y = ''; 
+        const API_S = ''; 
         
-        const PAISES = { 'RD':'DO','PR':'PR','US':'US','MEX':'MX','COL':'CO','ARG':'AR','CHL':'CL','ES':'ES' };
-        let cacheLoba = JSON.parse(localStorage.getItem('nvvex_loba')) || {};
-        let lastVPD = 0;
+        const REGIONS = { 'RD':'DO','PR':'PR','US':'US','MX':'MX','CO':'CO','ES':'ES','AR':'AR' };
 
         google.charts.load('current', { 'packages':['geochart'] });
 
-        function unlock() {
-            if(document.getElementById('passKey').value === "2026") {
-                document.getElementById('bunker-lock').style.display = 'none';
-                document.getElementById('main-content').style.display = 'flex';
-                dispararIntelGlobal(); 
-            } else { alert("ACCESO DENEGADO AL BÚNKER NVVEX"); }
+        // Inicialización automática
+        window.onload = () => {
+            renderPaises();
+            console.log("NVVEX CORE: Ready for API injection.");
+        };
+
+        function renderPaises() {
+            const container = document.getElementById('selector-paises');
+            container.innerHTML = Object.keys(REGIONS).map(p => `
+                <button class="btn-ui" style="background:var(--cristal); border:1px solid var(--borde); color:white;" onclick="fetchYT('${p}')">${p}</button>
+            `).join('');
         }
 
-        async function dispararIntelGlobal() {
-            const query = "Ozuna"; 
-            const proxy = "https://corsproxy.io/?";
-            const url = `https://serpapi.com/search.json?engine=google_trends&q=${encodeURIComponent(query)}&data_type=GEO_MAP_0&api_key=${__NVVEX_S}`;
-            
+        async function fetchYT(sigla) {
+            if(!API_Y) return alert("API_Y_MISSING: Inyecte su Google API Key en el script.");
+            const region = REGIONS[sigla];
             try {
-                const response = await fetch(proxy + encodeURIComponent(url));
-                const data = await response.json();
-                if(data.error) return console.warn("LIMIT_API_REACHED_V_EN_COLA");
-
-                const regiones = data.interest_by_region;
-                if(!regiones) return;
-
-                let mapaData = [["Country", "Hype"]];
-                let listaHtml = "";
-
-                regiones.sort((a,b) => b.extracted_value - a.extracted_value).forEach(reg => {
-                    mapaData.push([reg.location, reg.extracted_value]);
-                    listaHtml += `<div class="gen-burbuja">${reg.location.toUpperCase()} <span class="gen-pct">${reg.extracted_value}%</span></div>`;
-                });
-
-                document.getElementById('lista-paises-intel').innerHTML = listaHtml;
-                auditarMercadoMAR(regiones);
-
-                const chartData = google.visualization.arrayToDataTable(mapaData);
-                const chart = new google.visualization.GeoChart(document.getElementById('geochart_main'));
-                chart.draw(chartData, {
-                    colorAxis: {colors: ['#1e0b3a', '#a855f7', '#00f2ff']},
-                    backgroundColor: 'transparent', datalessRegionColor: '#1a1a1a', legend: 'none'
-                });
-            } catch (e) { console.error("RADAR_SYNC_ERROR"); }
+                const res = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular&regionCode=${region}&videoCategoryId=10&maxResults=12&key=${API_Y}`);
+                const data = await res.json();
+                renderGrid(data.items);
+            } catch (e) { console.error("YT_FETCH_ERROR"); }
         }
 
-        function auditarMercadoMAR(regiones) {
-            let debilHtml = ""; let inversionHtml = "";
-            const sorted = [...regiones].sort((a, b) => a.extracted_value - b.extracted_value);
-
-            sorted.forEach((reg, index) => {
-                const hype = reg.extracted_value;
-                const spotySim = Math.floor(Math.random() * 50) + 1;
-                let status = (hype > 70 && spotySim > 20) ? "FUGA DE STREAMS" : (spotySim < 10 && hype < 40) ? "MARCA FRÍA" : "ESTABLE";
-                let color = status === "FUGA DE STREAMS" ? "var(--red)" : "var(--cyan)";
-
-                debilHtml += `<div class="card-debil" style="border-left: 4px solid ${color}">
-                    <div style="display:flex; justify-content:space-between;"><b>${reg.location.toUpperCase()}</b><span class="badge-alerta" style="background:${color}">${status}</span></div>
-                    <div style="font-size:0.6rem; margin-top:5px;">TRENDS: ${hype}% | SPOTIFY: #${spotySim}</div>
-                </div>`;
-
-                if (index < 4) {
-                    inversionHtml += `<div class="gen-burbuja" style="border-left-color:${color}"><b>${reg.location.toUpperCase()}</b><br><span style="font-size:0.6rem;">INYECTAR ADS NIVEL 2</span></div>`;
-                }
-            });
-            document.getElementById('lista-debilidades-MAR').innerHTML = debilHtml;
-            document.getElementById('orden-ejecucion-MAR').innerHTML = inversionHtml;
-        }
-
-        // CARGA DE TENDENCIAS YOUTUBE
-        document.getElementById('paises-scroll').innerHTML = Object.keys(PAISES).map(c => `
-            <div style="padding:10px 20px; border-radius:50px; background:var(--cristal); border:1px solid var(--borde); cursor:pointer; color:white; font-size:0.75rem; white-space:nowrap;" onclick="buscarYT('${c}')">${c}</div>
-        `).join('');
-
-        async function buscarYT(sigla) {
-            const region = PAISES[sigla] || 'DO';
-            const res = await fetch(
-            const data = await res.json();
-            
-            let htmlV = "";
-            data.items.forEach((v, i) => {
-                htmlV += `<div class="yt-card" onclick="ejecutarEspionaje('${v.id}')">
-                    <img src="${v.snippet.thumbnails.high.url}" style="width:100%; height:120px; object-fit:cover;">
+        function renderGrid(items) {
+            const grid = document.getElementById('yt-grid');
+            grid.innerHTML = items.map((v, i) => `
+                <div class="yt-card" onclick="analizarVideo('${v.id}')">
+                    <img src="${v.snippet.thumbnails.medium.url}" style="width:100%;">
                     <div class="view-badge">${Number(v.statistics.viewCount).toLocaleString()}</div>
-                    <div style="padding:12px; font-size:0.65rem; font-weight:bold;">#${i+1} ${v.snippet.title.substring(0,35)}...</div>
-                </div>`;
-            });
-            document.getElementById('yt-container').innerHTML = htmlV;
+                    <div style="padding:10px; font-size:0.6rem;"><b>#${i+1}</b> ${v.snippet.title.substring(0,40)}</div>
+                </div>
+            `).join('');
         }
 
-        function evaluarIntento(e) { if (e.key === 'Enter') { let vId = e.target.value.match(/[a-zA-Z0-9_-]{11}/); if (vId) ejecutarEspionaje(vId[0]); else buscarYT('RD'); } }
-
-        async function ejecutarEspionaje(vId) {
-            const resV = await fetch(
-            const v = (await resV.json()).items[0];
-            const views = Number(v.statistics.viewCount);
-            const dias = Math.max(Math.ceil((new Date() - new Date(v.snippet.publishedAt)) / (1000*60*60*24)), 1);
-            const vpd = Math.round(views / dias);
-
+        async function analizarVideo(id) {
+            if(!API_Y) return;
+            const res = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id=${id}&key=${API_Y}`);
+            const v = (await res.json()).items[0];
+            
             document.getElementById('vid-img').src = v.snippet.thumbnails.high.url;
-            document.getElementById('vid-title').innerText = v.snippet.title.toUpperCase();
-            document.getElementById('art-vpd').innerText = vpd.toLocaleString();
-            document.getElementById('art-tags-real').innerHTML = (v.snippet.tags || ["SIN TAGS"]).map(t => `<span class="tag-burbuja">${t.toUpperCase()}</span>`).join('');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.getElementById('target-id').innerText = v.id;
+            document.getElementById('target-name').innerText = v.snippet.channelTitle;
+            document.getElementById('stat-1').innerText = "CALC...";
+            
+            const tags = v.snippet.tags ? v.snippet.tags.map(t => `<span class="tag-burbuja">${t}</span>`).join('') : "NO TAGS";
+            document.getElementById('tags-container').innerHTML = tags;
         }
 
-        function descargarReporte() {
-            const blob = new Blob(["NVVEX REPORT MARZO 2026 - STATUS: DOMINANCIA TOTAL"], {type: "text/plain"});
-            const a = document.createElement("a");
-            a.href = URL.createObjectURL(blob);
-            a.download = "NVVEX-REPORT-MAR.txt";
-            a.click();
+        async function dispararRadar() {
+            console.log("Iniciando búsqueda de tendencias externas...");
+            // Lógica de Google Trends (Requiere API Key de SerpApi o similar en API_S)
         }
+
+        function evaluarEntrada(e) {
+            if (e.key === 'Enter') {
+                const val = e.target.value;
+                if(val.length > 5) analizarVideo(val);
+            }
+        }
+
+        function descargarLog() {
+            alert("Generando reporte de sesión NVVEX-MAR...");
+        }
+
     </script>
 </body>
 </html>
