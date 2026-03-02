@@ -349,7 +349,8 @@ async function procesarPuntosFlojos(regiones) {
     const artista = "Ozuna";
     let debilHtml = "";
     let inversionHtml = "";
-    const proxy = "https://corsproxy.io/?";
+    // Probamos con un proxy más robusto para leer el HTML que me enviaste
+    const proxy = "https://api.allorigins.win/raw?url=";
     const chartUrl = `https://kworb.net/itunes/artist/ozuna.html`; 
     
     let dbGlobal = {}; 
@@ -360,45 +361,56 @@ async function procesarPuntosFlojos(regiones) {
         const parser = new DOMParser();
         const doc = parser.parseFromString(html, "text/html");
         
-        // El cerebro analiza el texto completo para detectar canciones y rankings
-        const fullText = doc.body.innerText;
-        const lineas = fullText.split('\n');
-        let cancionActual = "Desconocida";
+        // 1. Buscamos todas las secciones de canciones (los TD que contienen la data)
+        const celdasData = doc.querySelectorAll('td[valign="top"]');
 
-        lineas.forEach(linea => {
-            const l = linea.trim();
-            // Detectar cuando pasamos por el nombre de una canción o álbum
-            if (l.length > 3 && l.length < 50 && !l.includes("#") && !l.includes(":")) {
-                cancionActual = l;
-            }
+        celdasData.forEach(celda => {
+            // Extraemos el nombre de la canción (está en un b dentro de wrap)
+            const wrap = celda.querySelector('.wrap b');
+            const cancionNombre = wrap ? wrap.innerText : "Catálogo";
 
-            // Capturar Ranking y País: Ej: "#12 Nicaragua"
-            const match = l.match(/#(\d+)\s+(.+)/);
-            if (match) {
-                const ranking = parseInt(match[1]);
-                const paisDetectado = match[2].trim().toUpperCase();
+            // Buscamos todas las líneas de ranking (los div con clase la, eu, etc.)
+            const lineasRanking = celda.querySelectorAll('div[class*="spo"], div[class*="app"], div[class*="itu"]');
 
-                for (let [nombreLargo, sigla] of Object.entries(PAISES)) {
-                    if (paisDetectado.includes(nombreLargo.toUpperCase())) {
-                        if (!dbGlobal[nombreLargo]) {
-                            dbGlobal[nombreLargo] = { mejor: 999, hit: "", plataforma: "Digital" };
-                        }
+            lineasRanking.forEach(linea => {
+                const texto = linea.innerText; // Ejemplo: "#117 Peru (+23)"
+                const match = texto.match(/#(\d+)\s+([^(\n]+)/);
 
-                        // Si este ranking es mejor que el que ya teníamos, guardamos la canción
-                        if (ranking < dbGlobal[nombreLargo].mejor) {
-                            dbGlobal[nombreLargo].mejor = ranking;
-                            dbGlobal[nombreLargo].hit = cancionActual;
+                if (match) {
+                    const ranking = parseInt(match[1]);
+                    const paisExtraido = match[2].trim().toUpperCase();
+
+                    // Mapeo con nuestra lista de países
+                    for (let [nombreLargo, sigla] of Object.entries(PAISES)) {
+                        if (paisExtraido.includes(nombreLargo.toUpperCase())) {
+                            
+                            if (!dbGlobal[nombreLargo]) {
+                                dbGlobal[nombreLargo] = { mejor: 999, hit: "", sp: "OUT", am: "OUT" };
+                            }
+
+                            // Identificar si es Spotify o Apple Music por la clase del padre
+                            const esSpotify = linea.closest('.spo') || linea.classList.contains('spo');
+                            const esApple = linea.closest('.app') || linea.classList.contains('app');
+
+                            if (ranking < dbGlobal[nombreLargo].mejor) {
+                                dbGlobal[nombreLargo].mejor = ranking;
+                                dbGlobal[nombreLargo].hit = cancionNombre;
+                            }
+
+                            if (esSpotify) dbGlobal[nombreLargo].sp = "#" + ranking;
+                            if (esApple) dbGlobal[nombreLargo].am = "#" + ranking;
                         }
                     }
                 }
-            }
+            });
         });
-    } catch (e) { console.error("Error en Sensor de Hits:", e); }
+    } catch (e) { console.error("Error en Sensor de HTML Real:", e); }
 
+    // RENDERIZADO DE LAS TARJETAS
     regiones.forEach((reg, index) => {
         const hype = reg.extracted_value;
         const paisNom = reg.location.toUpperCase();
-        const data = dbGlobal[paisNom] || { mejor: 0, hit: "N/A" };
+        const data = dbGlobal[paisNom] || { mejor: 0, hit: "N/A", sp: "OUT", am: "OUT" };
         const rankReal = data.mejor === 999 ? 0 : data.mejor;
 
         let status = "ESTABLE";
@@ -406,10 +418,10 @@ async function procesarPuntosFlojos(regiones) {
         let icon = "📡";
 
         if (rankReal > 0 && rankReal <= 50) {
-            status = "DOMINIO TOTAL";
+            status = "DOMINIO TOP 50";
             color = "var(--exito)";
             icon = "🔥";
-        } else if (rankReal > 50) {
+        } else if (rankReal > 0 && rankReal > 50) {
             status = `RANKING: #${rankReal}`;
             color = "#facc15"; 
             icon = "📈";
@@ -420,38 +432,31 @@ async function procesarPuntosFlojos(regiones) {
         }
 
         debilHtml += `
-            <div class="card-debil" style="border-left: 4px solid ${color}; background: rgba(0,0,0,0.6); margin-bottom:10px; padding:15px; border-radius:4px;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                    <span style="font-size:0.8rem; font-weight:800; color:white; letter-spacing:1px;">${icon} ${paisNom}</span>
+            <div class="card-debil" style="border-left: 4px solid ${color}; background: rgba(0,0,0,0.5); margin-bottom:10px; padding:12px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:0.8rem; font-weight:bold; color:white;">${icon} ${paisNom}</span>
                     <span style="background:${color}; color:${color==='#facc15'?'black':'white'}; font-size:0.55rem; padding:2px 6px; font-weight:bold; border-radius:2px;">${status}</span>
                 </div>
                 
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; font-size:0.7rem; margin-bottom:8px;">
-                    <div style="background:rgba(255,255,255,0.03); padding:5px; border-radius:3px;">
-                        <span style="color:#888; display:block; font-size:0.6rem;">INTERÉS CALLE</span>
-                        <b style="color:white; font-size:0.9rem;">${hype}%</b>
-                    </div>
-                    <div style="background:rgba(255,255,255,0.03); padding:5px; border-radius:3px;">
-                        <span style="color:#888; display:block; font-size:0.6rem;">BEST RANKING</span>
-                        <b style="color:${color}; font-size:0.9rem;">#${rankReal > 0 ? rankReal : 'OUT'}</b>
-                    </div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; margin-top:10px; font-size:0.75rem; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:8px;">
+                    <div style="color:#888;">GOOGLE HYPE: <b style="color:white;">${hype}%</b></div>
+                    <div style="color:#888;">BEST RANK: <b style="color:${color};">#${rankReal > 0 ? rankReal : 'OUT'}</b></div>
                 </div>
 
-                <div style="margin-top:5px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.1);">
-                    <span style="color:#888; font-size:0.6rem; display:block; margin-bottom:2px;">PUNTA DE LANZA (HIT ACTIVO):</span>
-                    <span style="color:#00f2ff; font-size:0.75rem; font-weight:bold; text-transform:uppercase;">${data.hit || "SIN REGISTRO"}</span>
+                <div style="display:flex; justify-content:space-between; margin-top:8px;">
+                    <div style="font-size:0.6rem; color:#aaa;">
+                        <span style="color:#1DB954;">SP:</span> ${data.sp} | <span style="color:#FA243C;">AM:</span> ${data.am}
+                    </div>
+                    <div style="font-size:0.6rem; color:#00f2ff; font-weight:bold;">${data.hit}</div>
                 </div>
             </div>`;
             
         if (index < 5) {
-            let accion = rankReal === 0 ? "INYECTAR CAPITAL AGRESIVO" : 
-                         rankReal > 50 ? "SUBIR PUJA EN ADS" : "MANTENER POSICIÓN";
-            
+            let accion = rankReal === 0 ? "INYECTAR CAPITAL AGRESIVO" : (rankReal > 50 ? "SUBIR PUJA" : "MANTENER");
             inversionHtml += `
-                <div class="gen-burbuja" style="border-left: 3px solid ${color}; margin-bottom:8px; background:rgba(255,255,255,0.02);">
+                <div class="gen-burbuja" style="border-left: 3px solid ${color}; padding:8px; background:rgba(255,255,255,0.02); margin-bottom:5px;">
                     <b style="color:${color}; font-size:0.7rem;">${paisNom} [#${rankReal > 0 ? rankReal : 'OUT'}]</b><br>
-                    <span style="font-size:0.6rem; color:#aaa;">ESTRATEGIA: ${accion}</span><br>
-                    <span style="font-size:0.6rem; color:#fff;">TARGET: ${data.hit}</span>
+                    <span style="font-size:0.6rem; color:#ccc;">HIT: ${data.hit} | ACCIÓN: ${accion}</span>
                 </div>`;
         }
     });
