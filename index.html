@@ -367,8 +367,7 @@ async function procesarPuntosFlojos(regiones) {
             'PARAGUAY': 'PY', 'URUGUAY': 'UY', 'VENEZUELA': 'VE'
         };
 
-        // Lista de temas que ya sabemos que son "viejos" para detectar los NUEVOS
-        const CATALOGO_VIEJO = ["ODISEA", "DILES", "LA OCASION", "DILE QUE TU ME QUIERES", "ADICTO", "HEY MOR", "SOBREDOSIS", "SACOLARE"];
+        const CATALOGO_VIEJO = ["ODISEA", "DILES", "LA OCASION", "DILE QUE TU ME QUIERES", "ADICTO", "HEY MOR", "SOBREDOSIS", "SE PREPARO"];
 
         Object.keys(MAPA_INTERNO).forEach(pais => {
             const regex = new RegExp(`#(\\d+)\\s+(${pais})`, 'g');
@@ -376,24 +375,32 @@ async function procesarPuntosFlojos(regiones) {
             
             while ((match = regex.exec(rawUpper)) !== null) {
                 const rankValue = parseInt(match[1]);
-                const fragmentoPrevio = html.substring(match.index - 600, match.index);
-                const songMatch = fragmentoPrevio.match(/<b>(.*?)<\/b>/g);
-                let songName = "CATÁLOGO";
                 
-                if (songMatch) {
-                    const rawName = songMatch[songMatch.length - 1].replace(/<\/?b>/g, "");
-                    songName = rawName.split(" - ")[0].toUpperCase().trim(); 
+                // ESCANEO DE NOMBRE REFORZADO (Buscamos más atrás para evitar el 'CATÁLOGO')
+                const fragmentoPrevio = html.substring(match.index - 1000, match.index);
+                const songMatches = fragmentoPrevio.match(/<b>(.*?)<\/b>/g);
+                let songName = "TRACK DESCONOCIDO";
+                
+                if (songMatches && songMatches.length > 0) {
+                    // Filtramos nombres que sean basura o solo el nombre del artista
+                    for (let i = songMatches.length - 1; i >= 0; i--) {
+                        let candidate = songMatches[i].replace(/<\/?b>/g, "").toUpperCase();
+                        if (candidate.length > 2 && !candidate.includes("OZUNA") && !candidate.includes("ARTIST")) {
+                            songName = candidate.split(" - ")[0].trim();
+                            break;
+                        }
+                    }
                     if(songName.length > 25) songName = songName.substring(0, 22) + "...";
                 }
 
-                const contexto = rawUpper.substring(match.index - 50, match.index);
+                const contexto = rawUpper.substring(match.index - 60, match.index);
                 let plataforma = contexto.includes("SPO") ? "SPOTIFY" : (contexto.includes("APP") ? "APPLE" : "ITUNES");
 
                 if (!dbGlobal[pais]) dbGlobal[pais] = { mejor: 999, hits: [] };
                 if (rankValue < dbGlobal[pais].mejor) dbGlobal[pais].mejor = rankValue;
 
-                // INTELIGENCIA DE DETECCIÓN: ¿Es nuevo?
-                const esNuevo = !CATALOGO_VIEJO.some(v => songName.includes(v)) && rankValue < 100;
+                // Si no está en la lista de viejos, es NEW
+                const esNuevo = !CATALOGO_VIEJO.some(v => songName.includes(v)) && rankValue < 150;
 
                 const yaExiste = dbGlobal[pais].hits.some(h => h.rank === rankValue && h.song === songName);
                 if (!yaExiste) {
@@ -402,7 +409,7 @@ async function procesarPuntosFlojos(regiones) {
             }
         });
 
-    } catch (e) { console.error("Error en el radar de estrenos:", e); }
+    } catch (e) { console.error("Error Radar:", e); }
 
     regiones.forEach((reg, index) => {
         const hype = reg.extracted_value;
@@ -418,10 +425,10 @@ async function procesarPuntosFlojos(regiones) {
         let hitsHtml = info.hits.length > 0 
             ? info.hits.sort((a,b) => a.rank - b.rank).slice(0, 8).map(h => `
                 <span style="display:inline-block; font-size:0.55rem; background:rgba(0,0,0,0.3); color:#eee; padding:3px 7px; margin:2px; border-radius:4px; border-bottom: 2px solid ${h.plat === 'SPOTIFY' ? '#1DB954' : '#FA243C'}">
-                    ${h.nuevo ? '<b style="color:#facc15; animation: blink 1s infinite;">NEW </b>' : ''}
+                    ${h.nuevo ? '<b style="color:#facc15;">NEW </b>' : ''}
                     <b style="color:${h.plat === 'SPOTIFY' ? '#1DB954' : '#FA243C'}">#${h.rank}</b> ${h.song}
                 </span>`).join("")
-            : "<span style='color:#666; font-size:0.6rem;'>SIN DATA DE STREAMING</span>";
+            : "<span style='color:#666; font-size:0.6rem;'>SIN DATA ACTUAL</span>";
 
         debilHtml += `
             <div class="card-debil" style="border-left: 4px solid ${color}; background: rgba(255,255,255,0.02); margin-bottom:12px; padding:15px; border-radius:10px;">
@@ -437,14 +444,16 @@ async function procesarPuntosFlojos(regiones) {
             </div>`;
             
         if (index < 6) {
+            let principal = info.hits.find(h => h.nuevo) || info.hits[0];
+            let tagTitle = principal ? principal.song : "CATÁLOGO";
             let esLanzamiento = info.hits.some(h => h.nuevo);
-            let accion = esLanzamiento ? "PROTEGER ESTRENO (ALL IN)" : (rankReal === 0 ? "INYECTAR CAPITAL" : "MANTENER");
+            
             inversionHtml += `
                 <div class="gen-burbuja" style="border-left: 3px solid ${esLanzamiento ? '#facc15' : color}; background:rgba(255,255,255,0.03); padding:10px; margin-bottom:8px;">
                     <b style="color:${esLanzamiento ? '#facc15' : color}; font-size:0.75rem;">${paisNom}</b>
                     <div style="font-size:0.6rem; color:#888; margin-top:4px;">
-                        ESTADO: <b style="color:white;">${esLanzamiento ? '¡LANZAMIENTO DETECTADO!' : 'ORGANICO'}</b><br>
-                        ACCIÓN: <b style="color:${esLanzamiento ? '#facc15' : '#fff'}">${accion}</b>
+                        TRACK: <b style="color:white;">${tagTitle}</b><br>
+                        ACCIÓN: <b style="color:${esLanzamiento ? '#facc15' : '#fff'}">${esLanzamiento ? 'PROTEGER ESTRENO' : 'INYECTAR CAPITAL'}</b>
                     </div>
                 </div>`;
         }
