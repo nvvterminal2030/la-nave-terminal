@@ -367,7 +367,8 @@ async function procesarPuntosFlojos(regiones) {
             'PARAGUAY': 'PY', 'URUGUAY': 'UY', 'VENEZUELA': 'VE'
         };
 
-        // ESCANEO QUIRÚRGICO DE CANCIONES Y POSICIONES
+        const CATALOGO_VIEJO = ["ODISEA", "DILES", "LA OCASION", "DILE QUE TU ME QUIERES", "ADICTO", "HEY MOR", "SOBREDOSIS", "SE PREPARO"];
+
         Object.keys(MAPA_INTERNO).forEach(pais => {
             const regex = new RegExp(`#(\\d+)\\s+(${pais})`, 'g');
             let match;
@@ -375,81 +376,84 @@ async function procesarPuntosFlojos(regiones) {
             while ((match = regex.exec(rawUpper)) !== null) {
                 const rankValue = parseInt(match[1]);
                 
-                // Buscamos el nombre del track en el HTML original (usando el índice del match)
-                const fragmentoPrevio = html.substring(match.index - 600, match.index);
-                const songMatch = fragmentoPrevio.match(/<b>(.*?)<\/b>/g);
-                let songName = "CATÁLOGO";
+                // ESCANEO DE NOMBRE REFORZADO (Buscamos más atrás para evitar el 'CATÁLOGO')
+                const fragmentoPrevio = html.substring(match.index - 1000, match.index);
+                const songMatches = fragmentoPrevio.match(/<b>(.*?)<\/b>/g);
+                let songName = "TRACK DESCONOCIDO";
                 
-                if (songMatch) {
-                    // Limpiamos el nombre de la canción quitando etiquetas <b>
-                    const rawName = songMatch[songMatch.length - 1].replace(/<\/?b>/g, "");
-                    songName = rawName.split(" - ")[0].toUpperCase().trim(); 
+                if (songMatches && songMatches.length > 0) {
+                    // Filtramos nombres que sean basura o solo el nombre del artista
+                    for (let i = songMatches.length - 1; i >= 0; i--) {
+                        let candidate = songMatches[i].replace(/<\/?b>/g, "").toUpperCase();
+                        if (candidate.length > 2 && !candidate.includes("OZUNA") && !candidate.includes("ARTIST")) {
+                            songName = candidate.split(" - ")[0].trim();
+                            break;
+                        }
+                    }
                     if(songName.length > 25) songName = songName.substring(0, 22) + "...";
                 }
 
-                const contexto = rawUpper.substring(match.index - 50, match.index);
+                const contexto = rawUpper.substring(match.index - 60, match.index);
                 let plataforma = contexto.includes("SPO") ? "SPOTIFY" : (contexto.includes("APP") ? "APPLE" : "ITUNES");
 
                 if (!dbGlobal[pais]) dbGlobal[pais] = { mejor: 999, hits: [] };
                 if (rankValue < dbGlobal[pais].mejor) dbGlobal[pais].mejor = rankValue;
 
-                // Evitamos meter la misma canción dos veces para el mismo ranking
+                // Si no está en la lista de viejos, es NEW
+                const esNuevo = !CATALOGO_VIEJO.some(v => songName.includes(v)) && rankValue < 150;
+
                 const yaExiste = dbGlobal[pais].hits.some(h => h.rank === rankValue && h.song === songName);
                 if (!yaExiste) {
-                    dbGlobal[pais].hits.push({ plat: plataforma, rank: rankValue, song: songName });
+                    dbGlobal[pais].hits.push({ plat: plataforma, rank: rankValue, song: songName, nuevo: esNuevo });
                 }
             }
         });
 
-    } catch (e) { console.error("Falla en el Satélite Hunter:", e); }
+    } catch (e) { console.error("Error Radar:", e); }
 
-    // RENDERIZADO VISUAL DEL REPORTE
     regiones.forEach((reg, index) => {
         const hype = reg.extracted_value;
         const paisNom = reg.location.toUpperCase();
         const info = dbGlobal[paisNom] || { mejor: 999, hits: [] };
         const rankReal = info.mejor === 999 ? 0 : info.mejor;
 
-        // Definición de Status y Colores
         let status = "ESTABLE"; let color = "var(--cyan)"; let icon = "📡";
         if (rankReal > 0 && rankReal <= 50) { status = "DOMINIO TOP 50"; color = "var(--exito)"; icon = "🔥"; }
         else if (rankReal > 50) { status = `RANK #${rankReal}`; color = "#facc15"; icon = "📈"; }
         else if (hype > 55 && rankReal === 0) { status = "FUGA CRÍTICA"; color = "var(--red)"; icon = "🚨"; }
 
-        // Generar etiquetas de canciones (Hits)
         let hitsHtml = info.hits.length > 0 
             ? info.hits.sort((a,b) => a.rank - b.rank).slice(0, 8).map(h => `
                 <span style="display:inline-block; font-size:0.55rem; background:rgba(0,0,0,0.3); color:#eee; padding:3px 7px; margin:2px; border-radius:4px; border-bottom: 2px solid ${h.plat === 'SPOTIFY' ? '#1DB954' : '#FA243C'}">
+                    ${h.nuevo ? '<b style="color:#facc15;">NEW </b>' : ''}
                     <b style="color:${h.plat === 'SPOTIFY' ? '#1DB954' : '#FA243C'}">#${h.rank}</b> ${h.song}
                 </span>`).join("")
-            : "<span style='color:#666; font-size:0.6rem; padding-left:5px;'>SIN DATA DE STREAMING ACTUAL</span>";
+            : "<span style='color:#666; font-size:0.6rem;'>SIN DATA ACTUAL</span>";
 
         debilHtml += `
             <div class="card-debil" style="border-left: 4px solid ${color}; background: rgba(255,255,255,0.02); margin-bottom:12px; padding:15px; border-radius:10px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                    <span style="font-size:0.8rem; font-weight:bold; letter-spacing:1px; color:white;">${icon} ${paisNom}</span>
-                    <span style="background:${color}; color:${color==='#facc15'?'black':'white'}; font-size:0.55rem; padding:3px 8px; font-weight:900; border-radius:3px; text-transform:uppercase;">${status}</span>
+                    <span style="font-size:0.8rem; font-weight:bold; color:white;">${icon} ${paisNom}</span>
+                    <span style="background:${color}; color:${color==='#facc15'?'black':'white'}; font-size:0.55rem; padding:3px 8px; font-weight:900; border-radius:3px;">${status}</span>
                 </div>
                 <div style="display:grid; grid-template-columns: 1fr 1fr; margin-bottom:10px; font-size:0.75rem;">
-                    <div style="color:#aaa;">INTERÉS GOOGLE: <b style="color:white;">${hype}%</b></div>
-                    <div style="color:#aaa;">MEJOR PUESTO: <b style="color:${color};">#${rankReal > 0 ? rankReal : 'OUT'}</b></div>
+                    <div style="color:#aaa;">HYPE GOOGLE: <b style="color:white;">${hype}%</b></div>
+                    <div style="color:#aaa;">TOP RANK: <b style="color:${color};">#${rankReal > 0 ? rankReal : 'OUT'}</b></div>
                 </div>
                 <div style="display:flex; flex-wrap:wrap; gap:2px;">${hitsHtml}</div>
             </div>`;
             
-        // Estrategia de Inversión (Lado Derecho)
         if (index < 6) {
-            let accion = rankReal === 0 ? "INYECTAR CAPITAL" : (rankReal < 50 ? "MANTENER DOMINIO" : "REFORZAR PUJA");
-            let targetSong = info.hits[0] ? info.hits[0].song : "CATÁLOGO GLOBAL";
+            let principal = info.hits.find(h => h.nuevo) || info.hits[0];
+            let tagTitle = principal ? principal.song : "CATÁLOGO";
+            let esLanzamiento = info.hits.some(h => h.nuevo);
+            
             inversionHtml += `
-                <div class="gen-burbuja" style="border-left: 3px solid ${color}; background:rgba(255,255,255,0.03); padding:10px; margin-bottom:8px;">
-                    <div style="display:flex; justify-content:space-between;">
-                        <b style="color:${color}; font-size:0.75rem;">${paisNom}</b>
-                        <b style="color:white; font-size:0.7rem;">#${rankReal > 0 ? rankReal : 'OUT'}</b>
-                    </div>
+                <div class="gen-burbuja" style="border-left: 3px solid ${esLanzamiento ? '#facc15' : color}; background:rgba(255,255,255,0.03); padding:10px; margin-bottom:8px;">
+                    <b style="color:${esLanzamiento ? '#facc15' : color}; font-size:0.75rem;">${paisNom}</b>
                     <div style="font-size:0.6rem; color:#888; margin-top:4px;">
-                        TARGET: <span style="color:white;">${targetSong}</span><br>
-                        ACCIÓN: <b style="color:${color === 'var(--red)' ? 'var(--red)' : '#fff'}">${accion}</b>
+                        TRACK: <b style="color:white;">${tagTitle}</b><br>
+                        ACCIÓN: <b style="color:${esLanzamiento ? '#facc15' : '#fff'}">${esLanzamiento ? 'PROTEGER ESTRENO' : 'INYECTAR CAPITAL'}</b>
                     </div>
                 </div>`;
         }
@@ -458,6 +462,11 @@ async function procesarPuntosFlojos(regiones) {
     document.getElementById('lista-debilidades-MAR').innerHTML = debilHtml;
     document.getElementById('orden-ejecucion-MAR').innerHTML = inversionHtml;
 }
+
+// Estilo para el parpadeo de "NEW"
+const style = document.createElement('style');
+style.innerHTML = `@keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }`;
+document.head.appendChild(style);
     </script>
 </body>
 </html>
