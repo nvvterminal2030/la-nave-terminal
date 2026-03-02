@@ -349,79 +349,76 @@ async function procesarPuntosFlojos(regiones) {
     let debilHtml = "";
     let inversionHtml = "";
     const proxy = "https://api.allorigins.win/raw?url=";
-    const chartUrl = `https://kworb.net/itunes/artist/ozuna.html`; 
     
+    // URLs DUALES: Perfil de Ozuna + Chart Global
+    const urlArtista = `https://kworb.net/itunes/artist/ozuna.html`;
+    const urlGlobal = `https://kworb.net/itunes/`; // Página principal de rankings mundiales
+
     let dbGlobal = {}; 
 
-    try {
-        const response = await fetch(proxy + encodeURIComponent(chartUrl));
-        const html = await response.text();
-        const rawUpper = html.toUpperCase();
+    async function escanearUrl(url) {
+        try {
+            const response = await fetch(proxy + encodeURIComponent(url));
+            const html = await response.text();
+            const rawUpper = html.toUpperCase();
 
-        const MAPA_INTERNO = {
-            'DOMINICAN REPUBLIC': 'DO', 'PUERTO RICO': 'PR', 'UNITED STATES': 'US',
-            'MEXICO': 'MX', 'COLOMBIA': 'CO', 'ARGENTINA': 'AR', 'CHILE': 'CL',
-            'SPAIN': 'ES', 'PERU': 'PE', 'ECUADOR': 'EC', 'GUATEMALA': 'GT',
-            'HONDURAS': 'HN', 'EL SALVADOR': 'SV', 'NICARAGUA': 'NI',
-            'COSTA RICA': 'CR', 'PANAMA': 'PA', 'BOLIVIA': 'BO',
-            'PARAGUAY': 'PY', 'URUGUAY': 'UY', 'VENEZUELA': 'VE'
-        };
+            const MAPA_INTERNO = {
+                'DOMINICAN REPUBLIC': 'DO', 'PUERTO RICO': 'PR', 'UNITED STATES': 'US',
+                'MEXICO': 'MX', 'COLOMBIA': 'CO', 'ARGENTINA': 'AR', 'CHILE': 'CL',
+                'SPAIN': 'ES', 'PERU': 'PE', 'ECUADOR': 'EC', 'GUATEMALA': 'GT',
+                'HONDURAS': 'HN', 'EL SALVADOR': 'SV', 'NICARAGUA': 'NI',
+                'COSTA RICA': 'CR', 'PANAMA': 'PA', 'BOLIVIA': 'BO',
+                'PARAGUAY': 'PY', 'URUGUAY': 'UY', 'VENEZUELA': 'VE'
+            };
 
-        const CATALOGO_VIEJO = ["ODISEA", "DILES", "LA OCASION", "DILE QUE TU ME QUIERES", "ADICTO", "HEY MOR", "SOBREDOSIS", "SE PREPARO", "EL FARSANTE"];
+            const CATALOGO_VIEJO = ["ODISEA", "DILES", "LA OCASION", "DILE QUE TU ME QUIERES", "ADICTO", "HEY MOR", "SOBREDOSIS", "SE PREPARO", "EL FARSANTE"];
 
-        Object.keys(MAPA_INTERNO).forEach(pais => {
-            const regex = new RegExp(`#(\\d+)\\s+(${pais})`, 'g');
-            let match;
-            
-            while ((match = regex.exec(rawUpper)) !== null) {
-                const rankValue = parseInt(match[1]);
+            Object.keys(MAPA_INTERNO).forEach(pais => {
+                // Buscamos el patrón: #Ranking PAIS (donde Ozuna esté cerca)
+                const regex = new RegExp(`#(\\d+)\\s+(${pais})`, 'g');
+                let match;
                 
-                // BUSQUEDA ULTRA-PROFUNDA: Retrocedemos 1200 caracteres para atrapar el nombre del Track
-                const fragmentoPrevio = html.substring(Math.max(0, match.index - 1200), match.index);
-                
-                // Buscamos todas las etiquetas <b> y seleccionamos la que parece ser el título
-                const songMatches = fragmentoPrevio.match(/<b>(.*?)<\/b>/g);
-                let songName = "REVISAR DATA"; 
+                while ((match = regex.exec(rawUpper)) !== null) {
+                    const rankValue = parseInt(match[1]);
+                    const fragmentoPrevio = html.substring(Math.max(0, match.index - 1500), match.index + 500);
+                    
+                    // Solo guardamos si Ozuna aparece en este bloque de la canción
+                    if (fragmentoPrevio.toUpperCase().includes("OZUNA")) {
+                        const songMatches = fragmentoPrevio.match(/<b>(.*?)<\/b>/g);
+                        let songName = "REVISAR DATA"; 
 
-                if (songMatches) {
-                    for (let i = songMatches.length - 1; i >= 0; i--) {
-                        let candidate = songMatches[i].replace(/<\/?b>/g, "").trim();
-                        // Filtramos para que no sea solo el nombre de Ozuna o palabras vacías
-                        if (candidate.length > 2 && 
-                            candidate.toUpperCase() !== "OZUNA" && 
-                            !candidate.includes("Artist") && 
-                            !candidate.includes("Total") &&
-                            !candidate.includes("Worldwide")) {
-                            
-                            // Si contiene un "-", tomamos la parte de la canción (el final habitualmente)
-                            if (candidate.includes(" - ")) {
-                                let parts = candidate.split(" - ");
-                                songName = parts[parts.length - 1].toUpperCase();
-                            } else {
-                                songName = candidate.toUpperCase();
+                        if (songMatches) {
+                            for (let i = songMatches.length - 1; i >= 0; i--) {
+                                let candidate = songMatches[i].replace(/<\/?b>/g, "").trim();
+                                if (candidate.length > 2 && candidate.toUpperCase() !== "OZUNA" && !candidate.includes("Artist") && !candidate.includes("Total")) {
+                                    songName = candidate.includes(" - ") ? candidate.split(" - ")[candidate.split(" - ").length - 1].toUpperCase() : candidate.toUpperCase();
+                                    break;
+                                }
                             }
-                            break;
+                        }
+
+                        const contexto = rawUpper.substring(match.index - 80, match.index);
+                        let plataforma = contexto.includes("SPO") ? "SPOTIFY" : (contexto.includes("APP") ? "APPLE" : "ITUNES");
+
+                        if (!dbGlobal[pais]) dbGlobal[pais] = { mejor: 999, hits: [] };
+                        if (rankValue < dbGlobal[pais].mejor) dbGlobal[pais].mejor = rankValue;
+
+                        const esNuevo = !CATALOGO_VIEJO.some(v => songName.includes(v)) && rankValue < 150;
+                        const yaExiste = dbGlobal[pais].hits.some(h => h.rank === rankValue && h.song === songName);
+                        
+                        if (!yaExiste) {
+                            dbGlobal[pais].hits.push({ plat: plataforma, rank: rankValue, song: songName, nuevo: esNuevo });
                         }
                     }
                 }
+            });
+        } catch (e) { console.error("Error en escaneo:", url, e); }
+    }
 
-                const contexto = rawUpper.substring(match.index - 60, match.index);
-                let plataforma = contexto.includes("SPO") ? "SPOTIFY" : (contexto.includes("APP") ? "APPLE" : "ITUNES");
+    // Ejecutamos ambos escaneos en paralelo
+    await Promise.all([escanearUrl(urlArtista), escanearUrl(urlGlobal)]);
 
-                if (!dbGlobal[pais]) dbGlobal[pais] = { mejor: 999, hits: [] };
-                if (rankValue < dbGlobal[pais].mejor) dbGlobal[pais].mejor = rankValue;
-
-                const esNuevo = !CATALOGO_VIEJO.some(v => songName.includes(v)) && rankValue < 150;
-
-                const yaExiste = dbGlobal[pais].hits.some(h => h.rank === rankValue && h.song === songName);
-                if (!yaExiste) {
-                    dbGlobal[pais].hits.push({ plat: plataforma, rank: rankValue, song: songName, nuevo: esNuevo });
-                }
-            }
-        });
-
-    } catch (e) { console.error("Error Hunter:", e); }
-
+    // RENDERIZADO (El resto del código de visualización se mantiene igual)
     regiones.forEach((reg, index) => {
         const hype = reg.extracted_value;
         const paisNom = reg.location.toUpperCase();
@@ -434,7 +431,7 @@ async function procesarPuntosFlojos(regiones) {
         else if (hype > 55 && rankReal === 0) { status = "FUGA CRÍTICA"; color = "var(--red)"; icon = "🚨"; }
 
         let hitsHtml = info.hits.length > 0 
-            ? info.hits.sort((a,b) => a.rank - b.rank).slice(0, 8).map(h => `
+            ? info.hits.sort((a,b) => a.rank - b.rank).slice(0, 10).map(h => `
                 <span style="display:inline-block; font-size:0.55rem; background:rgba(0,0,0,0.3); color:#eee; padding:3px 7px; margin:2px; border-radius:4px; border-bottom: 2px solid ${h.plat === 'SPOTIFY' ? '#1DB954' : '#FA243C'}">
                     ${h.nuevo ? '<b style="color:#facc15; animation: blink 1s infinite;">NEW </b>' : ''}
                     <b style="color:${h.plat === 'SPOTIFY' ? '#1DB954' : '#FA243C'}">#${h.rank}</b> ${h.song}
@@ -457,14 +454,12 @@ async function procesarPuntosFlojos(regiones) {
         if (index < 6) {
             let principal = info.hits.find(h => h.nuevo) || info.hits[0];
             let tagTitle = principal ? principal.song : "CATÁLOGO";
-            let esLanzamiento = info.hits.some(h => h.nuevo);
-            
             inversionHtml += `
-                <div class="gen-burbuja" style="border-left: 3px solid ${esLanzamiento ? '#facc15' : color}; background:rgba(255,255,255,0.03); padding:10px; margin-bottom:8px;">
-                    <b style="color:${esLanzamiento ? '#facc15' : color}; font-size:0.75rem;">${paisNom}</b>
+                <div class="gen-burbuja" style="border-left: 3px solid ${info.hits.some(h=>h.nuevo) ? '#facc15' : color}; background:rgba(255,255,255,0.03); padding:10px; margin-bottom:8px;">
+                    <b style="color:${info.hits.some(h=>h.nuevo) ? '#facc15' : color}; font-size:0.75rem;">${paisNom}</b>
                     <div style="font-size:0.6rem; color:#888; margin-top:4px;">
                         TRACK: <b style="color:white;">${tagTitle}</b><br>
-                        ACCIÓN: <b style="color:${esLanzamiento ? '#facc15' : '#fff'}">${esLanzamiento ? 'PROTEGER ESTRENO' : 'INYECTAR CAPITAL'}</b>
+                        ACCIÓN: <b style="color:${info.hits.some(h=>h.nuevo) ? '#facc15' : '#fff'}">${info.hits.some(h=>h.nuevo) ? 'PROTEGER ESTRENO' : 'INYECTAR CAPITAL'}</b>
                     </div>
                 </div>`;
         }
@@ -473,7 +468,6 @@ async function procesarPuntosFlojos(regiones) {
     document.getElementById('lista-debilidades-MAR').innerHTML = debilHtml;
     document.getElementById('orden-ejecucion-MAR').innerHTML = inversionHtml;
 }
-
 // Estilo para el parpadeo de "NEW"
 const style = document.createElement('style');
 style.innerHTML = `@keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }`;
