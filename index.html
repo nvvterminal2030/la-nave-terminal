@@ -164,117 +164,98 @@
         }
 
        // --- BLOQUE 05: AUDITORÍA DE CONVERSIÓN REAL (DATOS KWORB -MAR) ---
-// --- SUSTITUYE TU FUNCIÓN auditoriaDeAsalto POR ESTA VERSIÓN MILITAR ---
 async function auditoriaDeAsalto(query) {
-    const proxy = "https://corsproxy.io/?";
-    // Target directo a la matriz global de Ozuna en Kworb
-    const urlKworb = `https://kworb.net/itunes/artist/ozuna.html`; 
-    
     const listaDebilidades = document.getElementById('lista-debilidades-MAR');
     const ordenEjecucion = document.getElementById('orden-ejecucion-MAR');
     const alerta = document.getElementById('alert-prioridad-MAR');
     
-    listaDebilidades.innerHTML = "<div class='gen-burbuja'>CONECTANDO SATÉLITE CON KWORB...</div>";
+    // Reset de interfaz
+    listaDebilidades.innerHTML = "<div class='gen-burbuja' style='border-color:var(--cyan)'>EXTRAYENDO DATA DE GOOGLE CLOUD (SERP)...</div>";
+    alerta.innerText = "RASTREANDO POSICIONES GLOBALES...";
+
+    // ESTRATEGIA: Buscamos específicamente en Kworb a través de SerpApi (Cero bloqueos)
+    const targetQuery = `site:kworb.net ${query} charts`;
+    const searchUrl = `https://serpapi.com/search.json?engine=google&q=${encodeURIComponent(targetQuery)}&api_key=${API_KEY_SERP}`;
 
     try {
-        const response = await fetch(proxy + encodeURIComponent(urlKworb));
-        const html = await response.text();
+        const response = await fetch(searchUrl);
+        const data = await response.json();
         
-        // Creamos un dom temporal para extraer el texto limpio
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = html;
-        const textoBruto = tempDiv.innerText;
-
-        // Dividimos el contenido por bloques de texto (Canciones/Álbumes)
-        const bloques = textoBruto.split('\n\n');
         let htmlRanking = "";
         let htmlEstrategia = "";
-        let plataformaActual = "CHARTS";
         let encontrados = 0;
         let puntosRojos = 0;
 
-        // Si el usuario no escribe nada, por defecto buscamos todo de Ozuna
-        const targetSearch = query ? query.toUpperCase() : "OZUNA";
-
-        bloques.forEach(bloque => {
-            const lineas = bloque.split('\n');
-            
-            // Verificamos si este bloque pertenece a lo que el usuario buscó
-            if (bloque.toUpperCase().includes(targetSearch)) {
+        if (data.organic_results) {
+            data.organic_results.forEach(result => {
+                const textParaAnalizar = (result.title + " " + result.snippet).toUpperCase();
                 
-                lineas.forEach(linea => {
-                    linea = linea.trim();
+                // Buscamos el patrón #Número seguido de un país (ej: #12 Spain o #5 Mexico)
+                const regexCharts = /#(\d+)\s+([A-ZÁÉÍÓÚÑ\s]{3,20})/g;
+                let match;
 
-                    // 1. Detectar cambio de plataforma en el texto
-                    if (linea.includes('Spotify:') || linea.includes('Apple Music:') || linea.includes('iTunes:')) {
-                        plataformaActual = linea.replace(':', '').toUpperCase();
-                    }
+                while ((match = regexCharts.exec(textParaAnalizar)) !== null) {
+                    const rank = parseInt(match[1]);
+                    const paisInfo = match[2].trim();
 
-                    // 2. Detectar Ranking real (Formato: #123 Pais)
-                    if (linea.startsWith('#')) {
-                        const partes = linea.match(/#(\d+)\s+(.+)/);
-                        if (partes) {
-                            encontrados++;
-                            const rank = parseInt(partes[1]);
-                            const pais = partes[2].trim();
+                    if (rank > 0 && rank <= 200) {
+                        encontrados++;
+                        let colorStatus, statusTxt;
 
-                            // Definir colores por posición real
-                            let colorStatus = "var(--exito)"; // Top 50
-                            let statusTxt = "DOMINIO";
-                            
-                            if (rank > 50 && rank <= 100) {
-                                colorStatus = "var(--cyan)";
-                                statusTxt = "DISPUTA";
-                            } else if (rank > 100) {
-                                colorStatus = "var(--red)";
-                                statusTxt = "CRÍTICO";
-                                puntosRojos++;
-                            }
+                        if (rank <= 50) {
+                            colorStatus = "var(--exito)";
+                            statusTxt = "DOMINIO";
+                        } else if (rank <= 100) {
+                            colorStatus = "var(--cyan)";
+                            statusTxt = "DISPUTA";
+                        } else {
+                            colorStatus = "var(--red)";
+                            statusTxt = "CRÍTICO";
+                            puntosRojos++;
+                        }
 
-                            // Renderizar tarjeta de posición real
-                            htmlRanking += `
-                                <div class="card-debil" style="border-left: 4px solid ${colorStatus}; background: rgba(255,255,255,0.02); margin-bottom:8px;">
-                                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                                        <span style="font-size:0.6rem; color:#888; font-weight:bold;">${plataformaActual}</span>
-                                        <b style="font-size:0.7rem; color:white; letter-spacing:1px;">${pais.toUpperCase()}</b>
-                                    </div>
-                                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:5px;">
-                                        <span style="font-size:1.8rem; font-weight:900; color:white; text-shadow: 0 0 10px ${colorStatus}">#${rank}</span>
-                                        <span class="badge-alerta" style="background:${colorStatus}; color:black; font-size:0.55rem;">${statusTxt}</span>
-                                    </div>
+                        // Render de la tarjeta de posición
+                        htmlRanking += `
+                            <div class="card-debil" style="border-left: 4px solid ${colorStatus}; background: rgba(255,255,255,0.02); margin-bottom:8px; padding: 15px;">
+                                <div style="display:flex; justify-content:space-between; align-items:center;">
+                                    <span style="font-size:0.6rem; color:var(--morado-neon); font-weight:bold;">SISTEMA NVVEX</span>
+                                    <b style="font-size:0.75rem; color:white;">${paisInfo}</b>
+                                </div>
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
+                                    <span style="font-size:2rem; font-weight:900; color:white; text-shadow: 0 0 15px ${colorStatus}">#${rank}</span>
+                                    <span class="badge-alerta" style="background:${colorStatus}; color:black; padding: 2px 8px; border-radius:4px; font-size:0.6rem;">${statusTxt}</span>
+                                </div>
+                            </div>
+                        `;
+
+                        // Generar orden de ataque automática
+                        if (rank > 80) {
+                            htmlEstrategia += `
+                                <div class="gen-burbuja" style="border-left: 3px solid var(--red); margin-bottom:10px;">
+                                    <b style="color:var(--red)">APRETAR ${paisInfo}:</b> Puesto #${rank}. Nodo perdiendo fuerza. Se requiere bombardeo de ads/playlist.
                                 </div>
                             `;
-
-                            // 3. Generar Estrategia de Asalto (Solo para posiciones débiles o fuera de Top 100)
-                            if (rank > 100) {
-                                htmlEstrategia += `
-                                    <div class="gen-burbuja" style="border-left: 3px solid var(--red); font-size:0.65rem;">
-                                        <b style="color:var(--red)">APRETAR ${pais.toUpperCase()}:</b> Estamos en el puesto #${rank} en ${plataformaActual}. Nodo perdiendo impacto global.
-                                    </div>
-                                `;
-                            }
                         }
                     }
-                });
-            }
-        });
+                }
+            });
+        }
 
-        // Actualizar Interfaz con data real
+        // Si no encuentra nada en la primera pasada, intentamos con un término más general
         if (encontrados === 0) {
-            listaDebilidades.innerHTML = `<p style="font-size:0.7rem; color:var(--red);">EL OBJETIVO "${targetSearch}" NO ESTÁ EN CHARTS ACTUALMENTE.</p>`;
-            ordenEjecucion.innerHTML = "<p style='font-size:0.7rem;'>SIN COORDENADAS DE ATAQUE.</p>";
-            alerta.innerText = "SATÉLITE EN ESPERA";
+            listaDebilidades.innerHTML = `<div class='gen-burbuja' style='border-color:var(--red)'>NO SE DETECTAN CHARTS ACTIVOS PARA "${query.toUpperCase()}"</div>`;
+            ordenEjecucion.innerHTML = "<p style='font-size:0.7rem;'>OBJETIVO FUERA DE RADAR (TOP 200).</p>";
+            alerta.innerText = "ESTATUS: FRÍO";
         } else {
             listaDebilidades.innerHTML = htmlRanking;
-            ordenEjecucion.innerHTML = htmlEstrategia || "<div class='gen-burbuja' style='border-color:var(--exito)'>DOMINIO TOTAL: No se detectan puntos de presión.</div>";
-            alerta.innerText = `SISTEMA ACTIVO: ${encontrados} POSICIONES REALES DETECTADAS | ${puntosRojos} CRÍTICOS`;
-            alerta.style.borderColor = puntosRojos > 0 ? "var(--red)" : "var(--cyan)";
+            ordenEjecucion.innerHTML = htmlEstrategia || "<div class='gen-burbuja' style='border-color:var(--exito)'>DOMINIO GLOBAL: Sin puntos de debilidad detectados.</div>";
+            alerta.innerText = `TOTAL: ${encontrados} POSICIONES | ${puntosRojos} ALERTAS ROJAS`;
             alerta.style.color = puntosRojos > 0 ? "var(--red)" : "var(--cyan)";
         }
 
     } catch (error) {
-        console.error(error);
-        listaDebilidades.innerHTML = "<p style='color:var(--red)'>FALLO EN EL ENLACE DE DATOS KWORB</p>";
+        console.error("Error en Satélite:", error);
+        listaDebilidades.innerHTML = "<div class='gen-burbuja' style='border-color:var(--red)'>FALLO DE CONEXIÓN CON SERP-API</div>";
     }
 }
 
