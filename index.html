@@ -166,13 +166,13 @@
        // --- BLOQUE 05: AUDITORÍA DE CONVERSIÓN REAL (DATOS KWORB -MAR) ---
 async function auditoriaDeAsalto(query) {
     const proxy = "https://corsproxy.io/?";
-    // Kworb centraliza los charts globales aquí
     const urlKworb = `https://kworb.net/itunes/artist/ozuna.html`; 
     
     const listaDebilidades = document.getElementById('lista-debilidades-MAR');
     const ordenEjecucion = document.getElementById('orden-ejecucion-MAR');
+    const alerta = document.getElementById('alert-prioridad-MAR');
     
-    listaDebilidades.innerHTML = "<div class='gen-burbuja'>ESCANEO DE CHARTS EN VIVO...</div>";
+    listaDebilidades.innerHTML = "<div class='gen-burbuja'>EXTRAYENDO CHARTS EN TIEMPO REAL...</div>";
 
     try {
         const response = await fetch(proxy + encodeURIComponent(urlKworb));
@@ -180,69 +180,66 @@ async function auditoriaDeAsalto(query) {
         const parser = new DOMParser();
         const doc = parser.parseFromString(html, 'text/html');
         
-        const filas = doc.querySelectorAll('tr');
+        // Buscamos el contenedor de texto donde Kworb escupe los rankings (clase "large")
+        const bodyText = doc.querySelector('.large')?.innerText || "";
+        
+        // Expresión regular para detectar: Plataforma: #Puesto Pais (Cambio)
+        // Ejemplo: "Apple Music: #62 Argentina (+29)"
+        const regexRanking = /(Spotify|Apple Music|iTunes):\s#(\d+)\s([\w\s]+?)\s\((.+?)\)/g;
+        
+        let match;
         let htmlRanking = "";
         let htmlEstrategia = "";
         let count = 0;
 
-        filas.forEach((fila) => {
-            const celdas = fila.querySelectorAll('td');
-            if (celdas.length >= 2) {
-                const infoTotal = celdas[0].innerText.toUpperCase(); // Ej: "SPAIN - SPOTIFY #120"
-                const mov = celdas[1].innerText.trim(); // El cambio (+5, -2, NEW)
+        while ((match = regexRanking.exec(bodyText)) !== null) {
+            const plataforma = match[1];
+            const rank = parseInt(match[2]);
+            const pais = match[3].trim();
+            const cambio = match[4]; // Ej: "+29", "-10", "NE" (New Entry)
 
-                // Filtramos por la canción que buscaste o mostramos todo lo de Ozuna
-                if (infoTotal.includes(query.toUpperCase()) || query.toUpperCase() === "OZUNA") {
-                    const partes = infoTotal.split('#');
-                    const localizacion = partes[0].trim(); // Pais + Plataforma
-                    const rankActual = parseInt(partes[1]);
+            // Filtrar solo si el país es relevante o si queremos ver todo de Ozuna
+            if (count < 20) { // Limitamos a los top 20 movimientos para no saturar
+                
+                let colorMov = cambio.includes('+') ? "var(--exito)" : (cambio.includes('-') ? "var(--red)" : "var(--cyan)");
+                let status = rank <= 50 ? "DOMINANDO" : (rank <= 150 ? "DISPUTA" : "CRÍTICO");
+                let colorStatus = rank <= 50 ? "var(--exito)" : "var(--red)";
 
-                    // DETERMINAR SI ESTÁ FLOJO (Realidad NVVEX: > 100 es zona de peligro)
-                    const estaFlojo = rankActual > 100;
-                    const esSpotify = infoTotal.includes('SPOTIFY');
-                    const colorPlataforma = esSpotify ? 'var(--exito)' : 'var(--cyan)';
-                    const colorBorde = estaFlojo ? 'var(--red)' : colorPlataforma;
+                htmlRanking += `
+                    <div class="card-debil" style="border-left: 4px solid ${colorStatus}; background: rgba(0,0,0,0.3); margin-bottom:10px; padding:10px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span style="font-size:0.6rem; color:#aaa; font-weight:bold;">${plataforma.toUpperCase()}</span>
+                            <b style="font-size:0.7rem; color:white;">${pais}</b>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:5px;">
+                            <span style="font-size:1.8rem; font-weight:900; color:white; text-shadow: 0 0 10px ${colorStatus}">#${rank}</span>
+                            <span style="color:${colorMov}; font-weight:bold; font-size:0.8rem;">${cambio}</span>
+                        </div>
+                    </div>
+                `;
 
-                    htmlRanking += `
-                        <div class="card-debil" style="border-left: 4px solid ${colorBorde}">
-                            <div style="display:flex; justify-content:space-between;">
-                                <b style="font-size:0.7rem; color:white;">${localizacion}</b>
-                                <span class="badge-alerta" style="background:${estaFlojo ? 'var(--red)' : 'var(--exito)'}">
-                                    ${estaFlojo ? 'FLOJO' : 'DOMINANDO'}
-                                </span>
-                            </div>
-                            <div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center;">
-                                <span style="font-size:1.2rem; font-weight:bold; color:white;">#${rankActual}</span>
-                                <span style="font-size:0.6rem; color:${mov.includes('+') ? 'var(--exito)' : 'var(--red)'}">
-                                    MOV: ${mov || 'STABLE'}
-                                </span>
-                            </div>
+                // LOGICA DE DONDE APRETAR
+                if (cambio.includes('-') || rank > 100) {
+                    htmlEstrategia += `
+                        <div class="gen-burbuja" style="border-left: 3px solid var(--red); font-size:0.6rem; margin-bottom:5px;">
+                            <b>APRETAR EN ${pais}:</b> Bajamos ${cambio}. Reforzar playlisting en ${plataforma}.
                         </div>
                     `;
-
-                    // ESTRATEGIA DE APRIETE (Sin simulaciones)
-                    if (estaFlojo && count < 6) {
-                        htmlEstrategia += `
-                            <div class="gen-burbuja" style="border-left-color: var(--red); font-size:0.65rem;">
-                                <b style="color:var(--red)">APRETAR EN ${localizacion}:</b> 
-                                El nodo está en #${rankActual}. Inyectar pauta en TikTok local para forzar entrada al Top 50.
-                            </div>
-                        `;
-                    }
-                    count++;
                 }
             }
-        });
+            count++;
+        }
 
         if (count === 0) {
-            listaDebilidades.innerHTML = "<p>EL OBJETIVO NO ESTÁ EN CHARTS ACTUALES</p>";
+            listaDebilidades.innerHTML = "<p>SIN DATOS RECIENTES. ARTISTA EN PAUSA.</p>";
         } else {
             listaDebilidades.innerHTML = htmlRanking;
-            ordenEjecucion.innerHTML = htmlEstrategia || "<p style='color:var(--exito)'>POSICIONES SÓLIDAS. MANTENER RITMO.</p>";
+            ordenEjecucion.innerHTML = htmlEstrategia || "<div class='gen-burbuja'>TODO EN ORDEN: MANTENER TRÁFICO ORGÁNICO</div>";
+            alerta.innerText = `SISTEMA ACTIVO: ${count} CHARTS DETECTADOS`;
         }
 
     } catch (error) {
-        listaDebilidades.innerHTML = "<p style='color:var(--red)'>FALLO CRÍTICO EN SATÉLITE</p>";
+        listaDebilidades.innerHTML = "<p style='color:var(--red)'>FALLO DE CONEXIÓN SATELITAL</p>";
     }
 }
 
