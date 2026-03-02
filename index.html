@@ -346,70 +346,111 @@
 
   /* LÓGICA BLOQUE 05: AUDITORÍA DE CONVERSIÓN 100% REAL */
 async function procesarPuntosFlojos(regiones) {
-            const artista = "Ozuna"; // FIJO OZUNA
-            let debilHtml = "";
-            let inversionHtml = "";
-            
-            const proxy = "https://corsproxy.io/?";
-            const chartUrl = `https://kworb.net/itunes/artist/ozuna.html`; // URL DIRECTA
-            
-            let posicionesReales = {};
-            
-            try {
-                const response = await fetch(proxy + encodeURIComponent(chartUrl));
-                const html = await response.text();
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(html, "text/html");
+    const artista = "Ozuna";
+    let debilHtml = "";
+    let inversionHtml = "";
+    const proxy = "https://corsproxy.io/?";
+    const chartUrl = `https://kworb.net/itunes/artist/ozuna.html`; 
+    
+    let dbGlobal = {}; 
+
+    try {
+        const response = await fetch(proxy + encodeURIComponent(chartUrl));
+        const html = await response.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, "text/html");
+        
+        const rows = doc.querySelectorAll("tr");
+        rows.forEach(row => {
+            const cells = row.querySelectorAll("td");
+            if (cells.length > 1) {
+                const text = cells[0].innerText.toUpperCase(); // Nombre del país
                 
-                const rows = doc.querySelectorAll("tr");
-                rows.forEach(row => {
-                    const contenido = row.innerText.toUpperCase();
-                    for (let [nom, cod] of Object.entries(PAISES)) {
-                        if (contenido.includes(nom)) {
-                            const posMatch = row.innerText.match(/\d+/);
-                            posicionesReales[nom] = posMatch ? parseInt(posMatch[0]) : 101;
-                        }
+                for (let [nombreLargo, sigla] of Object.entries(PAISES)) {
+                    if (text.includes(nombreLargo.toUpperCase())) {
+                        // Kworb suele poner Spotify en las primeras columnas y Apple/iTunes después
+                        const nums = Array.from(cells).slice(1).map(c => {
+                            const n = parseInt(c.innerText.match(/\d+/));
+                            return isNaN(n) ? "OUT" : n;
+                        });
+
+                        dbGlobal[nombreLargo] = {
+                            spotify: nums[0] || "OUT", // Primera columna de datos
+                            apple: nums[1] || "OUT",   // Segunda columna de datos
+                            mejor: nums.filter(n => n !== "OUT").length > 0 ? Math.min(...nums.filter(n => n !== "OUT")) : 0
+                        };
                     }
-                });
-            } catch (e) { console.error("Error en Charts de Ozuna:", e); }
-
-            regiones.forEach((reg, index) => {
-                const hype = reg.extracted_value;
-                const paisNom = reg.location.toUpperCase();
-                const posReal = posicionesReales[paisNom] || 101;
-
-                let alertaStatus = "ESTABLE";
-                let colorAlerta = "var(--cyan)";
-
-                if (hype > 55 && posReal > 70) { 
-                    alertaStatus = "FUGA DE STREAMS"; colorAlerta = "var(--red)"; 
-                } else if (posReal < 15 && hype < 30) {
-                    alertaStatus = "MARCA FRÍA / BOTS"; colorAlerta = "var(--morado-neon)";
                 }
+            }
+        });
+    } catch (e) { console.error("Error en Sensor Multi-Plataforma:", e); }
 
-                debilHtml += `
-                    <div class="card-debil" style="border-left: 3px solid ${colorAlerta}">
-                        <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <b style="font-size:0.75rem;">${paisNom}</b>
-                            <span class="badge-alerta" style="background:${colorAlerta}">${alertaStatus}</span>
-                        </div>
-                        <div style="display:grid; grid-template-columns: 1fr 1fr; margin-top:8px; font-size:0.6rem; color:#ccc;">
-                            <div>GOOGLE: <b style="color:white;">${hype}%</b></div>
-                            <div>RANKING: <b style="color:white;">${posReal > 100 ? 'OUT' : '#' + posReal}</b></div>
-                        </div>
-                    </div>`;
-                    
-                if (index < 5) {
-                    let accion = (alertaStatus === "FUGA DE STREAMS") ? "🔴 ADS DIRECTO A SPOTIFY" : 
-                                 (alertaStatus === "MARCA FRÍA / BOTS") ? "🟣 REVISAR AUDIENCIA" : "🟢 MANTENER REFUERZO";
-                    inversionHtml += `<div class="gen-burbuja" style="border-left-color:${colorAlerta}; margin-bottom:10px; font-size:0.65rem;">
-                        <b>${paisNom}</b>: ${accion}</div>`;
-                }
-            });
+    regiones.forEach((reg, index) => {
+        const hype = reg.extracted_value;
+        const paisNom = reg.location.toUpperCase();
+        const dataReal = dbGlobal[paisNom] || { spotify: "OUT", apple: "OUT", mejor: 0 };
+        const rankReal = dataReal.mejor;
 
-            document.getElementById('lista-debilidades-MAR').innerHTML = debilHtml;
-            document.getElementById('orden-ejecucion-MAR').innerHTML = inversionHtml;
+        let status = "ESTABLE";
+        let color = "var(--cyan)";
+        let icon = "📡";
+
+        // LÓGICA DE PRECISIÓN NVVEX
+        if (rankReal > 0 && rankReal <= 50) {
+            status = "DOMINIO TOP 50";
+            color = "var(--exito)";
+            icon = "🔥";
+        } else if (rankReal > 50) {
+            status = `RANKING: #${rankReal}`;
+            color = "#facc15"; 
+            icon = "📈";
+        } else if (hype > 55 && rankReal === 0) {
+            status = "FUGA CRÍTICA";
+            color = "var(--red)";
+            icon = "🚨";
         }
+
+        const rankDisplay = rankReal > 0 ? `#${rankReal}` : "OUT";
+
+        debilHtml += `
+            <div class="card-debil" style="border-left: 4px solid ${color}; background: rgba(0,0,0,0.5); margin-bottom:8px; padding: 15px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:0.85rem; font-weight:bold; letter-spacing:1px;">${icon} ${paisNom}</span>
+                    <span class="badge-alerta" style="background:${color}; font-size:0.6rem; padding: 3px 8px; color:${color === '#facc15' ? 'black' : 'white'}">${status}</span>
+                </div>
+                
+                <div style="display:grid; grid-template-columns: 1fr 1fr; margin-top:12px; font-size:0.75rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;">
+                    <div style="color:#888;">GOOGLE HYPE: <b style="color:white;">${hype}%</b></div>
+                    <div style="color:#888;">BEST RANK: <b style="color:${color}; font-size:0.9rem;">${rankDisplay}</b></div>
+                </div>
+
+                <div style="display:flex; gap:15px; margin-top:10px; font-size:0.65rem; font-weight:bold;">
+                    <div style="display:flex; align-items:center; gap:4px;">
+                        <div style="width:8px; height:8px; border-radius:50%; background:#1DB954;"></div>
+                        <span style="color:#aaa;">SPOTIFY:</span> <span style="color:white;">${dataReal.spotify}</span>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:4px;">
+                        <div style="width:8px; height:8px; border-radius:50%; background:#FA243C;"></div>
+                        <span style="color:#aaa;">APPLE:</span> <span style="color:white;">${dataReal.apple}</span>
+                    </div>
+                </div>
+            </div>`;
+            
+        if (index < 5) {
+            let accion = rankReal > 0 && rankReal <= 50 ? "✅ MANTENER REFUERZO" : 
+                         rankReal > 50 ? "⚠️ SUBIR PUJA / ADS" : "🚨 INYECTAR CAPITAL AGRESIVO";
+            
+            inversionHtml += `
+                <div class="gen-burbuja" style="border-left-color:${color}; padding:10px; font-size:0.65rem; background:rgba(255,255,255,0.02); margin-bottom:10px;">
+                    <b style="color:${color}; font-size:0.75rem;">${paisNom} [${rankDisplay}]</b><br>
+                    <span style="display:inline-block; margin-top:4px; color:#ccc;">${accion}</span>
+                </div>`;
+        }
+    });
+
+    document.getElementById('lista-debilidades-MAR').innerHTML = debilHtml;
+    document.getElementById('orden-ejecucion-MAR').innerHTML = inversionHtml;
+}
     </script>
 </body>
 </html>
