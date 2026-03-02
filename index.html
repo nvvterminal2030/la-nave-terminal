@@ -1,1 +1,377 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NVVEX | INTELIGENCIA TOTAL</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <style>
+        :root {
+            --morado-neon: #a855f7; --morado-glow: rgba(168, 85, 247, 0.6); --negro-mate: #050505;
+            --cristal: rgba(255, 255, 255, 0.03); --borde: rgba(168, 85, 247, 0.2);
+            --exito: #22c55e; --red: #ff3131; --cyan: #00f2ff;
+        }
+        body { background-color: var(--negro-mate); color: #e5e7eb; font-family: 'Inter', sans-serif; margin: 0; display: flex; flex-direction: column; align-items: center; }
 
+        /* BLOQUEO DE SEGURIDAD */
+        #bunker-lock { position: fixed; inset: 0; background: var(--negro-mate); z-index: 10000; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .lock-box { background: var(--cristal); border: 1px solid var(--morado-neon); padding: 40px; border-radius: 30px; text-align: center; backdrop-filter: blur(15px); }
+        .lock-input { background: rgba(0,0,0,0.5); border: 1px solid var(--borde); padding: 15px; border-radius: 15px; color: white; text-align: center; font-size: 1.5rem; outline: none; margin: 20px 0; }
+
+        .piso-entrada { height: 20vh; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; background: radial-gradient(circle at center, #1e0b3a 0%, var(--negro-mate) 70%); }
+        .logo-nvvex { font-size: 1.2rem; font-weight: 700; letter-spacing: 8px; color: var(--morado-neon); text-shadow: 0 0 20px var(--morado-glow); text-transform: uppercase; margin-bottom: 15px; }
+        .main-input { width: 90%; max-width: 600px; padding: 15px 25px; background: var(--cristal); border: 1px solid var(--borde); border-radius: 100px; color: white; font-size: 1rem; text-align: center; outline: none; }
+        .dashboard-container { width: 95%; max-width: 1200px; display: none; flex-direction: column; gap: 25px; padding-bottom: 50px; }
+        .piso { background: var(--cristal); border: 1px solid var(--borde); border-radius: 40px; padding: 35px; backdrop-filter: blur(10px); position: relative; }
+        .piso-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--borde); padding-bottom: 10px; }
+        .piso-header h2 { font-size: 0.8rem; letter-spacing: 3px; color: var(--morado-neon); text-transform: uppercase; }
+        .artist-grid { display: grid; grid-template-columns: 280px 1fr; gap: 30px; }
+        .video-cover { width: 100%; height: 180px; border-radius: 25px; border: 3px solid var(--morado-neon); object-fit: cover; box-shadow: 0 0 30px var(--morado-glow); }
+        .circle-stat { text-align:center; padding: 12px; border-radius: 20px; background: rgba(255,255,255,0.02); border: 1px solid var(--borde); flex: 1; }
+        .nube-track { background: rgba(255,255,255,0.03); padding: 10px 18px; border-radius: 12px; border: 1px solid var(--borde); margin-bottom: 8px; display: flex; justify-content: space-between; font-size: 0.8rem; }
+        .yt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
+        .yt-card { background: rgba(0,0,0,0.3); border-radius: 20px; overflow: hidden; border: 1px solid var(--borde); cursor: pointer; position: relative; transition: 0.3s; }
+        .view-badge { position: absolute; top: 10px; right: 10px; background: rgba(0,242,255,0.9); color: black; padding: 2px 8px; border-radius: 5px; font-size: 0.65rem; font-weight: bold; }
+        .btn-gatillo { background: var(--red); color: white; border: none; padding: 12px 25px; border-radius: 50px; font-size: 0.75rem; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-left: 10px; }
+        .btn-intel { background: var(--cyan); color: black; border: none; padding: 12px 25px; border-radius: 50px; font-size: 0.75rem; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+        .habladora-col { background: rgba(0,0,0,0.2); padding: 20px; border-radius: 20px; border: 1px solid var(--borde); }
+        .tag-burbuja { display: inline-block; background: rgba(168, 85, 247, 0.1); border: 1px solid var(--morado-neon); padding: 5px 12px; border-radius: 50px; margin: 4px; font-size: 0.65rem; color: #fff; text-shadow: 0 0 5px var(--morado-glow); }
+        .pais-rank { display: inline-block; background: rgba(0, 242, 255, 0.1); border: 1px solid var(--cyan); color: var(--cyan); padding: 6px 14px; border-radius: 10px; margin: 5px; font-size: 0.75rem; font-weight: bold; text-shadow: 0 0 10px var(--cyan); border-bottom: 2px solid var(--cyan); }
+        .gen-burbuja { display: block; background: linear-gradient(90deg, rgba(168, 85, 247, 0.2), transparent); border-left: 4px solid var(--morado-neon); padding: 10px; margin-bottom: 10px; border-radius: 0 15px 15px 0; font-weight: bold; }
+        .gen-pct { float: right; color: var(--cyan); text-shadow: 0 0 10px var(--cyan); }
+        
+        /* ESTILOS ESPECÍFICOS BLOQUE 05 - UPGRADE MARZO */
+        @keyframes pulse-red { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        .card-debil { background: rgba(255,255,255,0.03); border: 1px solid var(--borde); border-radius: 15px; padding: 12px; margin-bottom: 10px; transition: 0.3s; }
+        .card-debil:hover { background: rgba(255,255,255,0.06); }
+        .badge-alerta { color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.6rem; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div id="bunker-lock">
+        <div class="lock-box">
+            <div style="color:var(--morado-neon); letter-spacing:5px; font-weight:bold; margin-bottom:10px;">NVVEX STUDIOS</div>
+            <div style="font-size:0.7rem; color:#666;">BANCA DE INTELIGENCIA 2026</div>
+            <input type="password" id="passKey" class="lock-input" placeholder="PASSCODE">
+            <button onclick="unlock()" style="background:var(--morado-neon); color:white; border:none; padding:12px 40px; border-radius:50px; cursor:pointer; font-weight:bold;">ACCEDER</button>
+        </div>
+    </div>
+
+    <section class="piso-entrada">
+        <div class="logo-nvvex">NVVEX STUDIOS</div>
+        <input type="text" id="masterSearch" class="main-input" placeholder="PEGA LINK O BUSCA CANCIÓN/PAÍS..." onkeyup="evaluarIntento(event)">
+    </section>
+
+    <div class="dashboard-container" id="main-content">
+        <div class="piso">
+            <div style="position: absolute; top: 30px; right: 35px; display: flex;">
+                <button class="btn-intel" onclick="dispararIntelGlobal()">DISPARAR SATÉLITE</button>
+                <button class="btn-gatillo" onclick="publicarRadarTotal()">PUBLICAR REPORTE</button>
+            </div>
+            <div class="piso-header"><h2>01. Artista Intelligence & Bio (En Vivo)</h2></div>
+            <div class="artist-grid">
+                <div style="text-align: center;">
+                    <img src="https://via.placeholder.com/280x180" id="vid-img" class="video-cover">
+                    <div style="display:flex; gap:10px; justify-content:center; margin-top:20px;">
+                        <div class="circle-stat"><span id="art-pop" style="color:var(--exito); font-weight:bold;">--</span><br><label style="font-size:0.5rem;">ENG %</label></div>
+                        <div class="circle-stat"><span id="presion-real" style="color:var(--cyan); font-weight:bold;">--</span><br><label style="font-size:0.5rem;">PRESIÓN</label></div>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div id="art-tracks">
+                        <div class="nube-track"><span>OBJETIVO:</span> <b id="target-name">--</b></div>
+                        <div class="nube-track"><span>TÍTULO:</span> <b id="vid-title" style="font-size:0.6rem">--</b></div>
+                        <div class="nube-track"><span>VPD:</span> <b id="art-vpd">--</b></div>
+                        <div class="nube-track"><span>PUBLICADO:</span> <b id="art-antiguedad">--</b></div>
+                        <div class="nube-track"><span>SUBS:</span> <b id="art-subs">--</b></div>
+                        <div class="nube-track"><span>TOTAL CANAL:</span> <b id="art-total-views">--</b></div>
+                        <div class="nube-track" style="border-color:var(--morado-neon)"><span>STATUS:</span> <b id="art-status-val">--</b></div>
+                    </div>
+                    <div>
+                        <div class="piso-header" style="margin-bottom:10px; border:none;"><h2>TAGS EN BURBUJAS</h2></div>
+                        <div id="art-tags-real" style="height:120px; overflow-y:auto; border:1px solid var(--borde); padding:10px; border-radius:15px;"></div>
+                        <div id="global-map-link" style="margin-top:15px; border-top: 1px solid var(--borde); padding-top: 10px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="piso">
+            <div class="piso-header"><h2>02. Mapa de Calor Satelital (Hype de Ozuna)</h2></div>
+            <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 25px;">
+                <div id="geochart_ozuna" style="width: 100%; height: 400px; border-radius: 25px; background: rgba(0,0,0,0.2);"></div>
+                <div class="habladora-col" style="overflow-y: auto; max-height: 400px;">
+                    <h3 style="font-size:0.7rem; color:var(--cyan); letter-spacing: 2px;">RANKING DE INTERÉS REAL</h3>
+                    <div id="lista-paises-intel">--</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="piso">
+            <div class="piso-header"><h2>03. Sala de Guerra & Habladora</h2></div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;">
+                <div class="habladora-col"><h3 style="font-size:0.7rem; color:var(--cyan)">SEO DE ASALTO</h3><div id="seo-tags">--</div></div>
+                <div class="habladora-col"><h3 style="font-size:0.7rem; color:var(--morado-neon)">ESTRATEGIA GLOBAL (TOP 30)</h3><div id="market-strategy" style="font-size:0.65rem;">--</div></div>
+                <div class="habladora-col"><h3 style="font-size:0.7rem; color:var(--red)">CONEXIÓN REAL</h3><div id="target-debil" style="font-size:0.65rem;">--</div></div>
+            </div>
+        </div>
+
+        <div class="piso">
+            <div class="piso-header"><h2>04. Radar Visual (Portadas Reales)</h2></div>
+            <div style="display:flex; gap:10px; overflow-x:auto; padding-bottom:15px; margin-bottom:15px;" id="paises-scroll"></div>
+            <div class="yt-grid" id="yt-container"></div>
+        </div>
+
+        <div class="piso" id="piso-auditoria-MAR">
+            <div class="piso-header">
+                <h2>05. Auditoría de Conversión: Spotify & TikTok (Ojo de Dios)</h2>
+                <div id="alert-prioridad-MAR" style="font-size: 0.6rem; color: var(--cyan); border: 1px solid var(--cyan); padding: 5px 12px; border-radius: 50px; animation: pulse-red 2s infinite; font-weight: bold;">SATÉLITE BUSCANDO DATA VERÍDICA</div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 25px;">
+                <div class="habladora-col">
+                    <h3 style="font-size:0.7rem; color:var(--red); letter-spacing: 2px;">STATUS DE PENETRACIÓN GLOBAL</h3>
+                    <div id="lista-debilidades-MAR" style="max-height: 350px; overflow-y: auto;">
+                        <p style="font-size:0.7rem; color:#666;">Inicia una búsqueda para activar el rastreo de charts...</p>
+                    </div>
+                </div>
+                <div class="habladora-col" style="border-color: var(--cyan);">
+                    <h3 style="font-size:0.7rem; color:var(--cyan); letter-spacing: 2px;">ESTRATEGIA DE ASALTO (APRETAR)</h3>
+                    <div id="orden-ejecucion-MAR">
+                        <p style="font-size:0.7rem; color:#666;">Esperando coordenadas...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const API_KEY_YT = 'AIzaSyBQwGNe8DsxIdvgyHKV374Do-xOYZ1qCu0';
+        const API_KEY_SERP = '32fbeb3cd8b8519cff30caf600950d1bae7629551e89ec0b680b3d2b048b766f';
+        const PAISES = { 'RD':'DO','PR':'PR','US':'US','MEX':'MX','COL':'CO','ARG':'AR','CHL':'CL','ES':'ES' };
+        let cacheLoba = JSON.parse(localStorage.getItem('nvvex_loba')) || {};
+        let lastVPD = 0;
+
+        google.charts.load('current', { 'packages':['geochart'] });
+
+        function unlock() {
+            if(document.getElementById('passKey').value === "2026") {
+                document.getElementById('bunker-lock').style.display = 'none';
+                document.getElementById('main-content').style.display = 'flex';
+            } else { alert("ACCESO DENEGADO"); }
+        }
+
+        // --- MOTOR DE INTELIGENCIA REAL (EL OJO DE DIOS) ---
+        async function auditoriaDeAsalto(query) {
+            const proxy = "https://corsproxy.io/?";
+            const idMes = "-MAR"; // Obligatorio por normativa de Bunker
+            // Buscamos en Kworb (Spotify) y TikTok Trends simultáneamente
+            const qReal = `site:kworb.net+spotify+OR+site:tiktok.com+"${encodeURIComponent(query)}"`;
+            const urlSerp = `https://serpapi.com/search.json?engine=google&q=${qReal}&api_key=${API_KEY_SERP}`;
+            
+            document.getElementById('lista-debilidades-MAR').innerHTML = "<p style='color:var(--cyan);'>BUSCANDO NODOS...</p>";
+
+            try {
+                const response = await fetch(proxy + encodeURIComponent(urlSerp));
+                const data = await response.json();
+                
+                let debilHtml = "";
+                let inversionHtml = "";
+
+                if(data.organic_results) {
+                    data.organic_results.slice(0, 6).forEach((res, index) => {
+                        const esTikTok = res.link.includes('tiktok');
+                        const fuente = esTikTok ? 'TIKTOK VIRAL' : 'SPOTIFY CHART';
+                        const color = esTikTok ? 'var(--cyan)' : 'var(--red)';
+                        const snippet = res.snippet.toUpperCase();
+                        
+                        // Lógica de detección de éxito
+                        const estaPegado = snippet.includes('TOP') || snippet.includes('#') || snippet.includes('VIRAL') || snippet.includes('MILLION');
+
+                        debilHtml += `
+                            <div class="card-debil" style="border-left: 3px solid ${color}">
+                                <div style="display:flex; justify-content:space-between; align-items:center;">
+                                    <b style="font-size:0.7rem; color:white;">${fuente}</b>
+                                    <span class="badge-alerta" style="background:${estaPegado ? 'var(--exito)' : 'var(--red)'}">${estaPegado ? 'CONVIRTIENDO' : 'FLOJO'}</span>
+                                </div>
+                                <div style="font-size:0.6rem; color:#ccc; margin-top:5px;">${res.title.substring(0,60)}</div>
+                                <div style="font-size:0.55rem; color:${color}; margin-top:3px;">REF: ${res.displayed_link}</div>
+                            </div>
+                        `;
+
+                        if (index < 3) {
+                            let sugerencia = esTikTok ? "POTENCIAR SOUND ID CON INFLUENCERS" : "REFORZAR PLAYLISTS DE TERCEROS";
+                            if(!estaPegado) sugerencia = "INYECTAR CAPITAL - NODO APAGADO";
+
+                            inversionHtml += `
+                                <div class="gen-burbuja" style="border-left-color: ${color}; font-size:0.65rem;">
+                                    <b>ALERTA ${index + 1}${idMes}:</b> ${sugerencia}<br>
+                                    <span style="font-size:0.55rem; color:#aaa;">${res.title.substring(0,30)}</span>
+                                </div>
+                            `;
+                        }
+                    });
+                }
+
+                document.getElementById('lista-debilidades-MAR').innerHTML = debilHtml || "<p>SIN DATA DE ASALTO</p>";
+                document.getElementById('orden-ejecucion-MAR').innerHTML = inversionHtml || "<p>NODOS ESTABLES</p>";
+
+            } catch (error) { 
+                console.error(error); 
+                document.getElementById('lista-debilidades-MAR').innerHTML = "<p style='color:var(--red)'>FALLO EN SATÉLITE</p>";
+            }
+        }
+
+        async function dispararIntelGlobal() {
+            const query = "Ozuna";
+            const proxy = "https://corsproxy.io/?";
+            const url = `https://serpapi.com/search.json?engine=google_trends&q=${encodeURIComponent(query)}&data_type=GEO_MAP_0&api_key=${API_KEY_SERP}`;
+            
+            try {
+                const response = await fetch(proxy + encodeURIComponent(url));
+                const data = await response.json();
+                const regiones = data.interest_by_region;
+                if(!regiones) return;
+
+                let mapaData = [["Country", "Hype"]];
+                let listaHtml = "";
+
+                regiones.sort((a,b) => b.extracted_value - a.extracted_value).forEach(reg => {
+                    mapaData.push([reg.location, reg.extracted_value]);
+                    listaHtml += `<div class="gen-burbuja" style="font-size: 0.7rem;">
+                        ${reg.location.toUpperCase()} <span class="gen-pct">${reg.extracted_value}%</span>
+                    </div>`;
+                });
+
+                document.getElementById('lista-paises-intel').innerHTML = listaHtml;
+                const chartData = google.visualization.arrayToDataTable(mapaData);
+                const chart = new google.visualization.GeoChart(document.getElementById('geochart_ozuna'));
+                chart.draw(chartData, {
+                    colorAxis: {colors: ['#1e0b3a', '#a855f7', '#00f2ff']},
+                    backgroundColor: 'transparent', datalessRegionColor: '#1a1a1a', legend: 'none'
+                });
+
+            } catch (error) { console.error(error); }
+        }
+
+        function evaluarIntento(e) { 
+            if (e.key === 'Enter') { 
+                let val = e.target.value;
+                let vId = val.match(/[a-zA-Z0-9_-]{11}/); 
+                if (vId) {
+                    ejecutarEspionaje(vId[0]); 
+                } else {
+                    buscarYT(val.toUpperCase()); 
+                    auditoriaDeAsalto(val); // <--- ACTIVA EL OJO DE DIOS
+                }
+            } 
+        }
+
+        async function buscarYT(sigla) {
+            const region = PAISES[sigla] || 'DO';
+            const res = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular&regionCode=${region}&videoCategoryId=10&maxResults=30&key=${API_KEY_YT}`);
+            const data = await res.json();
+            cacheLoba[region] = data;
+            localStorage.setItem('nvvex_loba', JSON.stringify(cacheLoba));
+            procesarGenerosGlobales(data.items, sigla);
+
+            let htmlV = "";
+            data.items.slice(0,24).forEach((v, i) => {
+                htmlV += `<div class="yt-card" onclick="ejecutarEspionaje('${v.id}')">
+                            <img src="${v.snippet.thumbnails.high.url}" style="width:100%; height:110px; object-fit:cover;">
+                            <div class="view-badge">${Number(v.statistics.viewCount).toLocaleString()}</div>
+                            <div style="padding:10px; font-size:0.65rem; font-weight:bold;">#${i+1} ${v.snippet.title.substring(0,35)}</div>
+                          </div>`;
+            });
+            document.getElementById('yt-container').innerHTML = htmlV;
+        }
+
+        async function ejecutarEspionaje(vId) {
+            const resV = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id=${vId}&key=${API_KEY_YT}`);
+            const v = (await resV.json()).items[0];
+            const resC = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&id=${v.snippet.channelId}&key=${API_KEY_YT}`);
+            const c = (await resC.json()).items[0];
+
+            const views = Number(v.statistics.viewCount);
+            const likes = Number(v.statistics.likeCount) || 0;
+            const comments = Number(v.statistics.commentCount) || 0;
+            const subsTotal = Number(c.statistics.subscriberCount);
+            const eng = (((likes + comments) / views) * 100).toFixed(2);
+            
+            const dias = Math.max(Math.ceil((new Date() - new Date(v.snippet.publishedAt)) / (1000*60*60*24)), 1);
+            const vpd = Math.round(views / dias);
+            const presionStr = vpd > lastVPD ? "ALTA (↑)" : "BAJA (↓)";
+            lastVPD = vpd;
+
+            document.getElementById('vid-img').src = v.snippet.thumbnails.high.url;
+            document.getElementById('target-name').innerText = c.snippet.title.toUpperCase();
+            document.getElementById('vid-title').innerText = v.snippet.title.toUpperCase();
+            document.getElementById('art-pop').innerText = eng + "%";
+            document.getElementById('art-vpd').innerText = vpd.toLocaleString();
+            document.getElementById('art-antiguedad').innerText = dias + " DÍAS";
+            document.getElementById('art-subs').innerText = subsTotal.toLocaleString();
+            document.getElementById('art-total-views').innerText = Number(c.statistics.viewCount).toLocaleString();
+            document.getElementById('presion-real').innerText = presionStr;
+            document.getElementById('art-status-val').innerText = eng >= 10 ? "PRENDIDO" : "FRIO";
+
+            document.getElementById('art-tags-real').innerHTML = (v.snippet.tags || ["SIN TAGS"]).map(t => `<span class="tag-burbuja">${t.toUpperCase()}</span>`).join('');
+            
+            document.getElementById('target-debil').innerHTML = `
+                <div class="gen-burbuja">VIRALIDAD: <span class="gen-pct">${((views / subsTotal) * 100).toFixed(2)}%</span></div>
+                <div class="gen-burbuja">DEMANDA: <span class="gen-pct">${eng}%</span></div>
+                <div class="gen-burbuja">CALLE REAL: <span class="gen-pct">${((likes / views) * 100).toFixed(2)}%</span></div>
+            `;
+            
+            // Disparar auditoría real por nombre de canción
+            auditoriaDeAsalto(v.snippet.title);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function procesarGenerosGlobales(items, pais) {
+            const counts = { 'DEMBOW': 0, 'REGGAETÓN': 0, 'TRAP/DRILL': 0, 'BACHATA': 0, 'URBANO': 0 };
+            items.forEach(v => {
+                const txt = (v.snippet.title + (v.snippet.tags?.join(' ') || '')).toUpperCase();
+                if(txt.includes('DEMBOW')) counts['DEMBOW']++;
+                else if(txt.includes('REGGAETON') || txt.includes('REGGAETÓN')) counts['REGGAETÓN']++;
+                else if(txt.includes('TRAP') || txt.includes('DRILL')) counts['TRAP/DRILL']++;
+                else if(txt.includes('BACHATA')) counts['BACHATA']++;
+                else counts['URBANO']++;
+            });
+            const sorted = Object.entries(counts).sort((a,b) => b[1] - a[1]);
+            document.getElementById('market-strategy').innerHTML = sorted.map(([gen, val], i) => {
+                const pct = Math.round((val/30)*100);
+                return `<div class="gen-burbuja">${gen} <span class="gen-pct">${pct}%</span></div>`;
+            }).join('');
+        }
+
+        async function publicarRadarTotal() {
+            let contenidoTxt = "--- NVVEX: REPORTE TOTAL ---\n\n";
+            let allTags = [];
+            for (const [nom, cod] of Object.entries(PAISES)) {
+                if(cacheLoba[cod]) {
+                    contenidoTxt += `PAIS: ${nom}\n`;
+                    cacheLoba[cod].items.slice(0,10).forEach((v,i) => {
+                        contenidoTxt += `#${i+1} ${v.snippet.title} | ${v.statistics.viewCount}\n`;
+                        if(v.snippet.tags) allTags.push(...v.snippet.tags);
+                    });
+                }
+            }
+            const topTags = Object.entries(allTags.reduce((a,b)=>{a[b]=(a[b]||0)+1; return a;}, {})).sort((a,b)=>b[1]-a[1]).slice(0,12);
+            document.getElementById('seo-tags').innerHTML = topTags.map(t => `<div class="tag-burbuja" style="border-color:var(--cyan)">#${t[0].toUpperCase()}</div>`).join('');
+            const blob = new Blob([contenidoTxt], {type: "text/plain"});
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(blob);
+            a.download = "radar_total_MAR.txt";
+            a.click();
+        }
+
+        // Render inicial de países
+        document.getElementById('paises-scroll').innerHTML = Object.keys(PAISES).map(c => `
+            <div style="padding:10px 20px; border-radius:50px; background:var(--cristal); border:1px solid var(--borde); cursor:pointer; color:white; font-size:0.75rem; white-space:nowrap;" onclick="buscarYT('${c}')">${c}</div>
+        `).join('');
+
+    </script>
+</body>
+</html>
