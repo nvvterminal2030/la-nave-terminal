@@ -370,33 +370,21 @@ async function procesarPuntosFlojos(regiones) {
                 const lineasRanking = celda.querySelectorAll('div');
                 lineasRanking.forEach(linea => {
                     const textoRaw = linea.innerText.toUpperCase();
-                    
                     if (textoRaw.includes('#')) {
                         const match = textoRaw.match(/#(\d+)\s+(.+)/);
                         if (match) {
                             const rank = parseInt(match[1]);
                             const paisNom = match[2].split('(')[0].trim().toUpperCase();
-                            
                             let plataforma = 'APPLE';
-                            if (linea.className.includes('spo') || textoRaw.includes('SPOTIFY')) {
-                                plataforma = 'SPOTIFY';
-                            } else if (textoRaw.includes('SHAZAM')) {
-                                plataforma = 'SHAZAM';
-                            } else if (textoRaw.includes('ITUNES')) {
-                                plataforma = 'ITUNES';
-                            }
+                            if (linea.className.includes('spo') || textoRaw.includes('SPOTIFY')) plataforma = 'SPOTIFY';
+                            else if (textoRaw.includes('SHAZAM')) plataforma = 'SHAZAM';
+                            else if (textoRaw.includes('ITUNES')) plataforma = 'ITUNES';
 
                             if (!dbGlobal[paisNom]) dbGlobal[paisNom] = { mejor: 999, hits: new Map() };
-                            
                             const llaveUnica = `${nombreID}_${plataforma}`;
                             if (!dbGlobal[paisNom].hits.has(llaveUnica)) {
-                                dbGlobal[paisNom].hits.set(llaveUnica, {
-                                    rank: rank,
-                                    plat: plataforma,
-                                    name: nombreCancion
-                                });
+                                dbGlobal[paisNom].hits.set(llaveUnica, { rank, plat: plataforma, name: nombreCancion });
                             }
-
                             if ((plataforma === 'SPOTIFY' || plataforma === 'APPLE') && rank < dbGlobal[paisNom].mejor) {
                                 dbGlobal[paisNom].mejor = rank;
                             }
@@ -411,36 +399,33 @@ async function procesarPuntosFlojos(regiones) {
             const paisNom = reg.location.toUpperCase();
             const info = dbGlobal[paisNom] || { mejor: 999, hits: new Map() };
             const rankReal = info.mejor === 999 ? 0 : info.mejor;
-            const hitsArr = Array.from(info.hits.values());
+            const hitsSorted = Array.from(info.hits.values()).sort((a, b) => a.rank - b.rank);
 
-            // --- LA MALICIA: ESTRATEGIA DE INVERSIÓN ---
-            let maliciaTexto = "📊 Monitorear: El mercado está en fase de calentamiento orgánico.";
-            const tieneZ_Fuerte = hitsArr.some(h => h.plat === 'SHAZAM' && h.rank <= 60);
-            const tieneO_Fuerte = hitsArr.some(h => h.plat === 'ITUNES' && h.rank <= 40);
-            const tieneA_S_Bajo = (rankReal > 100 || rankReal === 0);
+            // --- Cierre Bloque 5: Lógica de Penetración Real ---
+            let estrategiaReal = "Monitorear: Mercado en fase de calentamiento orgánico.";
+            const puntaDeLanza = hitsSorted.length > 0 ? hitsSorted[0].name : null;
+            const tieneShazamTop = hitsSorted.some(h => h.plat === 'SHAZAM' && h.rank <= 50);
+            const tieneiTunesTop = hitsSorted.some(h => h.plat === 'ITUNES' && h.rank <= 30);
 
-            if (tieneZ_Fuerte && tieneA_S_Bajo) {
-                maliciaTexto = "🔥 <b>RADAR CALIENTE:</b> Shazam alto detectado. El tema está rompiendo en la calle y radio. Sony no lo ha movido a streaming. <b>Inyectar YouTube Ads YA</b> para forzar el algoritmo.";
-            } else if (tieneO_Fuerte && tieneA_S_Bajo) {
-                maliciaTexto = "💰 <b>VENTA REAL:</b> Los fans están comprando el tema pero no llega a las Playlists. Hay que apretar a la distribuidora para entrar en 'Top Reggaetón' local.";
-            } else if (hype > 75 && rankReal === 0) {
-                maliciaTexto = "🚨 <b>FUGA CRÍTICA:</b> La gente busca a Ozuna en Google pero no encuentra música. Campaña de expectativa urgente o Remix con artista de la zona.";
-            } else if (rankReal > 0 && rankReal <= 50) {
-                maliciaTexto = "✅ <b>DOMINIO:</b> El país está conquistado. Mantener inversión mínima y mover el presupuesto sobrante a países en 'Fuga Crítica'.";
+            if (rankReal > 0 && rankReal <= 50) {
+                estrategiaReal = `✅ <b>DOMINIO:</b> Mantener inversión orgánica. Usar <b>${puntaDeLanza}</b> como motor para arrastrar el resto del catálogo en playlists locales.`;
+            } else if (tieneShazamTop && rankReal > 100) {
+                estrategiaReal = `🔥 <b>GAP DE CALLE:</b> El público está buscando <b>${puntaDeLanza}</b> (Shazam alto). Sony no tiene el tema en streaming fuerte. Inyectar Ads de YouTube localizados YA.`;
+            } else if (tieneiTunesTop && rankReal > 100) {
+                estrategiaReal = `💰 <b>VENTA ACTIVA:</b> Los fans están comprando el tema. Falta apoyo de curadores de Playlists. Presionar a Sony por entradas en el Top 50 de Apple Music.`;
+            } else if (hype > 70 && rankReal === 0) {
+                estrategiaReal = `🚨 <b>FUGA CRÍTICA:</b> Interés masivo en Google pero 0 consumo. Lanzar campaña de pauta directa a plataformas o Remix con artista local para abrir brecha.`;
+            } else if (puntaDeLanza) {
+                estrategiaReal = `📈 <b>POTENCIAL:</b> Usar <b>${puntaDeLanza}</b> para activar campañas de TikTok Ads. El track ya tiene tracción, solo necesita presupuesto.`;
             }
 
             let status = "ESTABLE"; let color = "var(--cyan)";
             if (rankReal > 0 && rankReal <= 50) { status = "DOMINIO TOP 50"; color = "var(--exito)"; }
             else if (hype > 65 && (rankReal > 100 || rankReal === 0)) { status = "FUGA CRÍTICA"; color = "var(--red)"; }
 
-            const hitsSorted = hitsArr.sort((a, b) => a.rank - b.rank);
-
             let hitsHtml = hitsSorted.map(h => {
-                let colPlat = '#FA243C'; let letra = 'A';
-                if (h.plat === 'SPOTIFY') { colPlat = '#1DB954'; letra = 'S'; }
-                else if (h.plat === 'SHAZAM') { colPlat = '#9b59b6'; letra = 'Z'; }
-                else if (h.plat === 'ITUNES') { colPlat = '#f1c40f'; letra = 'O'; }
-
+                let colPlat = h.plat === 'SPOTIFY' ? '#1DB954' : (h.plat === 'SHAZAM' ? '#9b59b6' : (h.plat === 'ITUNES' ? '#f1c40f' : '#FA243C'));
+                let letra = h.plat === 'SPOTIFY' ? 'S' : (h.plat === 'SHAZAM' ? 'Z' : (h.plat === 'ITUNES' ? 'O' : 'A'));
                 return `
                 <div style="background:rgba(255,255,255,0.04); margin:2px 0; padding:4px 8px; border-radius:4px; font-size:0.58rem; display:flex; justify-content:space-between; align-items:center; border-left: 3px solid ${colPlat}">
                     <span style="color:${colPlat}; font-weight:900; margin-right:6px; font-family:monospace; font-size:0.7rem;">${letra}</span>
@@ -450,17 +435,17 @@ async function procesarPuntosFlojos(regiones) {
             }).join("");
 
             debilHtml += `
-                <div class="card-debil" style="border-left: 5px solid ${color}; padding:12px; background:rgba(10,10,10,0.5); margin-bottom:15px; border-radius:10px; display:flex; flex-direction:column; gap:8px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div class="card-debil" style="border-left: 5px solid ${color}; padding:12px; background:rgba(10,10,10,0.5); margin-bottom:15px; border-radius:10px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
                         <b style="font-size:0.8rem; color:white;">${paisNom}</b>
                         <span style="background:${color}; color:black; font-size:0.5rem; padding:2px 6px; font-weight:bold; border-radius:3px;">${status}</span>
                     </div>
-                    <div style="font-size:0.6rem; color:#888;">HYPE GOOGLE: ${hype}% | TOP REAL: #${rankReal > 0 ? rankReal : '---'}</div>
-                    <div style="display:grid; grid-template-columns: 1fr; gap:1px;">${hitsHtml || "<span style='color:#444; font-size:0.6rem;'>SIN DATA</span>"}</div>
+                    <div style="font-size:0.6rem; color:#888; margin-bottom:8px;">HYPE GOOGLE: ${hype}% | TOP REAL: #${rankReal > 0 ? rankReal : '---'}</div>
+                    <div style="display:grid; grid-template-columns: 1fr; gap:1px; margin-bottom:10px;">${hitsHtml || "<span style='color:#444; font-size:0.6rem;'>SIN DATA</span>"}</div>
                     
-                    <div style="background:rgba(255,255,255,0.06); padding:10px; border-radius:6px; border-top: 1px solid rgba(255,255,255,0.1); margin-top:5px;">
-                        <div style="font-size:0.45rem; color:var(--cyan); font-weight:bold; text-transform:uppercase; margin-bottom:5px; letter-spacing:1px;">Inteligencia de Campaña:</div>
-                        <div style="font-size:0.6rem; color:#d1d1d1; line-height:1.4; font-style:italic;">${maliciaTexto}</div>
+                    <div style="background:rgba(255,255,255,0.07); padding:10px; border-radius:8px; border-top: 1px solid rgba(255,255,255,0.1);">
+                        <div style="font-size:0.45rem; color:var(--cyan); font-weight:bold; text-transform:uppercase; margin-bottom:4px; letter-spacing:1px;">Plan de Invasión:</div>
+                        <div style="font-size:0.58rem; color:#ccc; line-height:1.4;">${estrategiaReal}</div>
                     </div>
                 </div>`;
         });
