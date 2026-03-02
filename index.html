@@ -347,7 +347,6 @@
   /* LÓGICA BLOQUE 05: AUDITORÍA DE CONVERSIÓN 100% REAL */
 async function procesarPuntosFlojos(regiones) {
     let debilHtml = "";
-    let inversionHtml = "";
     const proxy = "https://api.allorigins.win/raw?url=";
     const chartUrl = `https://kworb.net/itunes/artist/ozuna.html`; 
     
@@ -362,80 +361,83 @@ async function procesarPuntosFlojos(regiones) {
         if (songsSection) {
             const celdas = songsSection.querySelectorAll('td[valign="top"]');
             celdas.forEach(celda => {
-                let nombreCancion = celda.querySelector('b')?.innerText.trim().toUpperCase() || "UNKNOWN";
-                // Limpiar nombres largos o con "Ozuna -"
+                let nombreCancion = celda.querySelector('b')?.innerText.trim().toUpperCase() || "TRACK";
+                // Limpieza de nombre
                 nombreCancion = nombreCancion.split(" - ").pop().replace("OZUNA", "").trim();
 
                 const lineasRanking = celda.querySelectorAll('div');
                 lineasRanking.forEach(linea => {
-                    const texto = linea.innerText.toUpperCase();
-                    if (texto.includes('#')) {
-                        const match = texto.match(/#(\d+)\s+(.+)/);
+                    const textoRaw = linea.innerText.toUpperCase();
+                    
+                    if (textoRaw.includes('#')) {
+                        const match = textoRaw.match(/#(\d+)\s+(.+)/);
                         if (match) {
                             const rank = parseInt(match[1]);
                             const paisNom = match[2].split('(')[0].trim();
-                            const plat = texto.includes('SPO') ? 'SPOTIFY' : 'APPLE';
-
-                            if (!dbGlobal[paisNom]) dbGlobal[paisNom] = { mejor: 999, hits: new Map() };
-                            if (rank < dbGlobal[paisNom].mejor) dbGlobal[paisNom].mejor = rank;
                             
-                            // Agrupar por canción para no repetir
-                            if (!dbGlobal[paisNom].hits.has(nombreCancion) || rank < dbGlobal[paisNom].hits.get(nombreCancion).rank) {
-                                dbGlobal[paisNom].hits.set(nombreCancion, { rank, plat });
-                            }
+                            // LÓGICA DE DETECCIÓN DUAL
+                            // Kworb usa clase 'spo' para Spotify y 'app' o 'itu' para Apple/iTunes
+                            const esSpotify = linea.className.includes('spo') || textoRaw.includes('SPO');
+                            const plataforma = esSpotify ? 'SPOTIFY' : 'APPLE';
+
+                            if (!dbGlobal[paisNom]) dbGlobal[paisNom] = { mejor: 999, hits: [] };
+                            
+                            // Guardamos todos los hits indicando su plataforma
+                            dbGlobal[paisNom].hits.push({
+                                rank: rank,
+                                plat: plataforma,
+                                name: nombreCancion
+                            });
+
+                            if (rank < dbGlobal[paisNom].mejor) dbGlobal[paisNom].mejor = rank;
                         }
                     }
                 });
             });
         }
 
-        // --- RENDERIZADO DE ALTO IMPACTO ---
-        regiones.forEach((reg, index) => {
+        // RENDERIZADO EN EL RADAR
+        regiones.forEach((reg) => {
             const hype = reg.extracted_value;
             const paisNom = reg.location.toUpperCase();
-            const info = dbGlobal[paisNom] || { mejor: 999, hits: new Map() };
+            const info = dbGlobal[paisNom] || { mejor: 999, hits: [] };
             const rankReal = info.mejor === 999 ? 0 : info.mejor;
 
-            // Lógica de Inteligencia NVVEX
-            let status = "ESTABLE"; 
-            let color = "var(--cyan)";
-            let alertaExtra = "";
+            let status = "ESTABLE"; let color = "var(--cyan)";
+            if (rankReal > 0 && rankReal <= 50) { status = "DOMINIO TOP 50"; color = "var(--exito)"; }
+            else if (hype > 65 && (rankReal > 100 || rankReal === 0)) { status = "FUGA CRÍTICA"; color = "var(--red)"; }
 
-            if (rankReal > 0 && rankReal <= 50) { 
-                status = "DOMINIO TOP 50"; color = "var(--exito)"; 
-            } else if (hype > 65 && (rankReal > 100 || rankReal === 0)) {
-                status = "CRÍTICO: HYPE SIN CONVERSIÓN"; color = "var(--red)";
-                alertaExtra = "border: 1px solid var(--red); animation: pulse-red 1s infinite;";
-            }
+            // Ordenar: Mostrar los mejores rankings primero
+            const hitsSorted = info.hits.sort((a, b) => a.rank - b.rank).slice(0, 7);
 
-            const hitsArray = Array.from(info.hits.entries())
-                .sort((a, b) => a[1].rank - b[1].rank)
-                .slice(0, 5);
+            let hitsHtml = hitsSorted.map(h => {
+                // Definir color según plataforma: VERDE para Spotify, ROJO para Apple
+                const esS = h.plat === 'SPOTIFY';
+                const colPlat = esS ? '#1DB954' : '#FA243C';
+                const letra = esS ? 'S' : 'A';
 
-            let hitsHtml = hitsArray.length > 0 ? hitsArray.map(([name, data]) => `
-                <div style="background:rgba(255,255,255,0.05); margin:2px; padding:4px 8px; border-radius:5px; font-size:0.6rem; display:flex; justify-content:space-between; border-left: 2px solid ${data.plat === 'SPOTIFY' ? '#1DB954' : '#FA243C'}">
-                    <span>${name}</span>
-                    <b style="color:white;">#${data.rank}</b>
-                </div>`).join("") : "<div style='color:#444; font-size:0.6rem;'>SIN PENETRACIÓN DE CHARTS</div>";
+                return `
+                <div style="background:rgba(255,255,255,0.04); margin:2px 0; padding:4px 8px; border-radius:4px; font-size:0.58rem; display:flex; justify-content:space-between; align-items:center; border-left: 3px solid ${colPlat}">
+                    <span style="color:${colPlat}; font-weight:900; margin-right:6px; font-family:monospace; font-size:0.7rem;">${letra}</span>
+                    <span style="flex:1; color:#eee; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${h.name}</span>
+                    <b style="color:white; margin-left:5px;">#${h.rank}</b>
+                </div>`;
+            }).join("");
 
             debilHtml += `
-                <div class="card-debil" style="border-left: 5px solid ${color}; ${alertaExtra} padding:15px; background:rgba(10,10,10,0.4);">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <b style="letter-spacing:1px;">${paisNom}</b>
+                <div class="card-debil" style="border-left: 5px solid ${color}; padding:12px; background:rgba(10,10,10,0.5); margin-bottom:10px; border-radius:10px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                        <b style="font-size:0.8rem; color:white;">${paisNom}</b>
                         <span style="background:${color}; color:black; font-size:0.5rem; padding:2px 6px; font-weight:bold; border-radius:3px;">${status}</span>
                     </div>
-                    <div style="display:flex; gap:15px; margin:10px 0; font-size:0.7rem;">
-                        <div style="color:#888;">INTERÉS: <b style="color:white;">${hype}%</b></div>
-                        <div style="color:#888;">TOP: <b style="color:${color};">#${rankReal > 0 ? rankReal : '---'}</b></div>
-                    </div>
-                    <div style="display:grid; grid-template-columns: 1fr; gap:2px;">${hitsHtml}</div>
+                    <div style="font-size:0.6rem; color:#888; margin-bottom:8px; letter-spacing:1px;">HYPE GOOGLE: ${hype}% | TOP: #${rankReal > 0 ? rankReal : '---'}</div>
+                    <div style="display:grid; grid-template-columns: 1fr; gap:1px;">${hitsHtml || "<span style='color:#444; font-size:0.6rem;'>SIN PENETRACIÓN</span>"}</div>
                 </div>`;
         });
 
         document.getElementById('lista-debilidades-MAR').innerHTML = debilHtml;
-
-    } catch (e) {
-        console.error("Error:", e);
+    } catch (e) { 
+        console.error("Error en Radar Dual:", e); 
     }
 }
     </script>
