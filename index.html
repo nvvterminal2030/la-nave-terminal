@@ -356,7 +356,8 @@ async function procesarPuntosFlojos(regiones) {
     try {
         const response = await fetch(proxy + encodeURIComponent(chartUrl));
         const html = await response.text();
-        const cleanHtml = html.toUpperCase();
+        // Usamos una versión limpia para no perder los nombres de canciones
+        const rawUpper = html.toUpperCase();
 
         const MAPA_INTERNO = {
             'DOMINICAN REPUBLIC': 'DO', 'PUERTO RICO': 'PR', 'UNITED STATES': 'US',
@@ -367,41 +368,57 @@ async function procesarPuntosFlojos(regiones) {
             'PARAGUAY': 'PY', 'URUGUAY': 'UY', 'VENEZUELA': 'VE'
         };
 
+        // Escaneo profundo de canciones y plataformas
         Object.keys(MAPA_INTERNO).forEach(pais => {
-            // Buscamos todas las menciones de ranking para ese país
             const regex = new RegExp(`#(\\d+)\\s+(${pais})`, 'g');
             let match;
             
-            while ((match = regex.exec(cleanHtml)) !== null) {
+            while ((match = regex.exec(rawUpper)) !== null) {
                 const rankValue = parseInt(match[1]);
-                // Cortamos un trozo de texto antes del ranking para ver la plataforma
-                const contexto = cleanHtml.substring(match.index - 50, match.index);
+                // Buscamos el nombre de la canción (está en el bloque previo al ranking)
+                const fragmentoPrevio = html.substring(match.index - 500, match.index);
+                const songMatch = fragmentoPrevio.match(/<b>(.*?)<\/b>/g);
+                let songName = "CATÁLOGO";
                 
-                if (!dbGlobal[pais]) dbGlobal[pais] = { mejor: 999, platforms: [] };
+                if (songMatch) {
+                    // El último <b> antes del ranking suele ser el nombre del tema
+                    const cleanName = songMatch[songMatch.length - 1].replace(/<\/?b>/g, "");
+                    songName = cleanName.length > 30 ? "TRACK" : cleanName.toUpperCase();
+                }
 
+                const contexto = rawUpper.substring(match.index - 50, match.index);
+                let plataforma = contexto.includes("SPO") ? "SPOTIFY" : (contexto.includes("APP") ? "APPLE" : "ITUNES");
+
+                if (!dbGlobal[pais]) dbGlobal[pais] = { mejor: 999, hits: [] };
                 if (rankValue < dbGlobal[pais].mejor) dbGlobal[pais].mejor = rankValue;
 
-                if (contexto.includes("SPO")) dbGlobal[pais].platforms.push(`SPOTIFY (#${rankValue})`);
-                if (contexto.includes("APP")) dbGlobal[pais].platforms.push(`APPLE (#${rankValue})`);
+                // Evitamos duplicados en la lista de hits
+                const idHit = `${plataforma}: #${rankValue} - ${songName}`;
+                if (!dbGlobal[pais].hits.includes(idHit)) {
+                    dbGlobal[pais].hits.push({ plat: plataforma, rank: rankValue, song: songName });
+                }
             }
         });
 
-    } catch (e) { console.error("Error Sensor Bloque 5:", e); }
+    } catch (e) { console.error("Error Sensor Hunter:", e); }
 
     regiones.forEach((reg, index) => {
         const hype = reg.extracted_value;
         const paisNom = reg.location.toUpperCase();
-        const info = dbGlobal[paisNom] || { mejor: 0, platforms: [] };
+        const info = dbGlobal[paisNom] || { mejor: 999, hits: [] };
         const rankReal = info.mejor === 999 ? 0 : info.mejor;
-        const platStr = info.platforms.length > 0 ? info.platforms.join(" | ") : "SIN DATA DE STREAM";
 
-        let status = "ESTABLE";
-        let color = "var(--cyan)";
-        let icon = "📡";
+        let status = "ESTABLE"; let color = "var(--cyan)"; let icon = "📡";
 
         if (rankReal > 0 && rankReal <= 50) { status = "DOMINIO TOP 50"; color = "var(--exito)"; icon = "🔥"; }
         else if (rankReal > 50) { status = `RANK #${rankReal}`; color = "#facc15"; icon = "📈"; }
         else if (hype > 55 && rankReal === 0) { status = "FUGA CRÍTICA"; color = "var(--red)"; icon = "🚨"; }
+
+        // Construir visual de canciones
+        let hitsHtml = info.hits.length > 0 
+            ? info.hits.map(h => `<span style="display:inline-block; font-size:0.55rem; background:rgba(255,255,255,0.05); padding:2px 5px; margin:2px; border-radius:3px; border-left: 2px solid ${h.plat === 'SPOTIFY' ? '#1DB954' : '#FA243C'}">
+                <b style="color:white">${h.rank}</b> ${h.song}</span>`).join("")
+            : "<span style='color:#666; font-size:0.6rem;'>SIN DATA DE STREAM</span>";
 
         debilHtml += `
             <div class="card-debil" style="border-left: 4px solid ${color}; background: rgba(0,0,0,0.5); margin-bottom:10px; padding:12px;">
@@ -410,34 +427,22 @@ async function procesarPuntosFlojos(regiones) {
                     <span style="background:${color}; color:${color==='#facc15'?'black':'white'}; font-size:0.5rem; padding:2px 6px; font-weight:bold;">${status}</span>
                 </div>
                 <div style="display:grid; grid-template-columns: 1fr 1fr; margin-top:8px; font-size:0.7rem;">
-                    <div>HYPE GOOGLE: <b>${hype}%</b></div>
-                    <div>RANK REAL: <b style="color:${color};">#${rankReal > 0 ? rankReal : 'OUT'}</b></div>
+                    <div>HYPE: <b>${hype}%</b></div>
+                    <div>TOP RANK: <b style="color:${color};">#${rankReal > 0 ? rankReal : 'OUT'}</b></div>
                 </div>
-                <div style="font-size:0.6rem; color:#aaa; margin-top:5px; border-top:1px solid rgba(255,255,255,0.1); padding-top:5px;">
-                    ${platStr}
-                </div>
+                <div style="margin-top:8px; display:flex; flex-wrap:wrap;">${hitsHtml}</div>
             </div>`;
             
         if (index < 5) {
-            // Lógica de recomendación de inversión
-            let recomendacion = "";
-            if (rankReal === 0) {
-                recomendacion = "INYECTAR CAPITAL AGRESIVO (ADS Y PLAYLISTING)";
-            } else if (info.platforms.some(p => p.includes("APPLE")) && !info.platforms.some(p => p.includes("SPOTIFY"))) {
-                recomendacion = "IMPULSAR SPOTIFY (GAP DETECTADO)";
-            } else {
-                recomendacion = "REFORZAR PUJA EN SEARCH ADS";
-            }
-
             inversionHtml += `
                 <div class="gen-burbuja" style="border-left: 3px solid ${color}; padding:8px; margin-bottom:5px;">
                     <b style="color:${color}">${paisNom} [#${rankReal > 0 ? rankReal : 'OUT'}]</b><br>
-                    <span style="font-size:0.6rem; color:#fff;">${recomendacion}</span>
+                    <span style="font-size:0.55rem; color:#fff;">OBJETIVO: ${info.hits[0] ? info.hits[0].song : 'RECONQUISTA'}</span>
                 </div>`;
         }
     });
 
-    document.getElementById('lista-debilidades-MAR').innerHTML = debilHtml;
+    document.getElementById('lista-debitidades-MAR' || 'lista-debilidades-MAR').innerHTML = debilHtml;
     document.getElementById('orden-ejecucion-MAR').innerHTML = inversionHtml;
 }
     </script>
