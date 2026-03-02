@@ -244,26 +244,34 @@
         }
 
         /* LÓGICA BLOQUE 02: SATÉLITE GOOGLE TRENDS */
-        async function dispararIntelGlobal() {
-            const query = "Ozuna";
+       async function dispararIntelGlobal() {
+            const query = "Ozuna"; // FIJO OZUNA
             const proxy = "https://corsproxy.io/?";
             const url = `https://serpapi.com/search.json?engine=google_trends&q=${encodeURIComponent(query)}&data_type=GEO_MAP_0&api_key=${API_KEY_SERP}`;
+            
             try {
                 const response = await fetch(proxy + encodeURIComponent(url));
                 const data = await response.json();
                 if(data.error) return alert("API ERROR: " + data.error);
+                
                 const regiones = data.interest_by_region;
                 if(!regiones) return alert("No se recibió data geográfica.");
+                
                 let mapaData = [["Country", "Hype"]];
                 let listaHtml = "";
+                
                 regiones.sort((a,b) => b.extracted_value - a.extracted_value).forEach(reg => {
                     mapaData.push([reg.location, reg.extracted_value]);
                     listaHtml += `<div class="gen-burbuja" style="font-size: 0.7rem;">
                         ${reg.location.toUpperCase()} <span class="gen-pct">${reg.extracted_value}%</span>
                     </div>`;
                 });
+                
                 document.getElementById('lista-paises-intel').innerHTML = listaHtml;
-                procesarPuntosFlojos(regiones); // CONEXIÓN CON BLOQUE 05
+
+                // ACTIVAMOS EL BLOQUE 5 CON LA DATA REAL
+                procesarPuntosFlojos(regiones); 
+
                 const chartData = google.visualization.arrayToDataTable(mapaData);
                 const chart = new google.visualization.GeoChart(document.getElementById('geochart_ozuna'));
                 chart.draw(chartData, {
@@ -338,85 +346,70 @@
 
   /* LÓGICA BLOQUE 05: AUDITORÍA DE CONVERSIÓN 100% REAL */
 async function procesarPuntosFlojos(regiones) {
-    const artista = document.getElementById('target-name').innerText;
-    let debilHtml = "";
-    let inversionHtml = "";
-    
-    // CAPTURA DE DATA REAL DE CHARTS (Vía Proxy para saltar bloqueo CORS)
-    // Kworb es la fuente de verdad de la industria 2026
-    const proxy = "https://corsproxy.io/?";
-    const chartUrl = `https://kworb.net/itunes/artist/${artista.toLowerCase().replace(/\s+/g, '')}.html`;
-    
-    let posicionesReales = {};
-    
-    try {
-        const response = await fetch(proxy + encodeURIComponent(chartUrl));
-        const html = await response.text();
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, "text/html");
-        
-        // Buscamos las filas de la tabla de rankings reales
-        const rows = doc.querySelectorAll("tr");
-        rows.forEach(row => {
-            const contenido = row.innerText.toUpperCase();
-            // Mapeamos los países que tenemos en nuestra constante PAISES
-            for (let [nom, cod] of Object.entries(PAISES)) {
-                if (contenido.includes(nom)) {
-                    // Extraemos el número de la posición real
-                    const posMatch = row.innerText.match(/\d+/);
-                    posicionesReales[nom] = posMatch ? parseInt(posMatch[0]) : 101;
+            const artista = "Ozuna"; // FIJO OZUNA
+            let debilHtml = "";
+            let inversionHtml = "";
+            
+            const proxy = "https://corsproxy.io/?";
+            const chartUrl = `https://kworb.net/itunes/artist/ozuna.html`; // URL DIRECTA
+            
+            let posicionesReales = {};
+            
+            try {
+                const response = await fetch(proxy + encodeURIComponent(chartUrl));
+                const html = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, "text/html");
+                
+                const rows = doc.querySelectorAll("tr");
+                rows.forEach(row => {
+                    const contenido = row.innerText.toUpperCase();
+                    for (let [nom, cod] of Object.entries(PAISES)) {
+                        if (contenido.includes(nom)) {
+                            const posMatch = row.innerText.match(/\d+/);
+                            posicionesReales[nom] = posMatch ? parseInt(posMatch[0]) : 101;
+                        }
+                    }
+                });
+            } catch (e) { console.error("Error en Charts de Ozuna:", e); }
+
+            regiones.forEach((reg, index) => {
+                const hype = reg.extracted_value;
+                const paisNom = reg.location.toUpperCase();
+                const posReal = posicionesReales[paisNom] || 101;
+
+                let alertaStatus = "ESTABLE";
+                let colorAlerta = "var(--cyan)";
+
+                if (hype > 55 && posReal > 70) { 
+                    alertaStatus = "FUGA DE STREAMS"; colorAlerta = "var(--red)"; 
+                } else if (posReal < 15 && hype < 30) {
+                    alertaStatus = "MARCA FRÍA / BOTS"; colorAlerta = "var(--morado-neon)";
                 }
-            }
-        });
-    } catch (e) {
-        console.error("Error en satélite de Charts:", e);
-    }
 
-    // CRUCE DE DATOS EN VIVO: GOOGLE VS CHARTS
-    regiones.forEach((reg, index) => {
-        const hype = reg.extracted_value;
-        const paisNom = reg.location.toUpperCase();
-        const posReal = posicionesReales[paisNom] || 101; // 101 = Fuera del Top 100
+                debilHtml += `
+                    <div class="card-debil" style="border-left: 3px solid ${colorAlerta}">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <b style="font-size:0.75rem;">${paisNom}</b>
+                            <span class="badge-alerta" style="background:${colorAlerta}">${alertaStatus}</span>
+                        </div>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; margin-top:8px; font-size:0.6rem; color:#ccc;">
+                            <div>GOOGLE: <b style="color:white;">${hype}%</b></div>
+                            <div>RANKING: <b style="color:white;">${posReal > 100 ? 'OUT' : '#' + posReal}</b></div>
+                        </div>
+                    </div>`;
+                    
+                if (index < 5) {
+                    let accion = (alertaStatus === "FUGA DE STREAMS") ? "🔴 ADS DIRECTO A SPOTIFY" : 
+                                 (alertaStatus === "MARCA FRÍA / BOTS") ? "🟣 REVISAR AUDIENCIA" : "🟢 MANTENER REFUERZO";
+                    inversionHtml += `<div class="gen-burbuja" style="border-left-color:${colorAlerta}; margin-bottom:10px; font-size:0.65rem;">
+                        <b>${paisNom}</b>: ${accion}</div>`;
+                }
+            });
 
-        let alertaStatus = "ESTABLE";
-        let colorAlerta = "var(--cyan)";
-
-        // Inteligencia de Mercado: Si hay mucho interés pero poca venta/stream
-        if (hype > 55 && posReal > 70) { 
-            alertaStatus = "FUGA DE STREAMS"; 
-            colorAlerta = "var(--red)"; 
-        } else if (posReal < 15 && hype < 30) {
-            alertaStatus = "MARCA FRÍA / BOTS"; 
-            colorAlerta = "var(--morado-neon)";
+            document.getElementById('lista-debilidades-MAR').innerHTML = debilHtml;
+            document.getElementById('orden-ejecucion-MAR').innerHTML = inversionHtml;
         }
-
-        debilHtml += `
-            <div class="card-debil" style="border-left: 3px solid ${colorAlerta}">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <b style="font-size:0.75rem;">${paisNom}</b>
-                    <span class="badge-alerta" style="background:${colorAlerta}">${alertaStatus}</span>
-                </div>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; margin-top:8px; font-size:0.6rem; color:#ccc;">
-                    <div>INTERÉS GOOGLE: <b style="color:white;">${hype}%</b></div>
-                    <div>SPOTIFY/ITUNES: <b style="color:white;">${posReal > 100 ? 'FUERA' : '#' + posReal}</b></div>
-                </div>
-            </div>`;
-            
-        // Estrategia de Inversión basada en Data Real
-        if (index < 5) {
-            let accion = (alertaStatus === "FUGA DE STREAMS") ? "🔴 URGENTE: ADS DIRECTO A SPOTIFY" : 
-                         (alertaStatus === "MARCA FRÍA / BOTS") ? "🟣 REVISAR AUDIENCIA EN TIKTOK" : "🟢 REFUERZO ORGÁNICO";
-            
-            inversionHtml += `
-                <div class="gen-burbuja" style="border-left-color: ${colorAlerta}; margin-bottom:10px; font-size:0.65rem;">
-                    <b>${paisNom}</b>: ${accion}
-                </div>`;
-        }
-    });
-
-    document.getElementById('lista-debilidades-MAR').innerHTML = debilHtml || "<p>ESPERANDO DATA DE SATÉLITE...</p>";
-    document.getElementById('orden-ejecucion-MAR').innerHTML = inversionHtml || "<p>CALCULANDO ESTRATEGIA...</p>";
-}
     </script>
 </body>
 </html>
