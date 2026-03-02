@@ -357,65 +357,56 @@ async function procesarPuntosFlojos(regiones) {
         const response = await fetch(proxy + encodeURIComponent(chartUrl));
         const html = await response.text();
         
-        // Creamos un elemento temporal para extraer el texto limpio (como el innerText que me pasaste)
-        const tempDiv = document.createElement("div");
-        tempDiv.innerHTML = html;
-        const textoPlano = tempDiv.innerText || tempDiv.textContent;
-        
-        // Dividimos el texto en líneas
-        const lineas = textoPlano.split('\n');
+        // DIVIDIMOS POR BLOQUES: Cada canción empieza después de un espacio doble o etiquetas de negrita
+        const bloques = html.split(/\n\s*\n/); 
 
         const MAPA_INTERNO = {
-            'DOMINICAN REPUBLIC': 'DO', 'PUERTO RICO': 'PR', 'MEXICO': 'MX', 
-            'COLOMBIA': 'CO', 'ARGENTINA': 'AR', 'CHILE': 'CL', 'SPAIN': 'ES', 
-            'PERU': 'PE', 'ECUADOR': 'EC', 'GUATEMALA': 'GT', 'HONDURAS': 'HN', 
-            'EL SALVADOR': 'SV', 'NICARAGUA': 'NI', 'COSTA RICA': 'CR', 
-            'PANAMA': 'PA', 'BOLIVIA': 'BO', 'PARAGUAY': 'PY', 'URUGUAY': 'UY', 
-            'VENEZUELA': 'VE'
+            'DOMINICAN REPUBLIC': 'DO', 'PUERTO RICO': 'PR', 'UNITED STATES': 'US',
+            'MEXICO': 'MX', 'COLOMBIA': 'CO', 'ARGENTINA': 'AR', 'CHILE': 'CL',
+            'SPAIN': 'ES', 'PERU': 'PE', 'ECUADOR': 'EC', 'GUATEMALA': 'GT',
+            'HONDURAS': 'HN', 'EL SALVADOR': 'SV', 'NICARAGUA': 'NI',
+            'COSTA RICA': 'CR', 'PANAMA': 'PA', 'BOLIVIA': 'BO',
+            'PARAGUAY': 'PY', 'URUGUAY': 'UY', 'VENEZUELA': 'VE'
         };
 
-        const CATALOGO_VIEJO = ["ODISEA", "DILES", "LA OCASION", "DILE QUE TU ME QUIERES", "ADICTO", "HEY MOR", "SOBREDOSIS", "SE PREPARO", "EL FARSANTE", "AHORA DICE", "ESCAPATE CONMIGO"];
+        const CATALOGO_VIEJO = ["ODISEA", "DILES", "LA OCASION", "DILE QUE TU ME QUIERES", "ADICTO", "HEY MOR", "SOBREDOSIS", "SE PREPARO", "EL FARSANTE", "ESCAPATE CONMIGO", "ENEMIGOS", "MONOTONIA", "SG", "UNA LOCURA", "GATA ONLY", "PA TI ESTOY", "AHORA DICE", "VAINA LOCA", "CARAMELO"];
 
-        let cancionActual = "";
-        let plataformaActual = "ITUNES";
+        let currentSong = "CATÁLOGO";
 
+        // Procesamos el texto línea por línea para no perder el hilo
+        const lineas = html.split('\n');
+        
         lineas.forEach(linea => {
-            const limpia = linea.trim();
+            let limpia = linea.replace(/<[^>]*>/g, "").trim();
             if (!limpia) return;
 
-            // 1. Detectar Plataforma
-            if (limpia.includes("Spotify:")) { plataformaActual = "SPOTIFY"; return; }
-            if (limpia.includes("Apple Music:")) { plataformaActual = "APPLE"; return; }
-            if (limpia.includes("iTunes:")) { plataformaActual = "ITUNES"; return; }
-            if (limpia.includes("YouTube:")) { plataformaActual = "YOUTUBE"; return; }
-
-            // 2. Detectar Canción: Si la línea NO tiene # y NO es una plataforma, es el nombre del track
-            if (!limpia.includes("#") && limpia.length > 2 && !limpia.includes("|") && limpia !== "Songs") {
-                // Solo actualizamos si no es ruido de la página
-                if (limpia.length < 50 && !["MAIN", "ALBUMS", "COUNTRIES", "ALL SERVICES"].includes(limpia.toUpperCase())) {
-                    cancionActual = limpia.toUpperCase();
-                }
+            // Si la línea NO empieza con # y es corta, probablemente es el NOMBRE DE LA CANCIÓN
+            if (!limpia.includes("#") && limpia.length > 2 && !limpia.includes("Spotify") && !limpia.includes("Apple") && !limpia.includes("iTunes")) {
+                currentSong = limpia.toUpperCase();
             }
 
-            // 3. Detectar Ranking y País
+            // Si la línea tiene un ranking y un país del mapa
             if (limpia.includes("#")) {
                 Object.keys(MAPA_INTERNO).forEach(pais => {
                     if (limpia.toUpperCase().includes(pais)) {
                         const match = limpia.match(/#(\d+)/);
                         if (match) {
-                            const rank = parseInt(match[1]);
-                            if (!dbGlobal[pais]) dbGlobal[pais] = { mejor: 999, hits: [] };
+                            const rankValue = parseInt(match[1]);
+                            const esNuevo = !CATALOGO_VIEJO.some(v => currentSong.includes(v)) && rankValue < 150;
                             
-                            const esNuevo = !CATALOGO_VIEJO.some(v => cancionActual.includes(v));
+                            if (!dbGlobal[pais]) dbGlobal[pais] = { mejor: 999, hits: [] };
+                            if (rankValue < dbGlobal[pais].mejor) dbGlobal[pais].mejor = rankValue;
 
-                            dbGlobal[pais].hits.push({
-                                song: cancionActual,
-                                rank: rank,
-                                plat: plataformaActual,
-                                nuevo: esNuevo
-                            });
-
-                            if (rank < dbGlobal[pais].mejor) dbGlobal[pais].mejor = rank;
+                            // Evitar duplicados en el mismo país/ranking
+                            const yaExiste = dbGlobal[pais].hits.some(h => h.rank === rankValue && h.song === currentSong);
+                            if (!yaExiste) {
+                                dbGlobal[pais].hits.push({ 
+                                    plat: limpia.includes("Spotify") ? "SPOTIFY" : "APPLE", 
+                                    rank: rankValue, 
+                                    song: currentSong, 
+                                    nuevo: esNuevo 
+                                });
+                            }
                         }
                     }
                 });
@@ -424,7 +415,7 @@ async function procesarPuntosFlojos(regiones) {
 
     } catch (e) { console.error("Error Radar:", e); }
 
-    // RENDERIZADO (Usa el formato visual que ya tenías)
+    // RENDERIZADO (Mantiene tu diseño original pero con la data curada)
     regiones.forEach((reg, index) => {
         const hype = reg.extracted_value;
         const paisNom = reg.location.toUpperCase();
@@ -438,11 +429,11 @@ async function procesarPuntosFlojos(regiones) {
 
         let hitsHtml = info.hits.length > 0 
             ? info.hits.sort((a,b) => a.rank - b.rank).slice(0, 8).map(h => `
-                <span style="display:inline-block; font-size:0.55rem; background:rgba(0,0,0,0.3); color:#eee; padding:3px 7px; margin:2px; border-radius:4px; border-bottom: 2px solid ${h.plat === 'SPOTIFY' ? '#1DB954' : (h.plat === 'YOUTUBE' ? '#FF0000' : '#FA243C')}">
+                <span style="display:inline-block; font-size:0.55rem; background:rgba(0,0,0,0.3); color:#eee; padding:3px 7px; margin:2px; border-radius:4px; border-bottom: 2px solid ${h.rank < 100 ? '#1DB954' : '#FA243C'}">
                     ${h.nuevo ? '<b style="color:#facc15;">NEW </b>' : ''}
                     <b style="color:white">#${h.rank}</b> ${h.song}
                 </span>`).join("")
-            : "<span style='color:#666; font-size:0.6rem;'>#OUT - SIN DATA</span>";
+            : "<span style='color:#666; font-size:0.6rem;'>SIN DATA ACTUAL</span>";
 
         debilHtml += `
             <div class="card-debil" style="border-left: 4px solid ${color}; background: rgba(255,255,255,0.02); margin-bottom:12px; padding:15px; border-radius:10px;">
@@ -450,17 +441,25 @@ async function procesarPuntosFlojos(regiones) {
                     <span style="font-size:0.8rem; font-weight:bold; color:white;">${icon} ${paisNom}</span>
                     <span style="background:${color}; color:${color==='#facc15'?'black':'white'}; font-size:0.55rem; padding:3px 8px; font-weight:900; border-radius:3px;">${status}</span>
                 </div>
-                <div style="font-size:0.75rem; margin-bottom:10px; color:#aaa;">HYPE: <b style="color:white;">${hype}%</b> | TOP: <b style="color:${color};">#${rankReal > 0 ? rankReal : 'OUT'}</b></div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; margin-bottom:10px; font-size:0.75rem;">
+                    <div style="color:#aaa;">HYPE GOOGLE: <b style="color:white;">${hype}%</b></div>
+                    <div style="color:#aaa;">TOP RANK: <b style="color:${color};">#${rankReal > 0 ? rankReal : 'OUT'}</b></div>
+                </div>
                 <div style="display:flex; flex-wrap:wrap; gap:2px;">${hitsHtml}</div>
             </div>`;
             
         if (index < 6) {
             let principal = info.hits.sort((a,b) => a.rank - b.rank)[0];
             let tagTitle = principal ? principal.song : "CATÁLOGO";
+            let esLanzamiento = info.hits.some(h => h.nuevo);
+            
             inversionHtml += `
-                <div class="gen-burbuja" style="border-left: 3px solid ${color}; background:rgba(255,255,255,0.03); padding:10px; margin-bottom:8px;">
-                    <b style="color:white; font-size:0.7rem;">${paisNom}</b><br>
-                    <b style="color:${color}; font-size:0.6rem;">${rankReal === 0 ? 'INYECTAR CAPITAL' : 'PUSH: ' + tagTitle}</b>
+                <div class="gen-burbuja" style="border-left: 3px solid ${esLanzamiento ? '#facc15' : color}; background:rgba(255,255,255,0.03); padding:10px; margin-bottom:8px;">
+                    <b style="color:${esLanzamiento ? '#facc15' : color}; font-size:0.75rem;">${paisNom}</b>
+                    <div style="font-size:0.6rem; color:#888; margin-top:4px;">
+                        TRACK: <b style="color:white;">${tagTitle}</b><br>
+                        ACCIÓN: <b style="color:${esLanzamiento ? '#facc15' : '#fff'}">${esLanzamiento ? 'PROTEGER ESTRENO' : 'INYECTAR CAPITAL'}</b>
+                    </div>
                 </div>`;
         }
     });
