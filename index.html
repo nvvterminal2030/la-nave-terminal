@@ -164,23 +164,31 @@
         }
 
        // --- BLOQUE 05: AUDITORÍA DE CONVERSIÓN REAL (DATOS KWORB -MAR) ---
+// --- BLOQUE 05: AUDITORÍA DE CONVERSIÓN REAL (SISTEMA NVVEX 2026) ---
 async function auditoriaDeAsalto(query) {
     const listaDebilidades = document.getElementById('lista-debilidades-MAR');
     const ordenEjecucion = document.getElementById('orden-ejecucion-MAR');
     const alerta = document.getElementById('alert-prioridad-MAR');
     
-    // Reset de interfaz
     listaDebilidades.innerHTML = "<div class='gen-burbuja' style='border-color:var(--cyan)'>EXTRAYENDO DATA DE GOOGLE CLOUD (SERP)...</div>";
     alerta.innerText = "RASTREANDO POSICIONES GLOBALES...";
 
-    // ESTRATEGIA: Buscamos específicamente en Kworb a través de SerpApi (Cero bloqueos)
-    const targetQuery = `site:kworb.net ${query} charts`;
+    // ESTRATEGIA: Búsqueda directa sin proxy (SerpApi ya maneja el CORS en su servidor)
+    // Buscamos específicamente en Kworb y Spotify Charts
+    const targetQuery = `site:kworb.net ${query} "spotify"`;
     const searchUrl = `https://serpapi.com/search.json?engine=google&q=${encodeURIComponent(targetQuery)}&api_key=${API_KEY_SERP}`;
 
     try {
         const response = await fetch(searchUrl);
         const data = await response.json();
         
+        console.log("SATÉLITE RESPONDRE:", data); // Monitoreo en consola
+
+        if (data.error) {
+            listaDebilidades.innerHTML = `<div class='gen-burbuja' style='border-color:var(--red)'>ERROR: ${data.error}</div>`;
+            return;
+        }
+
         let htmlRanking = "";
         let htmlEstrategia = "";
         let encontrados = 0;
@@ -189,9 +197,8 @@ async function auditoriaDeAsalto(query) {
         if (data.organic_results) {
             data.organic_results.forEach(result => {
                 const textParaAnalizar = (result.title + " " + result.snippet).toUpperCase();
-                
-                // Buscamos el patrón #Número seguido de un país (ej: #12 Spain o #5 Mexico)
-                const regexCharts = /#(\d+)\s+([A-ZÁÉÍÓÚÑ\s]{3,20})/g;
+                // Regex mejorada para capturar rankings reales de Kworb
+                const regexCharts = /#(\d+)\s+([A-ZÁÉÍÓÚÑ\s]{3,15})/g;
                 let match;
 
                 while ((match = regexCharts.exec(textParaAnalizar)) !== null) {
@@ -202,61 +209,80 @@ async function auditoriaDeAsalto(query) {
                         encontrados++;
                         let colorStatus, statusTxt;
 
-                        if (rank <= 50) {
-                            colorStatus = "var(--exito)";
-                            statusTxt = "DOMINIO";
-                        } else if (rank <= 100) {
-                            colorStatus = "var(--cyan)";
-                            statusTxt = "DISPUTA";
-                        } else {
-                            colorStatus = "var(--red)";
-                            statusTxt = "CRÍTICO";
-                            puntosRojos++;
-                        }
+                        if (rank <= 50) { colorStatus = "var(--exito)"; statusTxt = "DOMINIO"; }
+                        else if (rank <= 100) { colorStatus = "var(--cyan)"; statusTxt = "DISPUTA"; }
+                        else { colorStatus = "var(--red)"; statusTxt = "CRÍTICO"; puntosRojos++; }
 
-                        // Render de la tarjeta de posición
                         htmlRanking += `
                             <div class="card-debil" style="border-left: 4px solid ${colorStatus}; background: rgba(255,255,255,0.02); margin-bottom:8px; padding: 15px;">
                                 <div style="display:flex; justify-content:space-between; align-items:center;">
-                                    <span style="font-size:0.6rem; color:var(--morado-neon); font-weight:bold;">SISTEMA NVVEX</span>
+                                    <span style="font-size:0.6rem; color:var(--morado-neon); font-weight:bold;">TRACKER REAL</span>
                                     <b style="font-size:0.75rem; color:white;">${paisInfo}</b>
                                 </div>
                                 <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
                                     <span style="font-size:2rem; font-weight:900; color:white; text-shadow: 0 0 15px ${colorStatus}">#${rank}</span>
                                     <span class="badge-alerta" style="background:${colorStatus}; color:black; padding: 2px 8px; border-radius:4px; font-size:0.6rem;">${statusTxt}</span>
                                 </div>
-                            </div>
-                        `;
+                                <div style="font-size:0.5rem; color:#555; margin-top:5px;">${result.source}</div>
+                            </div>`;
 
-                        // Generar orden de ataque automática
                         if (rank > 80) {
                             htmlEstrategia += `
                                 <div class="gen-burbuja" style="border-left: 3px solid var(--red); margin-bottom:10px;">
-                                    <b style="color:var(--red)">APRETAR ${paisInfo}:</b> Puesto #${rank}. Nodo perdiendo fuerza. Se requiere bombardeo de ads/playlist.
-                                </div>
-                            `;
+                                    <b style="color:var(--red)">APRETAR ${paisInfo}:</b> Puesto #${rank}. El algoritmo está bajando. Necesitas pauta en este nodo.
+                                </div>`;
                         }
                     }
                 }
             });
         }
 
-        // Si no encuentra nada en la primera pasada, intentamos con un término más general
         if (encontrados === 0) {
-            listaDebilidades.innerHTML = `<div class='gen-burbuja' style='border-color:var(--red)'>NO SE DETECTAN CHARTS ACTIVOS PARA "${query.toUpperCase()}"</div>`;
-            ordenEjecucion.innerHTML = "<p style='font-size:0.7rem;'>OBJETIVO FUERA DE RADAR (TOP 200).</p>";
-            alerta.innerText = "ESTATUS: FRÍO";
+            listaDebilidades.innerHTML = `<div class='gen-burbuja' style='border-color:var(--red)'>OBJETIVO "${query.toUpperCase()}" NO ENCONTRADO EN TOP 200</div>`;
+            ordenEjecucion.innerHTML = "<p style='font-size:0.7rem;'>EL ARTISTA NO ESTÁ EN CHARTS ACTUALMENTE.</p>";
+            alerta.innerText = "SITUACIÓN: FUERA DE RADAR";
         } else {
             listaDebilidades.innerHTML = htmlRanking;
-            ordenEjecucion.innerHTML = htmlEstrategia || "<div class='gen-burbuja' style='border-color:var(--exito)'>DOMINIO GLOBAL: Sin puntos de debilidad detectados.</div>";
-            alerta.innerText = `TOTAL: ${encontrados} POSICIONES | ${puntosRojos} ALERTAS ROJAS`;
-            alerta.style.color = puntosRojos > 0 ? "var(--red)" : "var(--cyan)";
+            ordenEjecucion.innerHTML = htmlEstrategia || "<div class='gen-burbuja' style='border-color:var(--exito)'>ESTATUS VERDE: Dominio total del mercado.</div>";
+            alerta.innerText = `${encontrados} POSICIONES DETECTADAS | ${puntosRojos} PUNTOS DE ASALTO`;
         }
 
     } catch (error) {
-        console.error("Error en Satélite:", error);
-        listaDebilidades.innerHTML = "<div class='gen-burbuja' style='border-color:var(--red)'>FALLO DE CONEXIÓN CON SERP-API</div>";
+        console.error("ERROR CRÍTICO SATÉLITE:", error);
+        listaDebilidades.innerHTML = "<div class='gen-burbuja' style='border-color:var(--red)'>SATÉLITE BLOQUEADO - REVISA CONSOLA</div>";
     }
+}
+
+// CORRECCIÓN EN DISPARAR INTEL (QUITANDO EL PROXY QUE ENSUCIA LA KEY)
+async function dispararIntelGlobal() {
+    const query = document.getElementById('target-name').innerText || "Ozuna";
+    const url = `https://serpapi.com/search.json?engine=google_trends&q=${encodeURIComponent(query)}&data_type=GEO_MAP_0&api_key=${API_KEY_SERP}`;
+    
+    try {
+        // ELIMINADO EL PROXY: SerpApi ya tiene habilitado CORS para peticiones desde el navegador si la Key es válida
+        const response = await fetch(url); 
+        const data = await response.json();
+        const regiones = data.interest_by_region;
+        if(!regiones) return;
+
+        let mapaData = [["Country", "Hype"]];
+        let listaHtml = "";
+
+        regiones.sort((a,b) => b.extracted_value - a.extracted_value).forEach(reg => {
+            mapaData.push([reg.location, reg.extracted_value]);
+            listaHtml += `<div class="gen-burbuja" style="font-size: 0.7rem;">
+                ${reg.location.toUpperCase()} <span class="gen-pct">${reg.extracted_value}%</span>
+            </div>`;
+        });
+
+        document.getElementById('lista-paises-intel').innerHTML = listaHtml;
+        const chartData = google.visualization.arrayToDataTable(mapaData);
+        const chart = new google.visualization.GeoChart(document.getElementById('geochart_ozuna'));
+        chart.draw(chartData, {
+            colorAxis: {colors: ['#1e0b3a', '#a855f7', '#00f2ff']},
+            backgroundColor: 'transparent', datalessRegionColor: '#1a1a1a', legend: 'none'
+        });
+    } catch (error) { console.error("Error Hype Map:", error); }
 }
 
         async function dispararIntelGlobal() {
