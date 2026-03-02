@@ -394,29 +394,37 @@ async function procesarPuntosFlojos(regiones) {
             });
         }
 
-        regiones.forEach((reg) => {
+        // --- ORDENAR POR "APAGADOS" PRIMERO ---
+        // Priorizamos Fuga Crítica (Rojo) > Sin Data > Dominio (Verde)
+        const regionesOrdenadas = regiones.sort((a, b) => {
+            const infoA = dbGlobal[a.location.toUpperCase()] || { mejor: 999 };
+            const infoB = dbGlobal[b.location.toUpperCase()] || { mejor: 999 };
+            const rankA = infoA.mejor === 999 ? 1000 : infoA.mejor;
+            const rankB = infoB.mejor === 999 ? 1000 : infoB.mejor;
+            return rankB - rankA; // Los de ranking más alto (peor) o sin data van arriba
+        });
+
+        regionesOrdenadas.forEach((reg) => {
             const hype = reg.extracted_value;
             const paisNom = reg.location.toUpperCase();
             const info = dbGlobal[paisNom] || { mejor: 999, hits: new Map() };
             const rankReal = info.mejor === 999 ? 0 : info.mejor;
             const hitsSorted = Array.from(info.hits.values()).sort((a, b) => a.rank - b.rank);
 
-            // --- LÓGICA DE MALICIA PARA EL CIERRE DEL BLOQUE 5 ---
-            let planInvasion = "Analizando entrada: Mercado en fase de calentamiento.";
+            let planInvasion = "Mercado frío: Requiere activación de marca.";
             const topHit = hitsSorted.length > 0 ? hitsSorted[0] : null;
-            const tieneShazamCalle = hitsSorted.some(h => h.plat === 'SHAZAM' && h.rank <= 70);
-            const tieneVentaDirecta = hitsSorted.some(h => h.plat === 'ITUNES' && h.rank <= 40);
 
-            if (rankReal > 0 && rankReal <= 50) {
-                planInvasion = `🔥 <b>DOMINIO TOTAL:</b> El país está rompiendo. No gastar en Ads pesados. Usar <b>${topHit.name}</b> para empujar temas nuevos en radios locales.`;
-            } else if (tieneShazamCalle && (rankReal > 100 || rankReal === 0)) {
-                planInvasion = `⚠️ <b>GAP DE CALLE:</b> La gente busca <b>${topHit.name}</b> en Shazam pero no hay stream. Sony está dormida. Meter pauta en YouTube para capturar ese tráfico.`;
-            } else if (tieneVentaDirecta && (rankReal > 100 || rankReal === 0)) {
-                planInvasion = `💰 <b>FANS REALES:</b> Hay ventas en iTunes pero Sony no nos pone en Playlists. Necesitamos entrar en listas regionales para subir el stream.`;
-            } else if (hype > 70 && rankReal === 0) {
-                planInvasion = `🚨 <b>OPORTUNIDAD DE ORO:</b> Hype de ${hype}% en Google pero 0 música en los charts. El mercado está pidiendo a Ozuna. Lanzar campaña de choque.`;
-            } else if (topHit) {
-                planInvasion = `📈 <b>POTENCIAL:</b> <b>${topHit.name}</b> está asomando en el chart (#${topHit.rank}). Un empujón con influencers locales nos mete al Top 100.`;
+            // Lógica basada en la "oscuridad" del país
+            if (rankReal === 0 || rankReal > 100) {
+                if (hype > 60) {
+                    planInvasion = `🚨 <b>RESCATE URGENTE:</b> El país está "apagado" en charts pero el Hype es de ${hype}%. Sony tiene la distribución rota aquí. Lanzar campaña de choque con Ads directos a la canción más buscada.`;
+                } else {
+                    planInvasion = `🌑 <b>ZONA MUERTA:</b> Sin presencia orgánica. Se recomienda Remix con talento local o gira de medios digital para encender el algoritmo desde cero.`;
+                }
+            } else if (rankReal > 50) {
+                planInvasion = `📈 <b>RECUPERACIÓN:</b> Ozuna está perdiendo terreno (#${rankReal}). Reinyectar pauta en Playlists de terceros para frenar la caída y volver al Top 50.`;
+            } else {
+                planInvasion = `✅ <b>MANTENIMIENTO:</b> Dominio detectado. Solo vigilancia. Presupuesto liberado para países apagados.`;
             }
 
             let status = "ESTABLE"; let color = "var(--cyan)";
@@ -436,10 +444,10 @@ async function procesarPuntosFlojos(regiones) {
                         <span style="background:${color}; color:black; font-size:0.5rem; padding:2px 6px; font-weight:bold; border-radius:3px;">${status}</span>
                     </div>
                     <div style="font-size:0.6rem; color:#888; margin-bottom:8px;">HYPE GOOGLE: ${hype}% | TOP REAL: #${rankReal > 0 ? rankReal : '---'}</div>
-                    <div style="display:grid; grid-template-columns: 1fr; gap:1px; margin-bottom:8px;">${hitsHtml || "<span style='color:#444; font-size:0.6rem;'>SIN DATA</span>"}</div>
+                    <div style="display:grid; grid-template-columns: 1fr; gap:1px; margin-bottom:10px;">${hitsHtml || "<span style='color:#444; font-size:0.6rem;'>SIN DATA EN CHARTS</span>"}</div>
                     
                     <div style="background:rgba(255,255,255,0.08); padding:10px; border-radius:6px; border: 1px solid rgba(255,255,255,0.1);">
-                        <div style="font-size:0.45rem; color:var(--cyan); font-weight:bold; text-transform:uppercase; margin-bottom:4px; letter-spacing:1px;">Plan de Ataque:</div>
+                        <div style="font-size:0.45rem; color:var(--cyan); font-weight:bold; text-transform:uppercase; margin-bottom:4px; letter-spacing:1px;">Plan de Ataque (Rescate):</div>
                         <div style="font-size:0.58rem; color:#ddd; line-height:1.4;">${planInvasion}</div>
                     </div>
                 </div>`;
