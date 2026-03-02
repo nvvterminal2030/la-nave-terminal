@@ -345,128 +345,93 @@
         }
 
   /* LÓGICA BLOQUE 05: AUDITORÍA DE CONVERSIÓN 100% REAL */
+/* LÓGICA BLOQUE 05: EXTRACCIÓN DE DATOS REALES DE KWORB */
 async function procesarPuntosFlojos(regiones) {
     let debilHtml = "";
     let inversionHtml = "";
     const proxy = "https://api.allorigins.win/raw?url=";
     const chartUrl = `https://kworb.net/itunes/artist/ozuna.html`; 
     
-    let dbGlobal = {}; 
-
     try {
         const response = await fetch(proxy + encodeURIComponent(chartUrl));
         const html = await response.text();
-        const rawUpper = html.toUpperCase();
+        
+        // Creamos un buscador temporal para el HTML que descargamos
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        
+        // BUSCAMOS EL ID "SONGS" QUE ENCONTRAMOS EN EL CÓDIGO FUENTE
+        const songsSection = doc.getElementById('songs');
+        const dbGlobal = {};
 
-        const MAPA_INTERNO = {
-            'DOMINICAN REPUBLIC': 'DO', 'PUERTO RICO': 'PR', 'UNITED STATES': 'US',
-            'MEXICO': 'MX', 'COLOMBIA': 'CO', 'ARGENTINA': 'AR', 'CHILE': 'CL',
-            'SPAIN': 'ES', 'PERU': 'PE', 'ECUADOR': 'EC', 'GUATEMALA': 'GT',
-            'HONDURAS': 'HN', 'EL SALVADOR': 'SV', 'NICARAGUA': 'NI',
-            'COSTA RICA': 'CR', 'PANAMA': 'PA', 'BOLIVIA': 'BO',
-            'PARAGUAY': 'PY', 'URUGUAY': 'UY', 'VENEZUELA': 'VE'
-        };
-
-        const CATALOGO_VIEJO = ["ODISEA", "DILES", "LA OCASION", "DILE QUE TU ME QUIERES", "ADICTO", "HEY MOR", "SOBREDOSIS", "SE PREPARO"];
-
-        Object.keys(MAPA_INTERNO).forEach(pais => {
-            const regex = new RegExp(`#(\\d+)\\s+(${pais})`, 'g');
-            let match;
+        if (songsSection) {
+            const celdas = songsSection.querySelectorAll('td[valign="top"]');
             
-            while ((match = regex.exec(rawUpper)) !== null) {
-                const rankValue = parseInt(match[1]);
+            celdas.forEach(celda => {
+                const tituloTag = celda.querySelector('b');
+                if (!tituloTag) return;
                 
-                // ESCANEO DE NOMBRE REFORZADO (Buscamos más atrás para evitar el 'CATÁLOGO')
-                const fragmentoPrevio = html.substring(match.index - 1000, match.index);
-                const songMatches = fragmentoPrevio.match(/<b>(.*?)<\/b>/g);
-                let songName = "TRACK DESCONOCIDO";
+                const nombreCancion = tituloTag.innerText.trim().toUpperCase();
                 
-                if (songMatches && songMatches.length > 0) {
-                    // Filtramos nombres que sean basura o solo el nombre del artista
-                    for (let i = songMatches.length - 1; i >= 0; i--) {
-                        let candidate = songMatches[i].replace(/<\/?b>/g, "").toUpperCase();
-                        if (candidate.length > 2 && !candidate.includes("OZUNA") && !candidate.includes("ARTIST")) {
-                            songName = candidate.split(" - ")[0].trim();
-                            break;
-                        }
+                // Buscamos todos los países dentro de esa canción
+                const lineasRanking = celda.querySelectorAll('div');
+                lineasRanking.forEach(linea => {
+                    const texto = linea.innerText.toUpperCase();
+                    
+                    if (texto.includes('#')) {
+                        // Extraemos el ranking y el país (Ej: "#117 PERU")
+                        const partes = texto.split('(')[0].trim().split(' ');
+                        const rank = parseInt(partes[0].replace('#', ''));
+                        const paisNom = partes.slice(1).join(' '); // Une el resto por si el país tiene 2 nombres
+
+                        if (!dbGlobal[paisNom]) dbGlobal[paisNom] = { mejor: 999, hits: [] };
+                        if (rank < dbGlobal[paisNom].mejor) dbGlobal[paisNom].mejor = rank;
+                        
+                        dbGlobal[paisNom].hits.push({
+                            rank: rank,
+                            song: nombreCancion,
+                            plat: texto.includes('SPO') ? 'SPOTIFY' : 'APPLE'
+                        });
                     }
-                    if(songName.length > 25) songName = songName.substring(0, 22) + "...";
-                }
+                });
+            });
+        }
 
-                const contexto = rawUpper.substring(match.index - 60, match.index);
-                let plataforma = contexto.includes("SPO") ? "SPOTIFY" : (contexto.includes("APP") ? "APPLE" : "ITUNES");
+        // --- RENDERIZADO EN EL DASHBOARD ---
+        regiones.forEach((reg, index) => {
+            const hype = reg.extracted_value;
+            const paisNom = reg.location.toUpperCase();
+            const info = dbGlobal[paisNom] || { mejor: 999, hits: [] };
+            const rankReal = info.mejor === 999 ? 0 : info.mejor;
 
-                if (!dbGlobal[pais]) dbGlobal[pais] = { mejor: 999, hits: [] };
-                if (rankValue < dbGlobal[pais].mejor) dbGlobal[pais].mejor = rankValue;
+            // Lógica de colores NVVEX
+            let status = "ESTABLE"; let color = "var(--cyan)";
+            if (rankReal > 0 && rankReal <= 50) { status = "DOMINIO TOP 50"; color = "var(--exito)"; }
+            else if (hype > 60 && rankReal === 0) { status = "FUGA DE CAPITAL"; color = "var(--red)"; }
 
-                // Si no está en la lista de viejos, es NEW
-                const esNuevo = !CATALOGO_VIEJO.some(v => songName.includes(v)) && rankValue < 150;
+            let hitsHtml = info.hits.sort((a,b) => a.rank - b.rank).slice(0, 5).map(h => `
+                <span style="display:inline-block; font-size:0.55rem; background:rgba(0,0,0,0.3); padding:3px 7px; margin:2px; border-radius:4px; border-bottom: 2px solid var(--morado-neon)">
+                    <b>#${h.rank}</b> ${h.song}
+                </span>`).join("");
 
-                const yaExiste = dbGlobal[pais].hits.some(h => h.rank === rankValue && h.song === songName);
-                if (!yaExiste) {
-                    dbGlobal[pais].hits.push({ plat: plataforma, rank: rankValue, song: songName, nuevo: esNuevo });
-                }
-            }
+            debilHtml += `
+                <div class="card-debil" style="border-left: 4px solid ${color};">
+                    <div style="display:flex; justify-content:space-between;">
+                        <b>${paisNom}</b>
+                        <span style="color:${color}; font-size:0.6rem;">${status}</span>
+                    </div>
+                    <div style="font-size:0.7rem; margin:5px 0;">Hype: ${hype}% | Mejor: #${rankReal > 0 ? rankReal : '---'}</div>
+                    <div>${hitsHtml}</div>
+                </div>`;
         });
 
-    } catch (e) { console.error("Error Radar:", e); }
+        document.getElementById('lista-debilidades-MAR').innerHTML = debilHtml;
 
-    regiones.forEach((reg, index) => {
-        const hype = reg.extracted_value;
-        const paisNom = reg.location.toUpperCase();
-        const info = dbGlobal[paisNom] || { mejor: 999, hits: [] };
-        const rankReal = info.mejor === 999 ? 0 : info.mejor;
-
-        let status = "ESTABLE"; let color = "var(--cyan)"; let icon = "📡";
-        if (rankReal > 0 && rankReal <= 50) { status = "DOMINIO TOP 50"; color = "var(--exito)"; icon = "🔥"; }
-        else if (rankReal > 50) { status = `RANK #${rankReal}`; color = "#facc15"; icon = "📈"; }
-        else if (hype > 55 && rankReal === 0) { status = "FUGA CRÍTICA"; color = "var(--red)"; icon = "🚨"; }
-
-        let hitsHtml = info.hits.length > 0 
-            ? info.hits.sort((a,b) => a.rank - b.rank).slice(0, 8).map(h => `
-                <span style="display:inline-block; font-size:0.55rem; background:rgba(0,0,0,0.3); color:#eee; padding:3px 7px; margin:2px; border-radius:4px; border-bottom: 2px solid ${h.plat === 'SPOTIFY' ? '#1DB954' : '#FA243C'}">
-                    ${h.nuevo ? '<b style="color:#facc15;">NEW </b>' : ''}
-                    <b style="color:${h.plat === 'SPOTIFY' ? '#1DB954' : '#FA243C'}">#${h.rank}</b> ${h.song}
-                </span>`).join("")
-            : "<span style='color:#666; font-size:0.6rem;'>SIN DATA ACTUAL</span>";
-
-        debilHtml += `
-            <div class="card-debil" style="border-left: 4px solid ${color}; background: rgba(255,255,255,0.02); margin-bottom:12px; padding:15px; border-radius:10px;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                    <span style="font-size:0.8rem; font-weight:bold; color:white;">${icon} ${paisNom}</span>
-                    <span style="background:${color}; color:${color==='#facc15'?'black':'white'}; font-size:0.55rem; padding:3px 8px; font-weight:900; border-radius:3px;">${status}</span>
-                </div>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; margin-bottom:10px; font-size:0.75rem;">
-                    <div style="color:#aaa;">HYPE GOOGLE: <b style="color:white;">${hype}%</b></div>
-                    <div style="color:#aaa;">TOP RANK: <b style="color:${color};">#${rankReal > 0 ? rankReal : 'OUT'}</b></div>
-                </div>
-                <div style="display:flex; flex-wrap:wrap; gap:2px;">${hitsHtml}</div>
-            </div>`;
-            
-        if (index < 6) {
-            let principal = info.hits.find(h => h.nuevo) || info.hits[0];
-            let tagTitle = principal ? principal.song : "CATÁLOGO";
-            let esLanzamiento = info.hits.some(h => h.nuevo);
-            
-            inversionHtml += `
-                <div class="gen-burbuja" style="border-left: 3px solid ${esLanzamiento ? '#facc15' : color}; background:rgba(255,255,255,0.03); padding:10px; margin-bottom:8px;">
-                    <b style="color:${esLanzamiento ? '#facc15' : color}; font-size:0.75rem;">${paisNom}</b>
-                    <div style="font-size:0.6rem; color:#888; margin-top:4px;">
-                        TRACK: <b style="color:white;">${tagTitle}</b><br>
-                        ACCIÓN: <b style="color:${esLanzamiento ? '#facc15' : '#fff'}">${esLanzamiento ? 'PROTEGER ESTRENO' : 'INYECTAR CAPITAL'}</b>
-                    </div>
-                </div>`;
-        }
-    });
-
-    document.getElementById('lista-debilidades-MAR').innerHTML = debilHtml;
-    document.getElementById('orden-ejecucion-MAR').innerHTML = inversionHtml;
+    } catch (e) {
+        console.error("Error en Auditoría NVVEX:", e);
+        document.getElementById('lista-debilidades-MAR').innerHTML = "ERROR DE CONEXIÓN AL SATÉLITE";
+    }
 }
-
-// Estilo para el parpadeo de "NEW"
-const style = document.createElement('style');
-style.innerHTML = `@keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }`;
-document.head.appendChild(style);
     </script>
 </body>
 </html>
