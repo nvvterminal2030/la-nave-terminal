@@ -357,61 +357,74 @@ async function procesarPuntosFlojos(regiones) {
         const response = await fetch(proxy + encodeURIComponent(chartUrl));
         const html = await response.text();
         
-        // 1. DIVIDIMOS POR BLOQUES DE CANCIÓN (Esto es la clave para que no se crucen los datos)
-        const bloques = html.split("<br><br><b>"); 
+        // Creamos un elemento temporal para extraer el texto limpio (como el innerText que me pasaste)
+        const tempDiv = document.createElement("div");
+        tempDiv.innerHTML = html;
+        const textoPlano = tempDiv.innerText || tempDiv.textContent;
+        
+        // Dividimos el texto en líneas
+        const lineas = textoPlano.split('\n');
 
         const MAPA_INTERNO = {
-            'DOMINICAN REPUBLIC': 'DO', 'PUERTO RICO': 'PR', 'UNITED STATES': 'US',
-            'MEXICO': 'MX', 'COLOMBIA': 'CO', 'ARGENTINA': 'AR', 'CHILE': 'CL',
-            'SPAIN': 'ES', 'PERU': 'PE', 'ECUADOR': 'EC', 'GUATEMALA': 'GT',
-            'HONDURAS': 'HN', 'EL SALVADOR': 'SV', 'NICARAGUA': 'NI',
-            'COSTA RICA': 'CR', 'PANAMA': 'PA', 'BOLIVIA': 'BO',
-            'PARAGUAY': 'PY', 'URUGUAY': 'UY', 'VENEZUELA': 'VE'
+            'DOMINICAN REPUBLIC': 'DO', 'PUERTO RICO': 'PR', 'MEXICO': 'MX', 
+            'COLOMBIA': 'CO', 'ARGENTINA': 'AR', 'CHILE': 'CL', 'SPAIN': 'ES', 
+            'PERU': 'PE', 'ECUADOR': 'EC', 'GUATEMALA': 'GT', 'HONDURAS': 'HN', 
+            'EL SALVADOR': 'SV', 'NICARAGUA': 'NI', 'COSTA RICA': 'CR', 
+            'PANAMA': 'PA', 'BOLIVIA': 'BO', 'PARAGUAY': 'PY', 'URUGUAY': 'UY', 
+            'VENEZUELA': 'VE'
         };
 
-        const CATALOGO_VIEJO = ["ODISEA", "DILES", "LA OCASION", "DILE QUE TU ME QUIERES", "ADICTO", "HEY MOR", "SOBREDOSIS", "SE PREPARO", "EL FARSANTE", "AHORA DICE", "SOLITA", "VAINA LOCA", "CRIMINAL", "MONOTONIA"];
+        const CATALOGO_VIEJO = ["ODISEA", "DILES", "LA OCASION", "DILE QUE TU ME QUIERES", "ADICTO", "HEY MOR", "SOBREDOSIS", "SE PREPARO", "EL FARSANTE", "AHORA DICE", "ESCAPATE CONMIGO"];
 
-        bloques.forEach(bloque => {
-            // Extraer nombre de la canción del inicio del bloque
-            let lineas = bloque.split("<br>");
-            let songNameRaw = lineas[0].replace("</b>", "").toUpperCase();
-            let songName = songNameRaw.includes(" - ") ? songNameRaw.split(" - ")[1] : songNameRaw;
-            songName = songName.replace("OZUNA", "").trim();
+        let cancionActual = "";
+        let plataformaActual = "ITUNES";
 
-            if (!songName || songName.includes("ARTIST") || songName.length < 2) return;
+        lineas.forEach(linea => {
+            const limpia = linea.trim();
+            if (!limpia) return;
 
-            const esNuevo = !CATALOGO_VIEJO.some(v => songName.includes(v));
+            // 1. Detectar Plataforma
+            if (limpia.includes("Spotify:")) { plataformaActual = "SPOTIFY"; return; }
+            if (limpia.includes("Apple Music:")) { plataformaActual = "APPLE"; return; }
+            if (limpia.includes("iTunes:")) { plataformaActual = "ITUNES"; return; }
+            if (limpia.includes("YouTube:")) { plataformaActual = "YOUTUBE"; return; }
 
-            // 2. BUSCAMOS LOS PAÍSES SOLO DENTRO DE ESTE BLOQUE DE CANCIÓN
-            lineas.forEach(linea => {
-                const lineaUpper = linea.toUpperCase();
+            // 2. Detectar Canción: Si la línea NO tiene # y NO es una plataforma, es el nombre del track
+            if (!limpia.includes("#") && limpia.length > 2 && !limpia.includes("|") && limpia !== "Songs") {
+                // Solo actualizamos si no es ruido de la página
+                if (limpia.length < 50 && !["MAIN", "ALBUMS", "COUNTRIES", "ALL SERVICES"].includes(limpia.toUpperCase())) {
+                    cancionActual = limpia.toUpperCase();
+                }
+            }
+
+            // 3. Detectar Ranking y País
+            if (limpia.includes("#")) {
                 Object.keys(MAPA_INTERNO).forEach(pais => {
-                    if (lineaUpper.includes(pais)) {
-                        const match = lineaUpper.match(/#(\d+)/);
+                    if (limpia.toUpperCase().includes(pais)) {
+                        const match = limpia.match(/#(\d+)/);
                         if (match) {
-                            const rankValue = parseInt(match[1]);
-                            const plat = lineaUpper.includes("SPOTIFY") ? "SPOTIFY" : "APPLE";
-
+                            const rank = parseInt(match[1]);
                             if (!dbGlobal[pais]) dbGlobal[pais] = { mejor: 999, hits: [] };
                             
-                            // Guardamos solo si el ranking es real para este país en este bloque
-                            dbGlobal[pais].hits.push({ 
-                                rank: rankValue, 
-                                song: songName, 
-                                nuevo: esNuevo, 
-                                plat: plat 
+                            const esNuevo = !CATALOGO_VIEJO.some(v => cancionActual.includes(v));
+
+                            dbGlobal[pais].hits.push({
+                                song: cancionActual,
+                                rank: rank,
+                                plat: plataformaActual,
+                                nuevo: esNuevo
                             });
 
-                            if (rankValue < dbGlobal[pais].mejor) dbGlobal[pais].mejor = rankValue;
+                            if (rank < dbGlobal[pais].mejor) dbGlobal[pais].mejor = rank;
                         }
                     }
                 });
-            });
+            }
         });
 
     } catch (e) { console.error("Error Radar:", e); }
 
-    // RENDERIZADO (Mantiene tu diseño original pero con la data real)
+    // RENDERIZADO (Usa el formato visual que ya tenías)
     regiones.forEach((reg, index) => {
         const hype = reg.extracted_value;
         const paisNom = reg.location.toUpperCase();
@@ -424,8 +437,8 @@ async function procesarPuntosFlojos(regiones) {
         else if (hype > 55 && rankReal === 0) { status = "FUGA CRÍTICA"; color = "var(--red)"; icon = "🚨"; }
 
         let hitsHtml = info.hits.length > 0 
-            ? info.hits.sort((a,b) => a.rank - b.rank).slice(0, 10).map(h => `
-                <span style="display:inline-block; font-size:0.55rem; background:rgba(0,0,0,0.3); color:#eee; padding:3px 7px; margin:2px; border-radius:4px; border-bottom: 2px solid ${h.plat === 'SPOTIFY' ? '#1DB954' : '#FA243C'}">
+            ? info.hits.sort((a,b) => a.rank - b.rank).slice(0, 8).map(h => `
+                <span style="display:inline-block; font-size:0.55rem; background:rgba(0,0,0,0.3); color:#eee; padding:3px 7px; margin:2px; border-radius:4px; border-bottom: 2px solid ${h.plat === 'SPOTIFY' ? '#1DB954' : (h.plat === 'YOUTUBE' ? '#FF0000' : '#FA243C')}">
                     ${h.nuevo ? '<b style="color:#facc15;">NEW </b>' : ''}
                     <b style="color:white">#${h.rank}</b> ${h.song}
                 </span>`).join("")
@@ -437,10 +450,7 @@ async function procesarPuntosFlojos(regiones) {
                     <span style="font-size:0.8rem; font-weight:bold; color:white;">${icon} ${paisNom}</span>
                     <span style="background:${color}; color:${color==='#facc15'?'black':'white'}; font-size:0.55rem; padding:3px 8px; font-weight:900; border-radius:3px;">${status}</span>
                 </div>
-                <div style="font-size:0.75rem; margin-bottom:10px;">
-                    <span style="color:#aaa;">HYPE: <b style="color:white;">${hype}%</b></span> | 
-                    <span style="color:#aaa;">TOP: <b style="color:${color};">#${rankReal > 0 ? rankReal : 'OUT'}</b></span>
-                </div>
+                <div style="font-size:0.75rem; margin-bottom:10px; color:#aaa;">HYPE: <b style="color:white;">${hype}%</b> | TOP: <b style="color:${color};">#${rankReal > 0 ? rankReal : 'OUT'}</b></div>
                 <div style="display:flex; flex-wrap:wrap; gap:2px;">${hitsHtml}</div>
             </div>`;
             
@@ -449,7 +459,7 @@ async function procesarPuntosFlojos(regiones) {
             let tagTitle = principal ? principal.song : "CATÁLOGO";
             inversionHtml += `
                 <div class="gen-burbuja" style="border-left: 3px solid ${color}; background:rgba(255,255,255,0.03); padding:10px; margin-bottom:8px;">
-                    <b style="color:white; font-size:0.7rem;">${paisNom} (${hype}%)</b><br>
+                    <b style="color:white; font-size:0.7rem;">${paisNom}</b><br>
                     <b style="color:${color}; font-size:0.6rem;">${rankReal === 0 ? 'INYECTAR CAPITAL' : 'PUSH: ' + tagTitle}</b>
                 </div>`;
         }
