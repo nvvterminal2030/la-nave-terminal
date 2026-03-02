@@ -358,7 +358,6 @@ async function procesarPuntosFlojos(regiones) {
         const songsSection = doc.getElementById('songs');
         const dbGlobal = {};
 
-        // Normalizador para que 'TÚ' y 'TU' sean lo mismo
         const limpiarT = (t) => t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase().trim();
 
         if (songsSection) {
@@ -366,40 +365,26 @@ async function procesarPuntosFlojos(regiones) {
             celdas.forEach(celda => {
                 let nombreOriginal = celda.querySelector('b')?.innerText.trim().toUpperCase() || "TRACK";
                 let nombreCancion = nombreOriginal.split(" - ").pop().replace("OZUNA", "").trim();
-                let nombreID = limpiarT(nombreCancion); // Identidad única de la canción
+                let nombreID = limpiarT(nombreCancion);
 
                 const lineasRanking = celda.querySelectorAll('div');
                 lineasRanking.forEach(linea => {
                     const textoRaw = linea.innerText.toUpperCase();
-                    
                     if (textoRaw.includes('#')) {
                         const match = textoRaw.match(/#(\d+)\s+(.+)/);
                         if (match) {
                             const rank = parseInt(match[1]);
                             const paisNom = match[2].split('(')[0].trim().toUpperCase();
-                            
                             let plataforma = 'APPLE';
-                            if (linea.className.includes('spo') || textoRaw.includes('SPOTIFY')) {
-                                plataforma = 'SPOTIFY';
-                            } else if (textoRaw.includes('SHAZAM')) {
-                                plataforma = 'SHAZAM';
-                            } else if (textoRaw.includes('ITUNES')) {
-                                plataforma = 'ITUNES';
-                            }
+                            if (linea.className.includes('spo') || textoRaw.includes('SPOTIFY')) plataforma = 'SPOTIFY';
+                            else if (textoRaw.includes('SHAZAM')) plataforma = 'SHAZAM';
+                            else if (textoRaw.includes('ITUNES')) plataforma = 'ITUNES';
 
                             if (!dbGlobal[paisNom]) dbGlobal[paisNom] = { mejor: 999, hits: new Map() };
-                            
-                            // LOGICA ANTI-DUPLICADOS: 
-                            // Si la canción ya existe en esta plataforma, NO la vuelve a meter.
                             const llaveUnica = `${nombreID}_${plataforma}`;
                             if (!dbGlobal[paisNom].hits.has(llaveUnica)) {
-                                dbGlobal[paisNom].hits.set(llaveUnica, {
-                                    rank: rank,
-                                    plat: plataforma,
-                                    name: nombreCancion
-                                });
+                                dbGlobal[paisNom].hits.set(llaveUnica, { rank, plat: plataforma, name: nombreCancion });
                             }
-
                             if ((plataforma === 'SPOTIFY' || plataforma === 'APPLE') && rank < dbGlobal[paisNom].mejor) {
                                 dbGlobal[paisNom].mejor = rank;
                             }
@@ -412,39 +397,51 @@ async function procesarPuntosFlojos(regiones) {
         regiones.forEach((reg) => {
             const hype = reg.extracted_value;
             const paisNom = reg.location.toUpperCase();
-            // Convertimos el Map de hits a un Array para poder ordenarlo
             const info = dbGlobal[paisNom] || { mejor: 999, hits: new Map() };
             const rankReal = info.mejor === 999 ? 0 : info.mejor;
+            const hitsSorted = Array.from(info.hits.values()).sort((a, b) => a.rank - b.rank);
+
+            // --- LÓGICA DE MALICIA PARA EL CIERRE DEL BLOQUE 5 ---
+            let planInvasion = "Analizando entrada: Mercado en fase de calentamiento.";
+            const topHit = hitsSorted.length > 0 ? hitsSorted[0] : null;
+            const tieneShazamCalle = hitsSorted.some(h => h.plat === 'SHAZAM' && h.rank <= 70);
+            const tieneVentaDirecta = hitsSorted.some(h => h.plat === 'ITUNES' && h.rank <= 40);
+
+            if (rankReal > 0 && rankReal <= 50) {
+                planInvasion = `🔥 <b>DOMINIO TOTAL:</b> El país está rompiendo. No gastar en Ads pesados. Usar <b>${topHit.name}</b> para empujar temas nuevos en radios locales.`;
+            } else if (tieneShazamCalle && (rankReal > 100 || rankReal === 0)) {
+                planInvasion = `⚠️ <b>GAP DE CALLE:</b> La gente busca <b>${topHit.name}</b> en Shazam pero no hay stream. Sony está dormida. Meter pauta en YouTube para capturar ese tráfico.`;
+            } else if (tieneVentaDirecta && (rankReal > 100 || rankReal === 0)) {
+                planInvasion = `💰 <b>FANS REALES:</b> Hay ventas en iTunes pero Sony no nos pone en Playlists. Necesitamos entrar en listas regionales para subir el stream.`;
+            } else if (hype > 70 && rankReal === 0) {
+                planInvasion = `🚨 <b>OPORTUNIDAD DE ORO:</b> Hype de ${hype}% en Google pero 0 música en los charts. El mercado está pidiendo a Ozuna. Lanzar campaña de choque.`;
+            } else if (topHit) {
+                planInvasion = `📈 <b>POTENCIAL:</b> <b>${topHit.name}</b> está asomando en el chart (#${topHit.rank}). Un empujón con influencers locales nos mete al Top 100.`;
+            }
 
             let status = "ESTABLE"; let color = "var(--cyan)";
             if (rankReal > 0 && rankReal <= 50) { status = "DOMINIO TOP 50"; color = "var(--exito)"; }
             else if (hype > 65 && (rankReal > 100 || rankReal === 0)) { status = "FUGA CRÍTICA"; color = "var(--red)"; }
 
-            // Ordenamos todos los hits sin límite de cantidad
-            const hitsSorted = Array.from(info.hits.values()).sort((a, b) => a.rank - b.rank);
-
             let hitsHtml = hitsSorted.map(h => {
-                let colPlat = '#FA243C'; let letra = 'A';
-                if (h.plat === 'SPOTIFY') { colPlat = '#1DB954'; letra = 'S'; }
-                else if (h.plat === 'SHAZAM') { colPlat = '#9b59b6'; letra = 'Z'; }
-                else if (h.plat === 'ITUNES') { colPlat = '#f1c40f'; letra = 'O'; }
-
-                return `
-                <div style="background:rgba(255,255,255,0.04); margin:2px 0; padding:4px 8px; border-radius:4px; font-size:0.58rem; display:flex; justify-content:space-between; align-items:center; border-left: 3px solid ${colPlat}">
-                    <span style="color:${colPlat}; font-weight:900; margin-right:6px; font-family:monospace; font-size:0.7rem;">${letra}</span>
-                    <span style="flex:1; color:#eee; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${h.name}</span>
-                    <b style="color:white; margin-left:5px;">#${h.rank}</b>
-                </div>`;
+                let colPlat = h.plat === 'SPOTIFY' ? '#1DB954' : (h.plat === 'SHAZAM' ? '#9b59b6' : (h.plat === 'ITUNES' ? '#f1c40f' : '#FA243C'));
+                let letra = h.plat === 'SPOTIFY' ? 'S' : (h.plat === 'SHAZAM' ? 'Z' : (h.plat === 'ITUNES' ? 'O' : 'A'));
+                return `<div style="background:rgba(255,255,255,0.04); margin:2px 0; padding:4px 8px; border-radius:4px; font-size:0.58rem; display:flex; justify-content:space-between; align-items:center; border-left: 3px solid ${colPlat}"><span style="color:${colPlat}; font-weight:900;">${letra} <span style="color:#eee; font-weight:normal; margin-left:4px;">${h.name}</span></span><b style="color:white;">#${h.rank}</b></div>`;
             }).join("");
 
             debilHtml += `
-                <div class="card-debil" style="border-left: 5px solid ${color}; padding:12px; background:rgba(10,10,10,0.5); margin-bottom:10px; border-radius:10px;">
+                <div class="card-debil" style="border-left: 5px solid ${color}; padding:12px; background:rgba(10,10,10,0.5); margin-bottom:12px; border-radius:10px;">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
                         <b style="font-size:0.8rem; color:white;">${paisNom}</b>
                         <span style="background:${color}; color:black; font-size:0.5rem; padding:2px 6px; font-weight:bold; border-radius:3px;">${status}</span>
                     </div>
                     <div style="font-size:0.6rem; color:#888; margin-bottom:8px;">HYPE GOOGLE: ${hype}% | TOP REAL: #${rankReal > 0 ? rankReal : '---'}</div>
-                    <div style="display:grid; grid-template-columns: 1fr; gap:1px;">${hitsHtml || "<span style='color:#444; font-size:0.6rem;'>SIN DATA</span>"}</div>
+                    <div style="display:grid; grid-template-columns: 1fr; gap:1px; margin-bottom:8px;">${hitsHtml || "<span style='color:#444; font-size:0.6rem;'>SIN DATA</span>"}</div>
+                    
+                    <div style="background:rgba(255,255,255,0.08); padding:10px; border-radius:6px; border: 1px solid rgba(255,255,255,0.1);">
+                        <div style="font-size:0.45rem; color:var(--cyan); font-weight:bold; text-transform:uppercase; margin-bottom:4px; letter-spacing:1px;">Plan de Ataque:</div>
+                        <div style="font-size:0.58rem; color:#ddd; line-height:1.4;">${planInvasion}</div>
+                    </div>
                 </div>`;
         });
 
