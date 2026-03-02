@@ -362,7 +362,7 @@ async function procesarPuntosFlojos(regiones) {
             const celdas = songsSection.querySelectorAll('td[valign="top"]');
             celdas.forEach(celda => {
                 let nombreCancion = celda.querySelector('b')?.innerText.trim().toUpperCase() || "TRACK";
-                // Limpieza de nombre: quitamos el "Ozuna -" si existe
+                // Limpieza de nombre
                 nombreCancion = nombreCancion.split(" - ").pop().replace("OZUNA", "").trim();
 
                 const lineasRanking = celda.querySelectorAll('div');
@@ -375,32 +375,21 @@ async function procesarPuntosFlojos(regiones) {
                             const rank = parseInt(match[1]);
                             const paisNom = match[2].split('(')[0].trim();
                             
-                            // DETECCIÓN TRIPLE: Spotify, Shazam o Apple
-                            let plataforma = "APPLE";
-                            if (linea.className.includes('spo') || textoRaw.includes('SPO')) {
-                                plataforma = 'SPOTIFY';
-                            } else if (textoRaw.includes('SHAZAM')) {
-                                plataforma = 'SHAZAM';
-                            }
+                            // LÓGICA DE DETECCIÓN DUAL
+                            // Kworb usa clase 'spo' para Spotify y 'app' o 'itu' para Apple/iTunes
+                            const esSpotify = linea.className.includes('spo') || textoRaw.includes('SPO');
+                            const plataforma = esSpotify ? 'SPOTIFY' : 'APPLE';
 
-                            if (!dbGlobal[paisNom]) dbGlobal[paisNom] = { mejor: 999, hits: new Map() };
+                            if (!dbGlobal[paisNom]) dbGlobal[paisNom] = { mejor: 999, hits: [] };
                             
-                            // LLAVE ÚNICA para evitar que se repita la misma canción en la misma plataforma
-                            const key = `${nombreCancion}_${plataforma}`;
-                            
-                            // Solo guardamos si es una posición mejor o si no existía
-                            if (!dbGlobal[paisNom].hits.has(key) || rank < dbGlobal[paisNom].hits.get(key).rank) {
-                                dbGlobal[paisNom].hits.set(key, {
-                                    rank: rank,
-                                    plat: plataforma,
-                                    name: nombreCancion
-                                });
-                            }
+                            // Guardamos todos los hits indicando su plataforma
+                            dbGlobal[paisNom].hits.push({
+                                rank: rank,
+                                plat: plataforma,
+                                name: nombreCancion
+                            });
 
-                            // El ranking "Mejor" para el estatus no cuenta Shazam (solo ventas/repro)
-                            if (plataforma !== 'SHAZAM' && rank < dbGlobal[paisNom].mejor) {
-                                dbGlobal[paisNom].mejor = rank;
-                            }
+                            if (rank < dbGlobal[paisNom].mejor) dbGlobal[paisNom].mejor = rank;
                         }
                     }
                 });
@@ -411,31 +400,21 @@ async function procesarPuntosFlojos(regiones) {
         regiones.forEach((reg) => {
             const hype = reg.extracted_value;
             const paisNom = reg.location.toUpperCase();
-            const info = dbGlobal[paisNom] || { mejor: 999, hits: new Map() };
+            const info = dbGlobal[paisNom] || { mejor: 999, hits: [] };
             const rankReal = info.mejor === 999 ? 0 : info.mejor;
 
-            let status = "ESTABLE"; 
-            let color = "var(--cyan)";
-            
-            if (rankReal > 0 && rankReal <= 50) { 
-                status = "DOMINIO TOP 50"; 
-                color = "var(--exito)"; 
-            } else if (hype > 65 && (rankReal > 100 || rankReal === 0)) { 
-                status = "FUGA CRÍTICA"; 
-                color = "var(--red)"; 
-            }
+            let status = "ESTABLE"; let color = "var(--cyan)";
+            if (rankReal > 0 && rankReal <= 50) { status = "DOMINIO TOP 50"; color = "var(--exito)"; }
+            else if (hype > 65 && (rankReal > 100 || rankReal === 0)) { status = "FUGA CRÍTICA"; color = "var(--red)"; }
 
-            // Convertimos el Map a Array para ordenar y mostrar
-            const hitsSorted = Array.from(info.hits.values())
-                .sort((a, b) => a.rank - b.rank)
-                .slice(0, 7);
+            // Ordenar: Mostrar los mejores rankings primero
+            const hitsSorted = info.hits.sort((a, b) => a.rank - b.rank).slice(0, 7);
 
             let hitsHtml = hitsSorted.map(h => {
-                let colPlat = '#FA243C'; // Rojo Apple por defecto
-                let letra = 'A';
-                
-                if (h.plat === 'SPOTIFY') { colPlat = '#1DB954'; letra = 'S'; }
-                else if (h.plat === 'SHAZAM') { colPlat = '#9b59b6'; letra = 'Z'; } // Violeta Shazam
+                // Definir color según plataforma: VERDE para Spotify, ROJO para Apple
+                const esS = h.plat === 'SPOTIFY';
+                const colPlat = esS ? '#1DB954' : '#FA243C';
+                const letra = esS ? 'S' : 'A';
 
                 return `
                 <div style="background:rgba(255,255,255,0.04); margin:2px 0; padding:4px 8px; border-radius:4px; font-size:0.58rem; display:flex; justify-content:space-between; align-items:center; border-left: 3px solid ${colPlat}">
@@ -451,14 +430,14 @@ async function procesarPuntosFlojos(regiones) {
                         <b style="font-size:0.8rem; color:white;">${paisNom}</b>
                         <span style="background:${color}; color:black; font-size:0.5rem; padding:2px 6px; font-weight:bold; border-radius:3px;">${status}</span>
                     </div>
-                    <div style="font-size:0.6rem; color:#888; margin-bottom:8px; letter-spacing:1px;">HYPE GOOGLE: ${hype}% | TOP REAL: #${rankReal > 0 ? rankReal : '---'}</div>
+                    <div style="font-size:0.6rem; color:#888; margin-bottom:8px; letter-spacing:1px;">HYPE GOOGLE: ${hype}% | TOP: #${rankReal > 0 ? rankReal : '---'}</div>
                     <div style="display:grid; grid-template-columns: 1fr; gap:1px;">${hitsHtml || "<span style='color:#444; font-size:0.6rem;'>SIN PENETRACIÓN</span>"}</div>
                 </div>`;
         });
 
         document.getElementById('lista-debilidades-MAR').innerHTML = debilHtml;
     } catch (e) { 
-        console.error("Error en Radar Triple:", e); 
+        console.error("Error en Radar Dual:", e); 
     }
 }
     </script>
