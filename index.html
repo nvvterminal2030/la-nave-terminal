@@ -367,7 +367,7 @@ async function procesarPuntosFlojos(regiones) {
             'PARAGUAY': 'PY', 'URUGUAY': 'UY', 'VENEZUELA': 'VE'
         };
 
-        const CATALOGO_VIEJO = ["ODISEA", "DILES", "LA OCASION", "DILE QUE TU ME QUIERES", "ADICTO", "HEY MOR", "SOBREDOSIS", "SE PREPARO", "EL FARSANTE"];
+        const CATALOGO_VIEJO = ["ODISEA", "DILES", "LA OCASION", "DILE QUE TU ME QUIERES", "ADICTO", "HEY MOR", "SOBREDOSIS", "SE PREPARO"];
 
         Object.keys(MAPA_INTERNO).forEach(pais => {
             const regex = new RegExp(`#(\\d+)\\s+(${pais})`, 'g');
@@ -375,40 +375,36 @@ async function procesarPuntosFlojos(regiones) {
             
             while ((match = regex.exec(rawUpper)) !== null) {
                 const rankValue = parseInt(match[1]);
-                const fragmentoPrevio = html.substring(Math.max(0, match.index - 1000), match.index);
                 
-                // Solo procesamos si detectamos a OZUNA en el bloque inmediato
-                if (fragmentoPrevio.toUpperCase().includes("OZUNA")) {
-                    const songMatches = fragmentoPrevio.match(/<b>(.*?)<\/b>/g);
-                    let songName = ""; 
-
-                    if (songMatches) {
-                        for (let i = songMatches.length - 1; i >= 0; i--) {
-                            let candidate = songMatches[i].replace(/<\/?b>/g, "").toUpperCase();
-                            if (candidate.length > 2 && !candidate.includes("ARTIST") && !candidate.includes("TOTAL")) {
-                                // Limpiamos el nombre si viene con el artista
-                                songName = candidate.includes(" - ") ? candidate.split(" - ")[1].trim() : candidate.trim();
-                                // Si después de limpiar sigue diciendo OZUNA, buscamos el anterior
-                                if (songName === "OZUNA") continue;
-                                break;
-                            }
+                // ESCANEO DE NOMBRE REFORZADO (Buscamos más atrás para evitar el 'CATÁLOGO')
+                const fragmentoPrevio = html.substring(match.index - 1000, match.index);
+                const songMatches = fragmentoPrevio.match(/<b>(.*?)<\/b>/g);
+                let songName = "TRACK DESCONOCIDO";
+                
+                if (songMatches && songMatches.length > 0) {
+                    // Filtramos nombres que sean basura o solo el nombre del artista
+                    for (let i = songMatches.length - 1; i >= 0; i--) {
+                        let candidate = songMatches[i].replace(/<\/?b>/g, "").toUpperCase();
+                        if (candidate.length > 2 && !candidate.includes("OZUNA") && !candidate.includes("ARTIST")) {
+                            songName = candidate.split(" - ")[0].trim();
+                            break;
                         }
                     }
+                    if(songName.length > 25) songName = songName.substring(0, 22) + "...";
+                }
 
-                    if (!songName || songName === "") songName = "CATÁLOGO ACTIVO";
+                const contexto = rawUpper.substring(match.index - 60, match.index);
+                let plataforma = contexto.includes("SPO") ? "SPOTIFY" : (contexto.includes("APP") ? "APPLE" : "ITUNES");
 
-                    const contexto = rawUpper.substring(match.index - 60, match.index);
-                    let plataforma = contexto.includes("SPO") ? "SPOTIFY" : "APPLE MUSIC";
+                if (!dbGlobal[pais]) dbGlobal[pais] = { mejor: 999, hits: [] };
+                if (rankValue < dbGlobal[pais].mejor) dbGlobal[pais].mejor = rankValue;
 
-                    if (!dbGlobal[pais]) dbGlobal[pais] = { mejor: 999, hits: [] };
-                    if (rankValue < dbGlobal[pais].mejor) dbGlobal[pais].mejor = rankValue;
+                // Si no está en la lista de viejos, es NEW
+                const esNuevo = !CATALOGO_VIEJO.some(v => songName.includes(v)) && rankValue < 150;
 
-                    const esNuevo = !CATALOGO_VIEJO.some(v => songName.includes(v)) && rankValue < 150;
-                    const yaExiste = dbGlobal[pais].hits.some(h => h.rank === rankValue && h.song === songName);
-                    
-                    if (!yaExiste) {
-                        dbGlobal[pais].hits.push({ plat: plataforma, rank: rankValue, song: songName, nuevo: esNuevo });
-                    }
+                const yaExiste = dbGlobal[pais].hits.some(h => h.rank === rankValue && h.song === songName);
+                if (!yaExiste) {
+                    dbGlobal[pais].hits.push({ plat: plataforma, rank: rankValue, song: songName, nuevo: esNuevo });
                 }
             }
         });
@@ -429,39 +425,35 @@ async function procesarPuntosFlojos(regiones) {
         let hitsHtml = info.hits.length > 0 
             ? info.hits.sort((a,b) => a.rank - b.rank).slice(0, 8).map(h => `
                 <span style="display:inline-block; font-size:0.55rem; background:rgba(0,0,0,0.3); color:#eee; padding:3px 7px; margin:2px; border-radius:4px; border-bottom: 2px solid ${h.plat === 'SPOTIFY' ? '#1DB954' : '#FA243C'}">
-                    ${h.nuevo ? '<b style="color:#facc15; animation: blink 1s infinite;">NEW </b>' : ''}
+                    ${h.nuevo ? '<b style="color:#facc15;">NEW </b>' : ''}
                     <b style="color:${h.plat === 'SPOTIFY' ? '#1DB954' : '#FA243C'}">#${h.rank}</b> ${h.song}
                 </span>`).join("")
-            : "<span style='color:#666; font-size:0.6rem;'>FUERA DE CHARTS</span>";
+            : "<span style='color:#666; font-size:0.6rem;'>SIN DATA ACTUAL</span>";
 
         debilHtml += `
             <div class="card-debil" style="border-left: 4px solid ${color}; background: rgba(255,255,255,0.02); margin-bottom:12px; padding:15px; border-radius:10px;">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                     <span style="font-size:0.8rem; font-weight:bold; color:white;">${icon} ${paisNom}</span>
                     <span style="background:${color}; color:${color==='#facc15'?'black':'white'}; font-size:0.55rem; padding:3px 8px; font-weight:900; border-radius:3px;">${status}</span>
                 </div>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; margin-top:8px; font-size:0.7rem; color:#aaa;">
-                    <div>INTERÉS GOOGLE: <b style="color:white;">${hype}%</b></div>
-                    <div>TOP RANK: <b style="color:${color};">#${rankReal > 0 ? rankReal : 'OUT'}</b></div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; margin-bottom:10px; font-size:0.75rem;">
+                    <div style="color:#aaa;">HYPE GOOGLE: <b style="color:white;">${hype}%</b></div>
+                    <div style="color:#aaa;">TOP RANK: <b style="color:${color};">#${rankReal > 0 ? rankReal : 'OUT'}</b></div>
                 </div>
-                <div style="display:flex; flex-wrap:wrap; gap:2px; margin-top:10px;">${hitsHtml}</div>
+                <div style="display:flex; flex-wrap:wrap; gap:2px;">${hitsHtml}</div>
             </div>`;
             
         if (index < 6) {
             let principal = info.hits.find(h => h.nuevo) || info.hits[0];
-            let tagTitle = principal ? principal.song : "CONQUISTA";
+            let tagTitle = principal ? principal.song : "CATÁLOGO";
             let esLanzamiento = info.hits.some(h => h.nuevo);
-            let accion = (rankReal === 0) ? "FORZAR ENTRADA" : (esLanzamiento ? "PROTEGER POSICIÓN" : "SUBIR RANKING");
-
+            
             inversionHtml += `
                 <div class="gen-burbuja" style="border-left: 3px solid ${esLanzamiento ? '#facc15' : color}; background:rgba(255,255,255,0.03); padding:10px; margin-bottom:8px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <b style="color:${esLanzamiento ? '#facc15' : color}; font-size:0.75rem;">${paisNom}</b>
-                        <span style="color:white; font-size:0.6rem; font-weight:bold;">#${rankReal > 0 ? rankReal : 'OUT'}</span>
-                    </div>
+                    <b style="color:${esLanzamiento ? '#facc15' : color}; font-size:0.75rem;">${paisNom}</b>
                     <div style="font-size:0.6rem; color:#888; margin-top:4px;">
                         TRACK: <b style="color:white;">${tagTitle}</b><br>
-                        PLAN: <b style="color:${color === 'var(--red)' ? 'var(--red)' : '#fff'}">${accion}</b>
+                        ACCIÓN: <b style="color:${esLanzamiento ? '#facc15' : '#fff'}">${esLanzamiento ? 'PROTEGER ESTRENO' : 'INYECTAR CAPITAL'}</b>
                     </div>
                 </div>`;
         }
@@ -471,6 +463,7 @@ async function procesarPuntosFlojos(regiones) {
     document.getElementById('orden-ejecucion-MAR').innerHTML = inversionHtml;
 }
 
+// Estilo para el parpadeo de "NEW"
 const style = document.createElement('style');
 style.innerHTML = `@keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }`;
 document.head.appendChild(style);
