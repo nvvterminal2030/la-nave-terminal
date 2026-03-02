@@ -356,9 +356,7 @@ async function procesarPuntosFlojos(regiones) {
     try {
         const response = await fetch(proxy + encodeURIComponent(chartUrl));
         const html = await response.text();
-        
-        // DIVIDIMOS POR BLOQUES: Cada canción empieza después de un espacio doble o etiquetas de negrita
-        const bloques = html.split(/\n\s*\n/); 
+        const rawUpper = html.toUpperCase();
 
         const MAPA_INTERNO = {
             'DOMINICAN REPUBLIC': 'DO', 'PUERTO RICO': 'PR', 'UNITED STATES': 'US',
@@ -369,53 +367,50 @@ async function procesarPuntosFlojos(regiones) {
             'PARAGUAY': 'PY', 'URUGUAY': 'UY', 'VENEZUELA': 'VE'
         };
 
-        const CATALOGO_VIEJO = ["ODISEA", "DILES", "LA OCASION", "DILE QUE TU ME QUIERES", "ADICTO", "HEY MOR", "SOBREDOSIS", "SE PREPARO", "EL FARSANTE", "ESCAPATE CONMIGO", "ENEMIGOS", "MONOTONIA", "SG", "UNA LOCURA", "GATA ONLY", "PA TI ESTOY", "AHORA DICE", "VAINA LOCA", "CARAMELO"];
+        const CATALOGO_VIEJO = ["ODISEA", "DILES", "LA OCASION", "DILE QUE TU ME QUIERES", "ADICTO", "HEY MOR", "SOBREDOSIS", "SE PREPARO"];
 
-        let currentSong = "CATÁLOGO";
-
-        // Procesamos el texto línea por línea para no perder el hilo
-        const lineas = html.split('\n');
-        
-        lineas.forEach(linea => {
-            let limpia = linea.replace(/<[^>]*>/g, "").trim();
-            if (!limpia) return;
-
-            // Si la línea NO empieza con # y es corta, probablemente es el NOMBRE DE LA CANCIÓN
-            if (!limpia.includes("#") && limpia.length > 2 && !limpia.includes("Spotify") && !limpia.includes("Apple") && !limpia.includes("iTunes")) {
-                currentSong = limpia.toUpperCase();
-            }
-
-            // Si la línea tiene un ranking y un país del mapa
-            if (limpia.includes("#")) {
-                Object.keys(MAPA_INTERNO).forEach(pais => {
-                    if (limpia.toUpperCase().includes(pais)) {
-                        const match = limpia.match(/#(\d+)/);
-                        if (match) {
-                            const rankValue = parseInt(match[1]);
-                            const esNuevo = !CATALOGO_VIEJO.some(v => currentSong.includes(v)) && rankValue < 150;
-                            
-                            if (!dbGlobal[pais]) dbGlobal[pais] = { mejor: 999, hits: [] };
-                            if (rankValue < dbGlobal[pais].mejor) dbGlobal[pais].mejor = rankValue;
-
-                            // Evitar duplicados en el mismo país/ranking
-                            const yaExiste = dbGlobal[pais].hits.some(h => h.rank === rankValue && h.song === currentSong);
-                            if (!yaExiste) {
-                                dbGlobal[pais].hits.push({ 
-                                    plat: limpia.includes("Spotify") ? "SPOTIFY" : "APPLE", 
-                                    rank: rankValue, 
-                                    song: currentSong, 
-                                    nuevo: esNuevo 
-                                });
-                            }
+        Object.keys(MAPA_INTERNO).forEach(pais => {
+            const regex = new RegExp(`#(\\d+)\\s+(${pais})`, 'g');
+            let match;
+            
+            while ((match = regex.exec(rawUpper)) !== null) {
+                const rankValue = parseInt(match[1]);
+                
+                // ESCANEO DE NOMBRE REFORZADO (Buscamos más atrás para evitar el 'CATÁLOGO')
+                const fragmentoPrevio = html.substring(match.index - 1000, match.index);
+                const songMatches = fragmentoPrevio.match(/<b>(.*?)<\/b>/g);
+                let songName = "TRACK DESCONOCIDO";
+                
+                if (songMatches && songMatches.length > 0) {
+                    // Filtramos nombres que sean basura o solo el nombre del artista
+                    for (let i = songMatches.length - 1; i >= 0; i--) {
+                        let candidate = songMatches[i].replace(/<\/?b>/g, "").toUpperCase();
+                        if (candidate.length > 2 && !candidate.includes("OZUNA") && !candidate.includes("ARTIST")) {
+                            songName = candidate.split(" - ")[0].trim();
+                            break;
                         }
                     }
-                });
+                    if(songName.length > 25) songName = songName.substring(0, 22) + "...";
+                }
+
+                const contexto = rawUpper.substring(match.index - 60, match.index);
+                let plataforma = contexto.includes("SPO") ? "SPOTIFY" : (contexto.includes("APP") ? "APPLE" : "ITUNES");
+
+                if (!dbGlobal[pais]) dbGlobal[pais] = { mejor: 999, hits: [] };
+                if (rankValue < dbGlobal[pais].mejor) dbGlobal[pais].mejor = rankValue;
+
+                // Si no está en la lista de viejos, es NEW
+                const esNuevo = !CATALOGO_VIEJO.some(v => songName.includes(v)) && rankValue < 150;
+
+                const yaExiste = dbGlobal[pais].hits.some(h => h.rank === rankValue && h.song === songName);
+                if (!yaExiste) {
+                    dbGlobal[pais].hits.push({ plat: plataforma, rank: rankValue, song: songName, nuevo: esNuevo });
+                }
             }
         });
 
     } catch (e) { console.error("Error Radar:", e); }
 
-    // RENDERIZADO (Mantiene tu diseño original pero con la data curada)
     regiones.forEach((reg, index) => {
         const hype = reg.extracted_value;
         const paisNom = reg.location.toUpperCase();
@@ -429,9 +424,9 @@ async function procesarPuntosFlojos(regiones) {
 
         let hitsHtml = info.hits.length > 0 
             ? info.hits.sort((a,b) => a.rank - b.rank).slice(0, 8).map(h => `
-                <span style="display:inline-block; font-size:0.55rem; background:rgba(0,0,0,0.3); color:#eee; padding:3px 7px; margin:2px; border-radius:4px; border-bottom: 2px solid ${h.rank < 100 ? '#1DB954' : '#FA243C'}">
+                <span style="display:inline-block; font-size:0.55rem; background:rgba(0,0,0,0.3); color:#eee; padding:3px 7px; margin:2px; border-radius:4px; border-bottom: 2px solid ${h.plat === 'SPOTIFY' ? '#1DB954' : '#FA243C'}">
                     ${h.nuevo ? '<b style="color:#facc15;">NEW </b>' : ''}
-                    <b style="color:white">#${h.rank}</b> ${h.song}
+                    <b style="color:${h.plat === 'SPOTIFY' ? '#1DB954' : '#FA243C'}">#${h.rank}</b> ${h.song}
                 </span>`).join("")
             : "<span style='color:#666; font-size:0.6rem;'>SIN DATA ACTUAL</span>";
 
@@ -449,7 +444,7 @@ async function procesarPuntosFlojos(regiones) {
             </div>`;
             
         if (index < 6) {
-            let principal = info.hits.sort((a,b) => a.rank - b.rank)[0];
+            let principal = info.hits.find(h => h.nuevo) || info.hits[0];
             let tagTitle = principal ? principal.song : "CATÁLOGO";
             let esLanzamiento = info.hits.some(h => h.nuevo);
             
@@ -467,6 +462,11 @@ async function procesarPuntosFlojos(regiones) {
     document.getElementById('lista-debilidades-MAR').innerHTML = debilHtml;
     document.getElementById('orden-ejecucion-MAR').innerHTML = inversionHtml;
 }
+
+// Estilo para el parpadeo de "NEW"
+const style = document.createElement('style');
+style.innerHTML = `@keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }`;
+document.head.appendChild(style);
     </script>
 </body>
 </html>
