@@ -358,87 +358,84 @@ async function procesarPuntosFlojos(regiones) {
         const songsSection = doc.getElementById('songs');
         const dbGlobal = {};
 
+        // Función interna para limpiar tildes y basura
+        const limpiarTexto = (t) => t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase().trim();
+
         if (songsSection) {
             const celdas = songsSection.querySelectorAll('td[valign="top"]');
             celdas.forEach(celda => {
-                let nombreCancion = celda.querySelector('b')?.innerText.trim().toUpperCase() || "TRACK";
-                // Limpieza de nombre
-                nombreCancion = nombreCancion.split(" - ").pop().replace("OZUNA", "").trim();
+                let nombreOriginal = celda.querySelector('b')?.innerText || "TRACK";
+                let nombreLimpio = limpiarTexto(nombreOriginal.split(" - ").pop().replace("OZUNA", ""));
 
                 const lineasRanking = celda.querySelectorAll('div');
                 lineasRanking.forEach(linea => {
                     const textoRaw = linea.innerText.toUpperCase();
-                    
                     if (textoRaw.includes('#')) {
                         const match = textoRaw.match(/#(\d+)\s+(.+)/);
                         if (match) {
                             const rank = parseInt(match[1]);
-                            const paisNom = match[2].split('(')[0].trim();
+                            const paisNom = limpiarTexto(match[2].split('(')[0]);
                             
-                            // LÓGICA DE DETECCIÓN DUAL
-                            // Kworb usa clase 'spo' para Spotify y 'app' o 'itu' para Apple/iTunes
-                            const esSpotify = linea.className.includes('spo') || textoRaw.includes('SPO');
-                            const plataforma = esSpotify ? 'SPOTIFY' : 'APPLE';
+                            let plat = "APPLE";
+                            if (linea.className.includes('spo') || textoRaw.includes('SPOTIFY')) plat = 'SPOTIFY';
+                            else if (textoRaw.includes('SHAZAM')) plat = 'SHAZAM';
+                            else if (textoRaw.includes('ITUNES') || textoRaw.includes('YOUTUBE')) plat = 'OTHER';
 
-                            if (!dbGlobal[paisNom]) dbGlobal[paisNom] = { mejor: 999, hits: [] };
+                            if (!dbGlobal[paisNom]) dbGlobal[paisNom] = { mejor: 999, hits: new Map() };
                             
-                            // Guardamos todos los hits indicando su plataforma
-                            dbGlobal[paisNom].hits.push({
-                                rank: rank,
-                                plat: plataforma,
-                                name: nombreCancion
-                            });
+                            // FILTRO DE HUELLA ÚNICA: Canción + Plataforma
+                            const key = `${nombreLimpio}_${plat}`;
+                            if (!dbGlobal[paisNom].hits.has(key) || rank < dbGlobal[paisNom].hits.get(key).rank) {
+                                dbGlobal[paisNom].hits.set(key, { rank, plat, name: nombreLimpio });
+                            }
 
-                            if (rank < dbGlobal[paisNom].mejor) dbGlobal[paisNom].mejor = rank;
+                            if (plat !== 'SHAZAM' && plat !== 'OTHER' && rank < dbGlobal[paisNom].mejor) {
+                                dbGlobal[paisNom].mejor = rank;
+                            }
                         }
                     }
                 });
             });
         }
 
-        // RENDERIZADO EN EL RADAR
         regiones.forEach((reg) => {
             const hype = reg.extracted_value;
-            const paisNom = reg.location.toUpperCase();
-            const info = dbGlobal[paisNom] || { mejor: 999, hits: [] };
+            const paisNom = limpiarTexto(reg.location);
+            const info = dbGlobal[paisNom] || { mejor: 999, hits: new Map() };
             const rankReal = info.mejor === 999 ? 0 : info.mejor;
 
             let status = "ESTABLE"; let color = "var(--cyan)";
             if (rankReal > 0 && rankReal <= 50) { status = "DOMINIO TOP 50"; color = "var(--exito)"; }
             else if (hype > 65 && (rankReal > 100 || rankReal === 0)) { status = "FUGA CRÍTICA"; color = "var(--red)"; }
 
-            // Ordenar: Mostrar los mejores rankings primero
-            const hitsSorted = info.hits.sort((a, b) => a.rank - b.rank).slice(0, 7);
+            const hitsSorted = Array.from(info.hits.values()).sort((a,b) => a.rank - b.rank).slice(0, 8);
 
             let hitsHtml = hitsSorted.map(h => {
-                // Definir color según plataforma: VERDE para Spotify, ROJO para Apple
-                const esS = h.plat === 'SPOTIFY';
-                const colPlat = esS ? '#1DB954' : '#FA243C';
-                const letra = esS ? 'S' : 'A';
+                let colPlat = '#FA243C'; let letra = 'A';
+                if (h.plat === 'SPOTIFY') { colPlat = '#1DB954'; letra = 'S'; }
+                else if (h.plat === 'SHAZAM') { colPlat = '#9b59b6'; letra = 'Z'; }
+                else if (h.plat === 'OTHER') { colPlat = '#f1c40f'; letra = 'O'; }
 
                 return `
-                <div style="background:rgba(255,255,255,0.04); margin:2px 0; padding:4px 8px; border-radius:4px; font-size:0.58rem; display:flex; justify-content:space-between; align-items:center; border-left: 3px solid ${colPlat}">
-                    <span style="color:${colPlat}; font-weight:900; margin-right:6px; font-family:monospace; font-size:0.7rem;">${letra}</span>
+                <div style="background:rgba(255,255,255,0.04); margin:2px 0; padding:4px 8px; border-radius:4px; font-size:0.58rem; display:flex; justify-content:space-between; border-left: 3px solid ${colPlat}">
+                    <span style="color:${colPlat}; font-weight:900; margin-right:6px;">${letra}</span>
                     <span style="flex:1; color:#eee; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${h.name}</span>
-                    <b style="color:white; margin-left:5px;">#${h.rank}</b>
+                    <b style="color:white;">#${h.rank}</b>
                 </div>`;
             }).join("");
 
             debilHtml += `
                 <div class="card-debil" style="border-left: 5px solid ${color}; padding:12px; background:rgba(10,10,10,0.5); margin-bottom:10px; border-radius:10px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                        <b style="font-size:0.8rem; color:white;">${paisNom}</b>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <b style="font-size:0.8rem; color:white;">${reg.location.toUpperCase()}</b>
                         <span style="background:${color}; color:black; font-size:0.5rem; padding:2px 6px; font-weight:bold; border-radius:3px;">${status}</span>
                     </div>
-                    <div style="font-size:0.6rem; color:#888; margin-bottom:8px; letter-spacing:1px;">HYPE GOOGLE: ${hype}% | TOP: #${rankReal > 0 ? rankReal : '---'}</div>
-                    <div style="display:grid; grid-template-columns: 1fr; gap:1px;">${hitsHtml || "<span style='color:#444; font-size:0.6rem;'>SIN PENETRACIÓN</span>"}</div>
+                    <div style="font-size:0.6rem; color:#888; margin:5px 0;">HYPE: ${hype}% | TOP REAL: #${rankReal > 0 ? rankReal : '---'}</div>
+                    <div>${hitsHtml || "<span style='color:#444;'>SIN DATA</span>"}</div>
                 </div>`;
         });
-
         document.getElementById('lista-debilidades-MAR').innerHTML = debilHtml;
-    } catch (e) { 
-        console.error("Error en Radar Dual:", e); 
-    }
+    } catch (e) { console.error(e); }
 }
     </script>
 </body>
