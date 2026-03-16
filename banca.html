@@ -6,28 +6,38 @@
     <title>NVVEX // BANCA DE INTELIGENCIA</title>
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
-        :root { --morado: #bc13fe; --negro: #000; --verde-data: #39ff14; }
+        :root { --morado: #bc13fe; --negro: #000; --verde: #39ff14; --rojo: #ff3131; }
         body { background: var(--negro); color: #fff; font-family: 'Share Tech Mono', monospace; margin: 0; padding: 20px; overflow-x: hidden; }
         
-        /* Header Bloomberg Style */
+        /* Efecto de Escaneo de Terminal */
+        body::before { content: " "; display: block; position: fixed; top: 0; left: 0; bottom: 0; right: 0; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06)); z-index: 2; background-size: 100% 2px, 3px 100%; pointer-events: none; }
+
         .banca-header { border-bottom: 2px solid var(--morado); padding-bottom: 10px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-end; }
-        .banca-title { font-size: 1.5rem; font-weight: bold; text-shadow: 0 0 10px var(--morado); }
-        .status-line { font-size: 0.7rem; color: var(--morado); }
+        .banca-title { font-size: 1.6rem; font-weight: bold; text-shadow: 0 0 15px var(--morado); letter-spacing: 2px; }
+        .status-line { font-size: 0.7rem; color: var(--morado); text-transform: uppercase; }
 
-        /* Grid de 3 Bloques */
         .banca-grid { display: grid; grid-template-columns: 1fr 1.5fr 1fr; gap: 20px; }
-        .panel { border: 1px solid rgba(188, 19, 254, 0.3); background: rgba(5, 0, 5, 0.9); position: relative; }
-        .panel-h { background: var(--morado); color: #000; padding: 3px 10px; font-size: 0.7rem; font-weight: bold; }
+        .panel { border: 1px solid rgba(188, 19, 254, 0.4); background: rgba(10, 0, 10, 0.95); min-height: 500px; box-shadow: inset 0 0 20px rgba(188, 19, 254, 0.1); }
+        .panel-h { background: var(--morado); color: #000; padding: 5px 12px; font-size: 0.75rem; font-weight: bold; letter-spacing: 1px; }
 
-        /* Bloque 1: Mercados */
-        .market-item { padding: 10px; border-bottom: 1px solid rgba(188, 19, 254, 0.1); display: flex; justify-content: space-between; }
-        .val { color: var(--verde-data); }
+        /* Estilos de Mercados (Dinámicos) */
+        .market-item { padding: 12px; border-bottom: 1px solid rgba(188, 19, 254, 0.2); display: flex; justify-content: space-between; align-items: center; }
+        .asset-name { color: #aaa; font-size: 0.8rem; }
+        .val { color: var(--verde); font-size: 1.1rem; text-shadow: 0 0 5px var(--verde); }
 
-        /* Bloque 2 y 3: Noticias e Intel */
-        .noticia-item { padding: 15px; border-bottom: 1px solid rgba(188, 19, 254, 0.2); }
-        .id-stamp { font-size: 0.5rem; color: var(--morado); margin-bottom: 5px; }
-        .thumb-yt { width: 80px; height: auto; border: 1px solid var(--morado); float: left; margin-right: 10px; }
+        /* Estilos de Tech e Industria */
+        .noticia-item { padding: 15px; border-bottom: 1px solid rgba(188, 19, 254, 0.2); transition: 0.3s; }
+        .noticia-item:hover { background: rgba(188, 19, 254, 0.05); }
+        .id-stamp { font-size: 0.55rem; color: var(--morado); margin-bottom: 8px; opacity: 0.7; }
+        .titular-tech { color: #fff; font-size: 0.9rem; margin: 0 0 8px 0; text-transform: uppercase; line-height: 1.2; }
         
+        /* Imagen de YT (Hotlinking) */
+        .yt-box { width: 100%; height: 150px; background-size: cover; background-position: center; border: 1px solid var(--morado); margin-bottom: 10px; position: relative; }
+        .yt-box::after { content: "LIVE_STREAM"; position: absolute; top: 5px; right: 5px; background: var(--rojo); font-size: 0.5rem; padding: 2px 5px; }
+
+        .desc-intel { font-size: 0.75rem; color: #ccc; line-height: 1.4; margin: 0; }
+        .tag-impacto { display: inline-block; margin-top: 10px; font-size: 0.6rem; color: var(--morado); border: 1px solid var(--morado); padding: 2px 6px; }
+
         @media (max-width: 1024px) { .banca-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
@@ -36,53 +46,77 @@
 <div class="banca-header">
     <div>
         <div class="banca-title">NVVEX // BANCA DE INTELIGENCIA</div>
-        <div class="status-line">TERMINAL_ACTIVE // ORIGIN_CORE // ID: BUNKER-MAR</div>
+        <div class="status-line" id="status-terminal">> BUSCA: ACTIVA // ORIGIN_CORE // ID: BUNKER-MAR</div>
     </div>
-    <div id="live-clock" style="color: var(--morado);">00:00:00</div>
+    <div id="live-clock" style="color: var(--morado); font-size: 1.2rem;">00:00:00</div>
 </div>
 
 <div class="banca-grid">
-    <div class="panel" id="panel-mercados">
+    <div class="panel">
         <div class="panel-h">ECONOMÍA_REAL [FIAT_CRYPTO]</div>
-        <div id="mercados-content">
-            </div>
+        <div id="mercados-content"></div>
     </div>
 
-    <div class="panel" id="panel-tech">
+    <div class="panel">
         <div class="panel-h">INTELIGENCIA_TECNOLÓGICA</div>
-        <div id="tech-content">
-            </div>
+        <div id="tech-content"></div>
     </div>
 
-    <div class="panel" id="panel-industria">
+    <div class="panel">
         <div class="panel-h">INTELIGENCIA_DE_LA_INDUSTRIA</div>
-        <div id="industria-content">
-            </div>
+        <div id="industria-content"></div>
     </div>
 </div>
 
 <script>
-    // Función para actualizar el reloj
     setInterval(() => {
         document.getElementById('live-clock').innerText = new Date().toLocaleTimeString();
     }, 1000);
 
-    // Motor de Carga Dinámica (Busca en JSONs aparte)
     async function cargarBanca() {
-        // Cargar Mercados
-        const resMercados = await fetch('mercados.json');
-        const dataM = await resMercados.json();
-        let htmlM = '';
-        dataM.ticker.forEach(item => {
-            htmlM += `<div class="market-item"><span>${item.asset}</span><span class="val">${item.price}</span></div>`;
-        });
-        document.getElementById('mercados-content').innerHTML = htmlM;
+        try {
+            // 1. CARGAR MERCADOS
+            const resM = await fetch('mercados.json');
+            const dataM = await resM.json();
+            document.getElementById('mercados-content').innerHTML = dataM.ticker.map(item => `
+                <div class="market-item">
+                    <span class="asset-name">${item.asset}</span>
+                    <span class="val">${item.price}</span>
+                </div>
+            `).join('');
 
-        // Cargar Tech e Industria seguirán la misma lógica...
+            // 2. CARGAR TECNOLOGÍA
+            const resT = await fetch('tech.json');
+            const dataT = await resT.json();
+            document.getElementById('tech-content').innerHTML = dataT.tecnologia.map(item => `
+                <div class="noticia-item">
+                    <div class="id-stamp">${item.id}</div>
+                    <h3 class="titular-tech">${item.titular}</h3>
+                    <p class="desc-intel">${item.descripcion}</p>
+                    <div class="tag-impacto">IMPACTO: ${item.impacto}</div>
+                </div>
+            `).join('');
+
+            // 3. CARGAR INDUSTRIA (Noticia con Imagen de YT)
+            const resI = await fetch('industria.json');
+            const dataI = await resI.json();
+            document.getElementById('industria-content').innerHTML = dataI.reportes.map(item => `
+                <div class="noticia-item">
+                    <div class="id-stamp">${item.id}</div>
+                    <div class="yt-box" style="background-image: url('https://i.ytimg.com/vi/${item.yt_id}/hqdefault.jpg')"></div>
+                    <h3 class="titular-tech">${item.artista}</h3>
+                    <p class="desc-intel">${item.analisis}</p>
+                    <div class="tag-impacto">SERVIAPI_RANK: ${item.rank}</div>
+                </div>
+            `).join('');
+
+        } catch (e) {
+            console.error("Error cargando la Banca:", e);
+            document.getElementById('status-terminal').innerText = "> STATUS: ERROR_DE_CONEXIÓN";
+        }
     }
     
     window.onload = cargarBanca;
 </script>
-
 </body>
 </html>
