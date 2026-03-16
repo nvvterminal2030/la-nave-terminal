@@ -1,0 +1,8 @@
+{
+  "ticker": [
+    {"asset": "BITCOIN (BTC)", "price": "$72,432.80"},
+    {"asset": "ETHEREUM (ETH)", "price": "$3,844.15"},
+    {"asset": "SOLANA (SOL)", "price": "$145.20"},
+    {"asset": "USD/DOP", "price": "59.20"}
+  ]
+}
