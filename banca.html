@@ -3,165 +3,195 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NVVEX // BANCA DE INTELIGENCIA</title>
+    <title>NVVEX // TERMINAL DE INTELIGENCIA</title>
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
-        :root { --morado: #bc13fe; --negro: #000; --verde: #39ff14; --rojo: #ff3131; --gris: #0a0a0a; --glow: 0 0 10px rgba(188, 19, 254, 0.6); }
-        body { background: var(--negro); color: #fff; font-family: 'Share Tech Mono', monospace; margin: 0; padding: 10px; overflow-x: hidden; }
+        :root { --morado: #bc13fe; --glow: #bc13fe88; --negro: #000; --verde: #39ff14; --rojo: #ff3131; }
+        * { box-sizing: border-box; }
+        body { 
+            background: var(--negro); color: #fff; font-family: 'Share Tech Mono', monospace; 
+            margin: 0; padding: 10px; overflow-x: hidden;
+            background-image: radial-gradient(circle at 50% 50%, #1a0022 0%, #000 80%);
+        }
         
-        /* Scanline militar */
-        body::before { content: " "; display: block; position: fixed; top: 0; left: 0; bottom: 0; right: 0; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%); z-index: 100; background-size: 100% 4px; pointer-events: none; opacity: 0.1; }
+        /* Scanline Animado */
+        body::after {
+            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 2px;
+            background: rgba(188, 19, 254, 0.1); z-index: 1000;
+            animation: scanline 6s linear infinite; pointer-events: none;
+        }
+        @keyframes scanline { 0% { top: -10%; } 100% { top: 110%; } }
 
-        /* Ticker Dinámico */
-        .ticker-wrap { background: #050505; border-bottom: 1px solid var(--morado); border-top: 1px solid var(--morado); overflow: hidden; padding: 6px 0; margin-bottom: 15px; box-shadow: var(--glow); }
-        .ticker { display: inline-block; white-space: nowrap; animation: ticker 60s linear infinite; color: var(--morado); font-size: 0.85rem; letter-spacing: 1px; }
+        /* Header Estilo Bloomberg Pro */
+        .banca-header { 
+            border-bottom: 1px solid var(--morado); padding: 10px 20px; 
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.9);
+        }
+        .banca-title { font-size: 1.5rem; letter-spacing: 5px; text-shadow: 0 0 10px var(--morado); }
+
+        /* Ticker de Flujo Constante */
+        .ticker-wrap { background: #080808; border-bottom: 1px solid var(--morado); overflow: hidden; padding: 4px 0; }
+        .ticker { display: inline-block; white-space: nowrap; animation: ticker 50s linear infinite; color: var(--morado); font-size: 0.8rem; }
         @keyframes ticker { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
 
-        .banca-header { border-bottom: 2px solid var(--morado); padding-bottom: 10px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
-        .banca-title { font-size: 1.8rem; font-weight: bold; text-shadow: var(--glow); letter-spacing: 3px; }
+        /* Dashboard de Capas Flotantes */
+        .banca-container { 
+            display: grid; grid-template-columns: 300px 1fr 350px; gap: 15px; margin-top: 15px; 
+            height: calc(100vh - 120px);
+        }
+
+        .layer { 
+            background: rgba(5, 5, 5, 0.6); border: 1px solid rgba(188, 19, 254, 0.2);
+            position: relative; overflow-y: auto; scrollbar-width: none;
+            transition: 0.3s;
+        }
+        .layer:hover { border-color: var(--morado); box-shadow: inset 0 0 15px rgba(188, 19, 254, 0.1); }
+        .layer-h { 
+            position: sticky; top: 0; background: var(--morado); color: #000; 
+            padding: 5px 10px; font-size: 0.7rem; font-weight: bold; z-index: 10;
+            display: flex; justify-content: space-between;
+        }
+
+        /* Bloque de Criptos (Liquidez) */
+        .asset-row { 
+            padding: 15px; border-bottom: 1px solid rgba(188, 19, 254, 0.1); 
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .asset-info div:first-child { color: var(--morado); font-size: 0.6rem; }
+        .price { font-size: 1.1rem; font-weight: bold; }
+        .up { color: var(--verde); } .down { color: var(--rojo); }
+
+        /* Central de Inteligencia (Busca / SerpApi) */
+        .intel-card { 
+            padding: 20px; border-bottom: 1px solid rgba(188, 19, 254, 0.2);
+            background: linear-gradient(90deg, rgba(188,19,254,0.02) 0%, transparent 100%);
+        }
+        .yt-preview { 
+            width: 100%; height: 200px; background-size: cover; background-position: center;
+            border: 1px solid var(--morado); margin: 10px 0;
+            filter: grayscale(1) sepia(1) hue-rotate(250deg) brightness(0.7);
+            transition: 0.5s;
+        }
+        .intel-card:hover .yt-preview { filter: none; }
         
-        .banca-grid { display: grid; grid-template-columns: 1fr 1.6fr 1fr; gap: 15px; }
-        .panel { border: 1px solid rgba(188, 19, 254, 0.3); background: rgba(2, 2, 2, 0.98); min-height: 650px; position: relative; border-radius: 2px; }
-        .panel-h { background: var(--morado); color: #000; padding: 6px 15px; font-size: 0.8rem; font-weight: bold; display: flex; justify-content: space-between; text-transform: uppercase; }
+        /* Gráficos de Pulso (CSS Puro) */
+        .pulse-line { width: 100%; height: 2px; background: var(--morado); position: relative; margin: 10px 0; opacity: 0.3; }
+        .pulse-dot { 
+            position: absolute; width: 6px; height: 6px; background: var(--morado); 
+            border-radius: 50%; top: -2px; left: 0; box-shadow: 0 0 10px var(--morado);
+            animation: moveDot 3s infinite linear;
+        }
+        @keyframes moveDot { 0% { left: 0; } 100% { left: 100%; } }
 
-        /* Módulos de Mercado Inteligentes */
-        .market-item { padding: 15px; border-bottom: 1px solid rgba(188, 19, 254, 0.1); display: flex; justify-content: space-between; align-items: center; transition: 0.2s; }
-        .market-item:hover { background: rgba(188, 19, 254, 0.05); }
-        .val { font-size: 1.2rem; font-weight: bold; font-variant-numeric: tabular-nums; }
-        
-        /* Gráfica Mini-Sparkline (CSS Puro) */
-        .sparkline-box { width: 60px; height: 25px; display: flex; align-items: flex-end; gap: 2px; }
-        .bar { width: 4px; background: var(--verde); opacity: 0.6; animation: barGrow 1.5s ease-out; }
-        @keyframes barGrow { from { height: 0; } to { height: 100%; } }
+        /* Terminal de Inyección de Data */
+        #data-stream { font-size: 0.65rem; color: #444; padding: 10px; line-height: 1.2; }
 
-        /* Reportes de la Industria e Inteligencia Tech */
-        .noticia-item { padding: 18px; border-bottom: 1px solid rgba(188, 19, 254, 0.15); }
-        .yt-box { width: 100%; height: 180px; background-size: cover; background-position: center; border: 1px solid var(--morado); margin-bottom: 12px; filter: contrast(1.1) brightness(0.8) sepia(0.2) hue-rotate(240deg); }
-        .titular-tech { font-size: 1rem; text-transform: uppercase; color: #fff; margin-bottom: 10px; border-left: 3px solid var(--morado); padding-left: 10px; }
-        
-        .tag { font-size: 0.6rem; border: 1px solid var(--morado); padding: 3px 8px; color: var(--morado); margin-right: 6px; background: rgba(188, 19, 254, 0.1); }
-        .impacto-bar { height: 4px; background: #222; width: 100%; margin-top: 10px; overflow: hidden; }
-        .impacto-fill { height: 100%; background: var(--morado); box-shadow: var(--glow); }
-
-        #anomalia-box { background: rgba(255, 49, 49, 0.05); padding: 12px; font-size: 0.75rem; color: var(--rojo); border: 1px solid var(--rojo); margin: 10px; animation: alertFlash 1.5s infinite; text-align: center; }
-        @keyframes alertFlash { 0%, 100% { opacity: 1; border-color: var(--rojo); } 50% { opacity: 0.3; border-color: transparent; } }
-
-        @media (max-width: 1200px) { .banca-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 1100px) { .banca-container { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
 <div class="banca-header">
     <div>
-        <div class="banca-title">NVVEX // BANCA DE INTELIGENCIA</div>
-        <div style="font-size: 0.75rem; color: var(--morado); letter-spacing: 2px;">> BUSCA_ACTIVA // TERMINAL_ID: ORIGIN_CORE-MAR</div>
+        <div class="banca-title">NVVEX // BANCA</div>
+        <div style="font-size: 0.6rem; color: var(--morado); letter-spacing: 2px;">MOD: ORIGIN_CORE // SYS_MAR-2026</div>
     </div>
-    <div id="live-clock" style="color: var(--morado); font-size: 1.4rem; text-shadow: var(--glow);">00:00:00</div>
+    <div id="live-clock">00:00:00</div>
 </div>
 
 <div class="ticker-wrap">
     <div class="ticker" id="ticker-noticias">
-        +++ STATUS: CONECTADO AL BÚNKER... MONITOREANDO BTC/USD... RASTREANDO TENDENCIAS USA/LATAM... ANALIZANDO SERVIAPI FEED... ACTUALIZANDO DATA DE MARZO... +++
+        +++ CONECTANDO NODOS... SERPAPI: ACTIVE... YOUTUBE_DATA: ACTIVE... BUSCA: ESCANEANDO TENDENCIAS EN RD, USA Y ESPAÑA... ANALIZANDO LIQUIDEZ DIGITAL... +++
     </div>
 </div>
 
-<div class="banca-grid">
-    <div class="panel">
-        <div class="panel-h"><span>ECONOMÍA_REAL</span> <span>FIAT_CRYPTO</span></div>
+<div class="banca-container">
+    <div class="layer">
+        <div class="layer-h"><span>MERCADOS_REAL_TIME</span><span>[B-MAR]</span></div>
         <div id="mercados-content"></div>
-        <div id="anomalia-box">SISTEMA DE SEGURIDAD NVVEX: MONITOREANDO NODOS...</div>
+        <div style="padding: 10px;">
+            <div class="pulse-line"><div class="pulse-dot"></div></div>
+            <div style="font-size: 0.6rem; color: var(--morado);">ANÁLISIS DE VOLUMEN CUÁNTICO ACTIVO</div>
+        </div>
     </div>
 
-    <div class="panel">
-        <div class="panel-h"><span>INTELIGENCIA_TECNOLÓGICA</span> <span>GLOBAL_CORE</span></div>
-        <div id="tech-content"></div>
+    <div class="layer">
+        <div class="layer-h"><span>DETECCIÓN_DE_ANOMALÍAS_Y_TENDENCIAS</span><span>BUSCA: ON</span></div>
+        <div id="intel-content"></div>
     </div>
 
-    <div class="panel">
-        <div class="panel-h"><span>INTELIGENCIA_DE_LA_INDUSTRIA</span> <span>BUNKER_INTEL</span></div>
-        <div id="industria-content"></div>
+    <div class="layer">
+        <div class="layer-h"><span>DATA_STREAM_INJECTION</span><span>LIVE</span></div>
+        <div id="data-stream">
+            // INJECTING_RAW_JSON_FROM_APIS...<br>
+            // SEARCH_QUERY: "TOP_ARTIST_LATAM"<br>
+            // RESULT_CODE: 200_OK...
+        </div>
     </div>
 </div>
 
 <script>
-    // Reloj militar en tiempo real
+    // Reloj
     setInterval(() => { document.getElementById('live-clock').innerText = new Date().toLocaleTimeString(); }, 1000);
-
-    // Generador de Sparklines (Simulación de pulso técnico)
-    function generateBars() {
-        return Array.from({length: 8}, () => `<div class="bar" style="height: ${Math.random()*100}%"></div>`).join('');
-    }
 
     async function cargarBanca() {
         try {
-            // 1. CARGA DE MERCADOS DINÁMICA
+            // 1. CARGA MERCADOS (LIQUIDEZ)
             const resM = await fetch('mercados.json');
             const dataM = await resM.json();
             document.getElementById('mercados-content').innerHTML = dataM.ticker.map(item => `
-                <div class="market-item">
-                    <div>
-                        <div style="font-size: 0.6rem; color: var(--morado); opacity: 0.8;">ASSET_ID: ${item.id || 'N/A'}</div>
-                        <div style="color: #fff; font-size: 0.9rem; font-weight: bold;">${item.asset}</div>
+                <div class="asset-row">
+                    <div class="asset-info">
+                        <div>ID: ${item.id || 'N/A'}</div>
+                        <div style="font-weight: bold;">${item.asset}</div>
                     </div>
-                    <div style="text-align: right; display: flex; align-items: center; gap: 15px;">
-                        <div class="sparkline-box">${generateBars()}</div>
-                        <div>
-                            <div class="val" style="color: ${item.trend === 'up' ? 'var(--verde)' : 'var(--rojo)'}">${item.price}</div>
-                            <div style="font-size: 0.65rem; color: ${item.trend === 'up' ? 'var(--verde)' : 'var(--rojo)'}">
-                                ${item.trend === 'up' ? '▲' : '▼'} ${item.change || '0.0%'}
-                            </div>
-                        </div>
+                    <div style="text-align: right;">
+                        <div class="price ${item.trend === 'up' ? 'up' : 'down'}">${item.price}</div>
+                        <div style="font-size: 0.6rem; color: #666;">CHANGE: ${item.change || '0%'}</div>
                     </div>
                 </div>
             `).join('');
 
-            // 2. INTELIGENCIA TECNOLÓGICA (Análisis con barras de impacto)
-            const resT = await fetch('tech.json');
-            const dataT = await resT.json();
-            document.getElementById('tech-content').innerHTML = dataT.tecnologia.map(item => `
-                <div class="noticia-item">
-                    <div style="font-size: 0.55rem; color: var(--morado); margin-bottom: 5px;">> TECH_DATA_ID: ${item.id}</div>
-                    <h3 class="titular-tech">${item.titular}</h3>
-                    <p style="font-size: 0.8rem; color: #aaa; margin: 0;">${item.descripcion}</p>
-                    <div style="margin-top: 12px; display: flex; align-items: center;">
-                        <span class="tag">${item.tag || 'SYSTEM'}</span>
-                        <div style="font-size: 0.6rem; color: var(--morado);">IMPACTO_GLOBAL: ${item.impacto}</div>
-                    </div>
-                    <div class="impacto-bar"><div class="impacto-fill" style="width: ${item.impacto}"></div></div>
-                </div>
-            `).join('');
-
-            // 3. INTELIGENCIA DE LA INDUSTRIA (Realidad Viva - Fotos YT)
+            // 2. CARGA INTELIGENCIA (EL CORAZÓN)
             const resI = await fetch('industria.json');
             const dataI = await resI.json();
-            document.getElementById('industria-content').innerHTML = dataI.reportes.map(item => `
-                <div class="noticia-item">
-                    <div style="font-size: 0.55rem; color: var(--morado); margin-bottom: 8px;">SOURCE: SERVIAPI_RANK // ID: ${item.id}</div>
-                    <div class="yt-box" style="background-image: url('https://i.ytimg.com/vi/${item.yt_id}/maxresdefault.jpg')"></div>
-                    <h3 class="titular-tech">${item.artista}</h3>
-                    <p style="font-size: 0.8rem; color: #ccc;">${item.analisis}</p>
-                    <div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <span class="tag">RANK: ${item.rank}</span>
-                            <span class="tag">STATUS: TRENDING</span>
-                        </div>
-                        <div style="font-size: 0.6rem; color: var(--morado);">AUTH_CODE: NVVEX-MAR</div>
+            document.getElementById('intel-content').innerHTML = dataI.reportes.map(item => `
+                <div class="intel-card">
+                    <div style="font-size: 0.6rem; color: var(--morado); border-left: 2px solid var(--morado); padding-left: 10px;">
+                        RANK: ${item.rank} // ${item.id}
+                    </div>
+                    <h3 style="margin: 10px 0; text-transform: uppercase; font-size: 1.2rem; letter-spacing: 2px;">${item.artista}</h3>
+                    <div class="yt-preview" style="background-image: url('https://i.ytimg.com/vi/${item.yt_id}/maxresdefault.jpg')"></div>
+                    <p style="font-size: 0.8rem; color: #aaa; line-height: 1.4;">${item.analisis}</p>
+                    <div style="margin-top: 15px; font-size: 0.6rem; display: flex; gap: 10px;">
+                        <span style="border: 1px solid var(--morado); padding: 2px 5px;">SOURCE: SERP_API</span>
+                        <span style="border: 1px solid var(--morado); padding: 2px 5px;">DATA: YT_CORE</span>
                     </div>
                 </div>
             `).join('');
 
-            // 4. ANOMALÍAS (Sincronización en tiempo real)
-            const resA = await fetch('anomalias.json').catch(() => null);
-            if(resA) {
-                const dataA = await resA.json();
-                document.getElementById('anomalia-box').innerText = `[ALERTA_BUNKER]: ${dataA.alerta}`;
-            }
-
         } catch (e) {
-            console.error("CRITICAL_SYNC_ERROR:", e);
+            console.error("SYNC_ERROR", e);
         }
     }
-    
+
+    // Simulador de flujo de data para la capa 3
+    function updateDataStream() {
+        const stream = document.getElementById('data-stream');
+        const logs = [
+            `> GET /serpapi/v1/search?q=trending_rd...`,
+            `> DATA_CHUNK_RECEIVED: ${Math.random().toString(16).substring(2, 10)}`,
+            `> YT_API: FETCHING_METRICS_ID: ${Math.random().toString(36).substring(7)}`,
+            `> ANALYZING_CORRELATION_BTC_VS_TRENDS...`,
+            `> SYSTEM_STATUS: 100%_OPERATIONAL`
+        ];
+        stream.innerHTML += `<br>${logs[Math.floor(Math.random() * logs.length)]}`;
+        if (stream.innerHTML.length > 500) stream.innerHTML = "// BUFFER_CLEANED...<br>" + logs[0];
+    }
+    setInterval(updateDataStream, 2000);
+
     window.onload = cargarBanca;
 </script>
 </body>
