@@ -1,0 +1,20 @@
+{
+  "tecnologia": [
+    {
+      "id": "B-TECH-001-MAR",
+      "prioridad": "ALTA",
+      "titular": "IA_CORE: NUEVO MODELO DE PROCESAMIENTO REDUCE LATENCIA",
+      "descripcion": "Despliegue de nodos neuronales optimizados para renderizado 3D y análisis de big data.",
+      "impacto": "95%",
+      "tag": "INTELIGENCIA_ARTIFICIAL"
+    },
+    {
+      "id": "B-TECH-002-MAR",
+      "prioridad": "MEDIA",
+      "titular": "HARDWARE_UPDATE: CHIP CUÁNTICO EN FASE DE PRUEBA",
+      "descripcion": "La arquitectura NVVEX-SHIELD detecta mejoras en el encriptado de activos digitales.",
+      "impacto": "78%",
+      "tag": "SEGURIDAD_DIGITAL"
+    }
+  ]
+}
