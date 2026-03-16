@@ -6,39 +6,47 @@
     <title>NVVEX // BANCA DE INTELIGENCIA</title>
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
-        :root { --morado: #bc13fe; --negro: #000; --verde: #39ff14; --rojo: #ff3131; }
-        body { background: var(--negro); color: #fff; font-family: 'Share Tech Mono', monospace; margin: 0; padding: 20px; overflow-x: hidden; }
+        :root { --morado: #bc13fe; --negro: #000; --verde: #39ff14; --rojo: #ff3131; --gris: #0a0a0a; --glow: 0 0 10px rgba(188, 19, 254, 0.6); }
+        body { background: var(--negro); color: #fff; font-family: 'Share Tech Mono', monospace; margin: 0; padding: 10px; overflow-x: hidden; }
         
-        /* Efecto de Escaneo de Terminal */
-        body::before { content: " "; display: block; position: fixed; top: 0; left: 0; bottom: 0; right: 0; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06)); z-index: 2; background-size: 100% 2px, 3px 100%; pointer-events: none; }
+        /* Scanline militar */
+        body::before { content: " "; display: block; position: fixed; top: 0; left: 0; bottom: 0; right: 0; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%); z-index: 100; background-size: 100% 4px; pointer-events: none; opacity: 0.1; }
 
-        .banca-header { border-bottom: 2px solid var(--morado); padding-bottom: 10px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-end; }
-        .banca-title { font-size: 1.6rem; font-weight: bold; text-shadow: 0 0 15px var(--morado); letter-spacing: 2px; }
-        .status-line { font-size: 0.7rem; color: var(--morado); text-transform: uppercase; }
+        /* Ticker Dinámico */
+        .ticker-wrap { background: #050505; border-bottom: 1px solid var(--morado); border-top: 1px solid var(--morado); overflow: hidden; padding: 6px 0; margin-bottom: 15px; box-shadow: var(--glow); }
+        .ticker { display: inline-block; white-space: nowrap; animation: ticker 60s linear infinite; color: var(--morado); font-size: 0.85rem; letter-spacing: 1px; }
+        @keyframes ticker { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
 
-        .banca-grid { display: grid; grid-template-columns: 1fr 1.5fr 1fr; gap: 20px; }
-        .panel { border: 1px solid rgba(188, 19, 254, 0.4); background: rgba(10, 0, 10, 0.95); min-height: 500px; box-shadow: inset 0 0 20px rgba(188, 19, 254, 0.1); }
-        .panel-h { background: var(--morado); color: #000; padding: 5px 12px; font-size: 0.75rem; font-weight: bold; letter-spacing: 1px; }
-
-        /* Estilos de Mercados (Dinámicos) */
-        .market-item { padding: 12px; border-bottom: 1px solid rgba(188, 19, 254, 0.2); display: flex; justify-content: space-between; align-items: center; }
-        .asset-name { color: #aaa; font-size: 0.8rem; }
-        .val { color: var(--verde); font-size: 1.1rem; text-shadow: 0 0 5px var(--verde); }
-
-        /* Estilos de Tech e Industria */
-        .noticia-item { padding: 15px; border-bottom: 1px solid rgba(188, 19, 254, 0.2); transition: 0.3s; }
-        .noticia-item:hover { background: rgba(188, 19, 254, 0.05); }
-        .id-stamp { font-size: 0.55rem; color: var(--morado); margin-bottom: 8px; opacity: 0.7; }
-        .titular-tech { color: #fff; font-size: 0.9rem; margin: 0 0 8px 0; text-transform: uppercase; line-height: 1.2; }
+        .banca-header { border-bottom: 2px solid var(--morado); padding-bottom: 10px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .banca-title { font-size: 1.8rem; font-weight: bold; text-shadow: var(--glow); letter-spacing: 3px; }
         
-        /* Imagen de YT (Hotlinking) */
-        .yt-box { width: 100%; height: 150px; background-size: cover; background-position: center; border: 1px solid var(--morado); margin-bottom: 10px; position: relative; }
-        .yt-box::after { content: "LIVE_STREAM"; position: absolute; top: 5px; right: 5px; background: var(--rojo); font-size: 0.5rem; padding: 2px 5px; }
+        .banca-grid { display: grid; grid-template-columns: 1fr 1.6fr 1fr; gap: 15px; }
+        .panel { border: 1px solid rgba(188, 19, 254, 0.3); background: rgba(2, 2, 2, 0.98); min-height: 650px; position: relative; border-radius: 2px; }
+        .panel-h { background: var(--morado); color: #000; padding: 6px 15px; font-size: 0.8rem; font-weight: bold; display: flex; justify-content: space-between; text-transform: uppercase; }
 
-        .desc-intel { font-size: 0.75rem; color: #ccc; line-height: 1.4; margin: 0; }
-        .tag-impacto { display: inline-block; margin-top: 10px; font-size: 0.6rem; color: var(--morado); border: 1px solid var(--morado); padding: 2px 6px; }
+        /* Módulos de Mercado Inteligentes */
+        .market-item { padding: 15px; border-bottom: 1px solid rgba(188, 19, 254, 0.1); display: flex; justify-content: space-between; align-items: center; transition: 0.2s; }
+        .market-item:hover { background: rgba(188, 19, 254, 0.05); }
+        .val { font-size: 1.2rem; font-weight: bold; font-variant-numeric: tabular-nums; }
+        
+        /* Gráfica Mini-Sparkline (CSS Puro) */
+        .sparkline-box { width: 60px; height: 25px; display: flex; align-items: flex-end; gap: 2px; }
+        .bar { width: 4px; background: var(--verde); opacity: 0.6; animation: barGrow 1.5s ease-out; }
+        @keyframes barGrow { from { height: 0; } to { height: 100%; } }
 
-        @media (max-width: 1024px) { .banca-grid { grid-template-columns: 1fr; } }
+        /* Reportes de la Industria e Inteligencia Tech */
+        .noticia-item { padding: 18px; border-bottom: 1px solid rgba(188, 19, 254, 0.15); }
+        .yt-box { width: 100%; height: 180px; background-size: cover; background-position: center; border: 1px solid var(--morado); margin-bottom: 12px; filter: contrast(1.1) brightness(0.8) sepia(0.2) hue-rotate(240deg); }
+        .titular-tech { font-size: 1rem; text-transform: uppercase; color: #fff; margin-bottom: 10px; border-left: 3px solid var(--morado); padding-left: 10px; }
+        
+        .tag { font-size: 0.6rem; border: 1px solid var(--morado); padding: 3px 8px; color: var(--morado); margin-right: 6px; background: rgba(188, 19, 254, 0.1); }
+        .impacto-bar { height: 4px; background: #222; width: 100%; margin-top: 10px; overflow: hidden; }
+        .impacto-fill { height: 100%; background: var(--morado); box-shadow: var(--glow); }
+
+        #anomalia-box { background: rgba(255, 49, 49, 0.05); padding: 12px; font-size: 0.75rem; color: var(--rojo); border: 1px solid var(--rojo); margin: 10px; animation: alertFlash 1.5s infinite; text-align: center; }
+        @keyframes alertFlash { 0%, 100% { opacity: 1; border-color: var(--rojo); } 50% { opacity: 0.3; border-color: transparent; } }
+
+        @media (max-width: 1200px) { .banca-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -46,73 +54,111 @@
 <div class="banca-header">
     <div>
         <div class="banca-title">NVVEX // BANCA DE INTELIGENCIA</div>
-        <div class="status-line" id="status-terminal">> BUSCA: ACTIVA // ORIGIN_CORE // ID: BUNKER-MAR</div>
+        <div style="font-size: 0.75rem; color: var(--morado); letter-spacing: 2px;">> BUSCA_ACTIVA // TERMINAL_ID: ORIGIN_CORE-MAR</div>
     </div>
-    <div id="live-clock" style="color: var(--morado); font-size: 1.2rem;">00:00:00</div>
+    <div id="live-clock" style="color: var(--morado); font-size: 1.4rem; text-shadow: var(--glow);">00:00:00</div>
+</div>
+
+<div class="ticker-wrap">
+    <div class="ticker" id="ticker-noticias">
+        +++ STATUS: CONECTADO AL BÚNKER... MONITOREANDO BTC/USD... RASTREANDO TENDENCIAS USA/LATAM... ANALIZANDO SERVIAPI FEED... ACTUALIZANDO DATA DE MARZO... +++
+    </div>
 </div>
 
 <div class="banca-grid">
     <div class="panel">
-        <div class="panel-h">ECONOMÍA_REAL [FIAT_CRYPTO]</div>
+        <div class="panel-h"><span>ECONOMÍA_REAL</span> <span>FIAT_CRYPTO</span></div>
         <div id="mercados-content"></div>
+        <div id="anomalia-box">SISTEMA DE SEGURIDAD NVVEX: MONITOREANDO NODOS...</div>
     </div>
 
     <div class="panel">
-        <div class="panel-h">INTELIGENCIA_TECNOLÓGICA</div>
+        <div class="panel-h"><span>INTELIGENCIA_TECNOLÓGICA</span> <span>GLOBAL_CORE</span></div>
         <div id="tech-content"></div>
     </div>
 
     <div class="panel">
-        <div class="panel-h">INTELIGENCIA_DE_LA_INDUSTRIA</div>
+        <div class="panel-h"><span>INTELIGENCIA_DE_LA_INDUSTRIA</span> <span>BUNKER_INTEL</span></div>
         <div id="industria-content"></div>
     </div>
 </div>
 
 <script>
-    setInterval(() => {
-        document.getElementById('live-clock').innerText = new Date().toLocaleTimeString();
-    }, 1000);
+    // Reloj militar en tiempo real
+    setInterval(() => { document.getElementById('live-clock').innerText = new Date().toLocaleTimeString(); }, 1000);
+
+    // Generador de Sparklines (Simulación de pulso técnico)
+    function generateBars() {
+        return Array.from({length: 8}, () => `<div class="bar" style="height: ${Math.random()*100}%"></div>`).join('');
+    }
 
     async function cargarBanca() {
         try {
-            // 1. CARGAR MERCADOS
+            // 1. CARGA DE MERCADOS DINÁMICA
             const resM = await fetch('mercados.json');
             const dataM = await resM.json();
             document.getElementById('mercados-content').innerHTML = dataM.ticker.map(item => `
                 <div class="market-item">
-                    <span class="asset-name">${item.asset}</span>
-                    <span class="val">${item.price}</span>
+                    <div>
+                        <div style="font-size: 0.6rem; color: var(--morado); opacity: 0.8;">ASSET_ID: ${item.id || 'N/A'}</div>
+                        <div style="color: #fff; font-size: 0.9rem; font-weight: bold;">${item.asset}</div>
+                    </div>
+                    <div style="text-align: right; display: flex; align-items: center; gap: 15px;">
+                        <div class="sparkline-box">${generateBars()}</div>
+                        <div>
+                            <div class="val" style="color: ${item.trend === 'up' ? 'var(--verde)' : 'var(--rojo)'}">${item.price}</div>
+                            <div style="font-size: 0.65rem; color: ${item.trend === 'up' ? 'var(--verde)' : 'var(--rojo)'}">
+                                ${item.trend === 'up' ? '▲' : '▼'} ${item.change || '0.0%'}
+                            </div>
+                        </div>
+                    </div>
                 </div>
             `).join('');
 
-            // 2. CARGAR TECNOLOGÍA
+            // 2. INTELIGENCIA TECNOLÓGICA (Análisis con barras de impacto)
             const resT = await fetch('tech.json');
             const dataT = await resT.json();
             document.getElementById('tech-content').innerHTML = dataT.tecnologia.map(item => `
                 <div class="noticia-item">
-                    <div class="id-stamp">${item.id}</div>
+                    <div style="font-size: 0.55rem; color: var(--morado); margin-bottom: 5px;">> TECH_DATA_ID: ${item.id}</div>
                     <h3 class="titular-tech">${item.titular}</h3>
-                    <p class="desc-intel">${item.descripcion}</p>
-                    <div class="tag-impacto">IMPACTO: ${item.impacto}</div>
+                    <p style="font-size: 0.8rem; color: #aaa; margin: 0;">${item.descripcion}</p>
+                    <div style="margin-top: 12px; display: flex; align-items: center;">
+                        <span class="tag">${item.tag || 'SYSTEM'}</span>
+                        <div style="font-size: 0.6rem; color: var(--morado);">IMPACTO_GLOBAL: ${item.impacto}</div>
+                    </div>
+                    <div class="impacto-bar"><div class="impacto-fill" style="width: ${item.impacto}"></div></div>
                 </div>
             `).join('');
 
-            // 3. CARGAR INDUSTRIA (Noticia con Imagen de YT)
+            // 3. INTELIGENCIA DE LA INDUSTRIA (Realidad Viva - Fotos YT)
             const resI = await fetch('industria.json');
             const dataI = await resI.json();
             document.getElementById('industria-content').innerHTML = dataI.reportes.map(item => `
                 <div class="noticia-item">
-                    <div class="id-stamp">${item.id}</div>
-                    <div class="yt-box" style="background-image: url('https://i.ytimg.com/vi/${item.yt_id}/hqdefault.jpg')"></div>
+                    <div style="font-size: 0.55rem; color: var(--morado); margin-bottom: 8px;">SOURCE: SERVIAPI_RANK // ID: ${item.id}</div>
+                    <div class="yt-box" style="background-image: url('https://i.ytimg.com/vi/${item.yt_id}/maxresdefault.jpg')"></div>
                     <h3 class="titular-tech">${item.artista}</h3>
-                    <p class="desc-intel">${item.analisis}</p>
-                    <div class="tag-impacto">SERVIAPI_RANK: ${item.rank}</div>
+                    <p style="font-size: 0.8rem; color: #ccc;">${item.analisis}</p>
+                    <div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <span class="tag">RANK: ${item.rank}</span>
+                            <span class="tag">STATUS: TRENDING</span>
+                        </div>
+                        <div style="font-size: 0.6rem; color: var(--morado);">AUTH_CODE: NVVEX-MAR</div>
+                    </div>
                 </div>
             `).join('');
 
+            // 4. ANOMALÍAS (Sincronización en tiempo real)
+            const resA = await fetch('anomalias.json').catch(() => null);
+            if(resA) {
+                const dataA = await resA.json();
+                document.getElementById('anomalia-box').innerText = `[ALERTA_BUNKER]: ${dataA.alerta}`;
+            }
+
         } catch (e) {
-            console.error("Error cargando la Banca:", e);
-            document.getElementById('status-terminal').innerText = "> STATUS: ERROR_DE_CONEXIÓN";
+            console.error("CRITICAL_SYNC_ERROR:", e);
         }
     }
     
