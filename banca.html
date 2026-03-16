@@ -1,1 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NVVEX // BANCA DE INTELIGENCIA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --morado: #bc13fe; --negro: #000; --gris-oscuro: #0a0a0a; --texto: #eee; }
+        * { box-sizing: border-box; }
+        body { 
+            background: var(--negro); color: var(--texto); 
+            font-family: 'Inter', sans-serif; margin: 0; padding: 0; 
+        }
+        
+        /* Ticker Estático Superior (Bloomberg Style) */
+        .top-bar { 
+            background: var(--gris-oscuro); border-bottom: 1px solid #1a1a1a;
+            padding: 8px 20px; font-family: 'Share Tech Mono', monospace;
+            font-size: 0.75rem; display: flex; gap: 20px; overflow: hidden;
+        }
+        .ticker-item { display: flex; gap: 8px; white-space: nowrap; }
+        .up { color: #39ff14; } .down { color: #ff3131; }
 
+        /* Header Principal */
+        header { 
+            padding: 20px; text-align: center; border-bottom: 1px solid var(--morado);
+            background: var(--negro); position: sticky; top: 0; z-index: 100;
+        }
+        .logo { font-family: 'Share Tech Mono', monospace; font-size: 2rem; font-weight: bold; letter-spacing: 5px; color: #fff; }
+        .logo span { color: var(--morado); text-shadow: 0 0 10px var(--morado); }
+
+        /* Contenedor Principal */
+        .main-container { max-width: 1400px; margin: 20px auto; padding: 0 20px; display: grid; grid-template-columns: 1fr 350px; gap: 30px; }
+
+        /* Noticia Principal (Lead Hero) */
+        .hero-section { border-bottom: 1px solid #1a1a1a; padding-bottom: 30px; margin-bottom: 30px; }
+        .hero-image { 
+            width: 100%; height: 500px; background: #111; border: 1px solid #1a1a1a;
+            background-size: cover; background-position: center; position: relative;
+        }
+        .hero-content { margin-top: 20px; }
+        .category { color: var(--morado); font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 10px; }
+        .hero-title { font-size: 2.5rem; line-height: 1.1; margin: 0 0 15px 0; font-weight: 700; color: #fff; }
+        .hero-desc { font-size: 1.1rem; color: #888; line-height: 1.5; }
+
+        /* Sidebar (Lo Último / Radar Busca) */
+        .sidebar { border-left: 1px solid #1a1a1a; padding-left: 30px; }
+        .sidebar-h { font-family: 'Share Tech Mono', monospace; font-size: 0.9rem; border-bottom: 2px solid var(--morado); padding-bottom: 5px; margin-bottom: 20px; color: var(--morado); }
+        .side-item { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid #0f0f0f; }
+        .side-time { font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; color: #555; }
+        .side-title { font-size: 0.95rem; font-weight: bold; margin: 5px 0; color: #ccc; cursor: pointer; transition: 0.2s; }
+        .side-title:hover { color: var(--morado); }
+
+        /* Secciones por Nodos (RD, USA, ESP) */
+        .section-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 40px; }
+        .node-card { border-top: 1px solid #1a1a1a; padding-top: 15px; }
+        .node-thumb { width: 100%; height: 180px; background: #111; border: 1px solid #1a1a1a; margin-bottom: 12px; }
+        .node-title { font-size: 1.1rem; font-weight: bold; color: #fff; line-height: 1.3; }
+
+        @media (max-width: 1024px) { 
+            .main-container { grid-template-columns: 1fr; } 
+            .sidebar { border-left: none; padding-left: 0; }
+            .section-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-bar" id="ticker-assets">
+    </div>
+
+<header>
+    <div class="logo">NVVEX // <span>BANCA DE INTELIGENCIA</span></div>
+    <div style="font-family: 'Share Tech Mono'; font-size: 0.7rem; color: #555; margin-top: 5px;">> BUSCA_ACTIVA // TERMINAL_ID: ORIGIN_CORE-MAR</div>
+</header>
+
+<main class="main-container">
+    <section>
+        <div class="hero-section" id="hero-intel">
+            </div>
+
+        <div class="section-grid" id="nodos-content">
+            </div>
+    </section>
+
+    <aside class="sidebar">
+        <div class="sidebar-h">RADAR_BUSCA // LO ÚLTIMO</div>
+        <div id="sidebar-content">
+            </div>
+    </aside>
+</main>
+
+<script>
+    async function cargarBanca() {
+        try {
+            // Simulación de los JSON que llenaremos con las APIs
+            // 1. TICKER
+            const ticker = [
+                {a: "BTC", p: "$68,230", c: "+2.4%", t: "up"},
+                {a: "SOL", p: "$145.12", c: "-1.2%", t: "down"},
+                {a: "DOP/USD", p: "58.20", c: "+0.1%", t: "up"},
+                {a: "ALMA_INDEX", p: "94.8", c: "+12%", t: "up"}
+            ];
+            document.getElementById('ticker-assets').innerHTML = ticker.map(i => `
+                <div class="ticker-item">
+                    <span>${i.a}</span> <span class="${i.t}">${i.p} (${i.c})</span>
+                </div>
+            `).join(' | ');
+
+            // 2. HERO (DATA DE YOUTUBE/SERPAPI)
+            document.getElementById('hero-intel').innerHTML = `
+                <div class="category">Inteligencia de Mercado // RD</div>
+                <div class="hero-image" style="background-image: url('https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg')"></div>
+                <div class="hero-content">
+                    <h1 class="hero-title">Ruptura de Nodo detectada: El movimiento urbano en RD desplaza tendencias de USA.</h1>
+                    <p class="hero-desc">Análisis del búnker confirma que la retención de audiencia en el nodo Santo Domingo ha superado los niveles críticos de marzo. El 'busca' detecta anomalía en la SerpApi.</p>
+                </div>
+            `;
+
+            // 3. NODOS (PAÍSES)
+            const nodos = [
+                {id: "USA", t: "Inversión Tecnológica en Miami: Nuevos servidores de IA.", img: ""},
+                {id: "ESP", t: "España activa radar: Crecimiento de streaming en Madrid.", img: ""},
+                {id: "RD", t: "Industria Musical: Top 10 se consolida con data de YouTube.", img: ""}
+            ];
+            document.getElementById('nodos-content').innerHTML = nodos.map(n => `
+                <div class="node-card">
+                    <div class="category">${n.id}</div>
+                    <div class="node-thumb"></div>
+                    <div class="node-title">${n.t}</div>
+                </div>
+            `).join('');
+
+            // 4. SIDEBAR (RADAR)
+            const side = [
+                {h: "2m", t: "SerpApi: Búsquedas de 'IA Música' suben 300%"},
+                {h: "14m", t: "YouTube: Nuevo video de artista 'X' rompe el algoritmo"},
+                {h: "25m", t: "Burbuja Detectada en activo SOL: Posible corrección"}
+            ];
+            document.getElementById('sidebar-content').innerHTML = side.map(s => `
+                <div class="side-item">
+                    <div class="side-time">${s.h} ATRÁS</div>
+                    <div class="side-title">${s.t}</div>
+                </div>
+            `).join('');
+
+        } catch (e) { console.log("Error en sincronización", e); }
+    }
+
+    window.onload = cargarBanca;
+</script>
+</body>
+</html>
