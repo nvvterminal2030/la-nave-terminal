@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<script>
+(function() {
+    const bunker = "\x6e\x76\x76\x65\x78\x73\x74\x75\x64\x69\x6f\x73\x2e\x63\x6f\x6d";
+    const dev = "\x6c\x6f\x63\x61\x6c\x68\x6f\x73\x74";
+
+    if (window.location.hostname.indexOf(bunker) === -1 && window.location.hostname !== dev) {
+        document.documentElement.innerHTML = "";
+    }
+})();
+</script>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NVVEX | INTEL REPORT</title>
+
+    <script>
+  /*MAR: SYSTEM_AUTH_DATA */
+  (function(){
+    const _0x1a2b = "\x25\x63\x20\x4e\x56\x56\x45\x58\x20\x53\x45\x43\x55\x52\x49\x54\x59\x20\x47\x4c\x4f\x42\x41\x4c";
+    const _0x3f4e = "color: #39ff14; background: #000; font-size: 25px; font-weight: 900; border: 2px solid #39ff14; padding: 10px; text-shadow: 0 0 10px #39ff14;";
+    console.log(_0x1a2b, _0x3f4e);
+  })();
+</script>
+
+    <meta name="description" content="Archivo oficial de inteligencia musical y registros históricos de NVVEX STUDIOS.">
+    
+    <meta property="og:title" id="og-title" content="NVVEX | INTEL REPORT">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+
+    <meta property="og:description" id="og-desc" content="Archivo de Inteligencia Musical NVVEX.">
+    <meta property="og:image" content="https://nvvexstudios.com/img/NVVEX%20LOGO%20LETRERO-01%20(1).webp">
+    <meta property="og:url" id="og-url" content="https://nvvexstudios.com/archivo">
+    <meta property="og:type" content="website">
+
+    <link rel="canonical" id="canonical-link" href="https://nvvexstudios.com/archivo" />
+    <link rel="apple-touch-icon" href="https://nvvexstudios.com/img/NVVEX%20LOGO%20LETRERO-01%20(1).webp">
+
+    <script>
+    (function() {
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get('id');
+        if (id) {
+            const tituloNoticia = id.replace(/-/g, ' ').toUpperCase() + " | NVVEX NEWS";
+            const ogTitle = document.getElementById('og-title');
+            if (ogTitle) {
+                ogTitle.setAttribute('content', tituloNoticia);
+            }
+        }
+    })();
+    </script>
+</head>
+
+    <script type="application/ld+json" id="schema-json">
+    {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://nvvexstudios.com/archivo"
+      },
+      "headline": "BÚNKER DE DATOS | NVVEX STUDIOS",
+      "description": "Accediendo a los registros oficiales de NVVEX STUDIOS.",
+      "image": "https://nvvexstudios.com/img/NVVEX%20LOGO%20LETRERO-01%20(1).webp",
+      "author": {
+        "@type": "Organization", 
+        "name": "NVVEX STUDIOS",
+        "url": "https://nvvexstudios.com/"
+      },
+      "publisher": {
+        "@type": "Organization", 
+        "name": "NVVEX STUDIOS",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://nvvexstudios.com/img/NVVEX%20LOGO%20LETRERO-01%20(1).webp"
+        }
+      },
+      "datePublished": "2026-03-01T12:00:00+00:00"
+    }
+    </script>
+
+    <style>
+        :root { --neon: #39ff14; --dark: #050505; --intel: #00f2ff; }
+        body { background-color: var(--dark); color: white; font-family: 'Inter', sans-serif; margin: 0; overflow-x: hidden; }
+        #stars-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: radial-gradient(circle at 50% 50%, #1a1a1a 0%, #050505 100%); }
+        .star { position: absolute; background: white; border-radius: 50%; opacity: 0.5; animation: moveStar linear infinite; }
+        @keyframes moveStar { from { transform: translateY(100vh); } to { transform: translateY(-100vh); } }
+        .grid-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: linear-gradient(rgba(57, 255, 20, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(57, 255, 20, 0.05) 1px, transparent 1px); background-size: 40px 40px; z-index: -1; pointer-events: none; }
+        header { padding: 15px 25px; border-bottom: 1px solid rgba(57, 255, 20, 0.3); background: rgba(0,0,0,0.9); display: flex; justify-content: center; position: sticky; top: 0; z-index: 1000; backdrop-filter: blur(10px); }
+        .container { max-width: 1000px; margin: 20px auto; padding: 0 15px; }
+        .search-wrapper { margin-bottom: 25px; position: relative; }
+        #radar-search { width: 100%; background: rgba(0,0,0,0.9); border: 1px solid var(--intel); color: var(--intel); padding: 15px; font-family: 'Share Tech Mono', monospace; outline: none; box-sizing: border-box; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 0 15px rgba(0, 242, 255, 0.1); }
+        #radar-search:focus { border-color: var(--neon); color: var(--neon); box-shadow: 0 0 20px rgba(57, 255, 20, 0.2); }
+        .report-box { border: 1px solid rgba(57, 255, 20, 0.4); padding: 25px; background: rgba(0,0,0,0.85); border-radius: 8px; margin-bottom: 30px; box-shadow: 0 0 30px rgba(57, 255, 20, 0.1); position: relative; }
+        h1 { font-family: 'Share Tech Mono', monospace; font-size: 1.4rem; color: var(--neon); text-transform: uppercase; margin: 15px 0; text-shadow: 0 0 10px var(--neon); }
+#display-texto { font-family: 'Share Tech Mono', monospace; color: #E0E6ED; font-size: 0.95rem; line-height: 1.6; white-space: pre-line; border-top: 1px solid rgba(57, 255, 20, 0.2); padding-top: 20px; min-height: 450px; }
+        .fecha-header { font-family: 'Share Tech Mono'; color: var(--neon); border-left: 3px solid var(--neon); padding-left: 10px; margin: 35px 0 15px; font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; }
+        .news-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .news-card { background: rgba(10, 10, 10, 0.95); border: 1px solid #333; padding: 12px; border-radius: 4px; cursor: pointer; border-left: 2px solid #222; transition: 0.2s; text-decoration: none; color: white; }
+        .news-card:hover { border-color: var(--neon); background: rgba(57, 255, 20, 0.1); transform: scale(1.01); }
+        #btn-ver-mas { width: 100%; background: transparent; color: var(--neon); border: 1px solid var(--neon); padding: 15px; font-family: 'Share Tech Mono'; cursor: pointer; margin-top: 20px; font-weight: bold; transition: 0.3s; }
+        #btn-ver-mas:hover { background: var(--neon); color: black; }
+        @media (max-width: 600px) { h1 { font-size: 1.2rem; } .news-grid { grid-template-columns: 1fr; gap: 8px; } #display-texto { min-height: 600px; } }
+    </style>
+</head>
+<body>
+    <div style="background:#050505; color:#39ff14; border-bottom:1px solid rgba(57,255,20,0.4); overflow:hidden; white-space:nowrap; font-family:'Share Tech Mono', monospace; padding:10px 0; font-size:14px; position:relative; z-index:9999;">
+      <div style="display:inline-block; animation:nvvex-scroll 30s linear infinite;">
+        <span style="margin-right:60px;">[BUSCA]: RADAR DE INTELIGENCIA NVVEX ACTIVADO</span>
+        <span style="margin-right:60px;">[PROCESO]: NVVEX STUDIOS FILTRANDO LA REALIDAD GLOBAL</span>
+        <span style="margin-right:60px;">[STATUS]: OPERANDO DESDE EL BÚNKER - SIN INTERMEDIARIOS</span>
+        <span style="margin-right:60px;">[DATA]: INTELIGENCIA DE DATOS BY NVVEX STUDIOS</span>
+        <span style="margin-right:60px;">[MISIÓN]: 200,000 USUARIOS</span>
+      </div>
+    </div>
+
+    <style>@keyframes nvvex-scroll { from { transform: translateX(100%); } to { transform: translateX(-100%); } }</style>
+    <div id="stars-container"></div>
+    <div class="grid-overlay"></div>
+    <header>
+        <span style="font-family: 'Share Tech Mono'; font-size: 0.7rem; color: var(--neon); letter-spacing: 1px;">NVVEX STUDIOS // INTEL ARCHIVE v4.0</span>
+    </header>
+    
+    <div class="container">
+        <div class="search-wrapper">
+            <input type="text" id="radar-search" placeholder="[RADAR]: BUSCAR POR ARTISTA, ID O KEYWORD..." oninput="filtrarRadar()">
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+            <a href="https://nvvexstudios.com/" style="flex: 1; text-decoration: none;">
+                <button style="width: 100%; background: transparent; color: var(--neon); border: 1px solid var(--neon); padding: 12px; font-family: 'Share Tech Mono'; cursor: pointer; font-size: 0.7rem;">[ < ] SISTEMA_CENTRAL</button>
+            </a>
+            <a href="https://newusa.nvvexstudios.com" style="flex: 1; text-decoration: none;">
+                <button style="width: 100%; background: transparent; color: #00f2ff; border: 1px solid #00f2ff; padding: 12px; font-family: 'Share Tech Mono'; cursor: pointer; font-size: 0.7rem;">MONITOR_USA [ > ]</button>
+            </a>
+        </div>
+
+        <div class="report-box">
+            <div style="font-size: 0.55rem; color: var(--neon); margin-bottom: 8px; opacity: 0.8;">ESTATUS: SISTEMA_INTELIGENTE_NVVEX</div>
+            <h1 id="bunker-titulo">INTEL REPORT</h1>
+            <div id="display-texto">
+    <div id="google-shield" style="font-family: 'Share Tech Mono', monospace; color: rgba(224, 230, 237, 0.5); font-size: 0.8rem;">
+        [ PROTOCOLO DE INTELIGENCIA NVVEX ACTIVADO ]
+        Sincronizando con el Radar de Datos 2026. 
+        Analizando activos estratégicos, registros USPTO y créditos editoriales.
+        
+        <h2 style="font-size: 0.9rem; color: var(--neon); margin: 15px 0 5px 0;">SISTEMA DE MONITOREO GLOBAL</h2>
+        Accediendo a la Banca de Inteligencia Musical: LATAM, USA y ESPAÑA.
+        Cargando nodos de información oficial de NVVEX STUDIOS...
+    </div>
+</div>
+
+        <div id="archivo-timeline"></div>
+        <button id="btn-ver-mas" style="display: none;" onclick="mostrarSiguienteCiclo()">[ > ] EXPANDIR REGISTROS DEL BÚNKER</button>
+        
+        <div class="report-box" itemscope itemtype="https://schema.org/DefinedTermSet" style="margin-top: 50px; border-style: dashed; opacity: 0.9; padding: 20px; background: rgba(0,0,0,0.2);">
+            <div style="font-size: 0.55rem; color: var(--intel); margin-bottom: 12px; letter-spacing: 2px; font-family: 'Share Tech Mono', monospace;">[ GLOSARIO_DE_ACTIVOS_ESTRATÉGICOS ]</div>
+            <div style="display: grid; grid-template-columns: 1fr; gap: 20px; font-family: 'Share Tech Mono', monospace;">
+                <details itemprop="hasDefinedTerm" itemscope itemtype="https://schema.org/DefinedTerm" style="border-bottom: 1px solid rgba(0, 242, 255, 0.2); padding-bottom: 10px; cursor: pointer;">
+                    <summary itemprop="name" style="color: var(--intel); font-size: 0.85rem; list-style: none; text-shadow: 0 0 5px var(--intel);">[+] USPTO_PROTOCOLO</summary>
+                    <p itemprop="description" style="font-size: 0.75rem; color: #888; margin-top: 10px; padding-left: 10px; border-left: 1px solid var(--intel);">Registro federal de marcas en USA. Blindaje legal que convierte un nombre en un activo financiero global.</p>
+                </details>
+                <details itemprop="hasDefinedTerm" itemscope itemtype="https://schema.org/DefinedTerm" style="border-bottom: 1px solid rgba(57, 255, 20, 0.2); padding-bottom: 10px; cursor: pointer;">
+                    <summary itemprop="name" style="color: var(--neon); font-size: 0.85rem; list-style: none; text-shadow: 0 0 5px var(--neon);">[+] CRÉDITOS_EDITORIALES</summary>
+                    <p itemprop="description" style="font-size: 0.75rem; color: #888; margin-top: 10px; padding-left: 10px; border-left: 1px solid var(--neon);">Propiedad sobre el Publishing. Flujo de ingresos pasivos independiente del máster.</p>
+                </details>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin: 40px 0;">
+            <span style="color:var(--neon); font-family:'Share Tech Mono'; font-size:0.6rem; opacity: 0.5;">NVVEX STUDIOS ©️ 2026 // DOMINICANA EN LA CASA</span>
+        </div>
+    </div>
+
+    <script>
+
+    // [ LIMPIEZA DE URLS PARA GOOGLE ]
+    (function() {
+        let currentUrl = window.location.href;
+        if (currentUrl.includes(".html")) {
+            let cleanUrl = currentUrl.replace(".html", "");
+            window.history.replaceState({}, document.title, cleanUrl);
+        }
+    })();
+
+
+
+    let noticiasCargadas = [];
+    let noticiasVisibles = 15;
+    let filtroActual = "";
+
+// [ PROTOCOLO DE IDENTIDAD NVVEX - MODO HÍBRIDO ]
+(function() {
+    const params = new URLSearchParams(window.location.search);
+    let id = params.get('id');
+
+    // Si no hay id en la URL, lo sacamos de la ruta /intel/
+    if (!id && window.location.pathname.includes('/intel/')) {
+        id = window.location.pathname.split('/intel/').pop().replace(/\/$/, "");
+    }
+if (id) {
+    const tituloLimpio = decodeURIComponent(id).replace(/-/g, ' ').toUpperCase();
+    // Ponemos el sello desde el segundo cero para que Google no vea variables
+    document.title = tituloLimpio; 
+    
+    const checkH1 = setInterval(() => {
+        const h1 = document.getElementById('bunker-titulo');
+        if (h1) {
+            // Cambiamos el texto de carga para que se vea más pro
+            h1.innerText = "[ ESCANEANDO NODO: " + tituloLimpio + " ]";
+            clearInterval(checkH1);
+        }
+    }, 10);
+    setTimeout(() => clearInterval(checkH1), 2000);
+}
+})();
+
+    async function cargarBunker() {
+    try {
+        // [ FORZADO DE RUTA LIMPIA NVVEX ]
+        const agente = navigator.userAgent.toLowerCase();
+        const esBot = /bot|google|crawler|spider|robot|crawling/i.test(agente);
+        
+        // [ PROTOCOLO DE LIMPIEZA SEMÁNTICA -MAR ]
+const meses = ["ENE", "FEB", "MAR", "ABR", "MAY", "JUN", "JUL", "AGO", "SEP", "OCT", "NOV", "DIC"];
+const mesActual = meses[new Date().getMonth()];
+
+// [ PROTOCOLO DE AUTORIDAD NVVEX - MAR ]
+// Eliminamos variables automáticas porque el ID manual ya garantiza la unicidad.
+const urlFetch = '/archivo.json'; 
+
+const respuesta = await fetch(urlFetch, {
+    method: 'GET',
+    cache: 'no-cache' // "no-cache" es mejor que "no-store" para que Google no se asuste
+});
+
+        if (!respuesta.ok) throw new Error("Status: " + respuesta.status);
+        const data = await respuesta.json();
+        
+        if (data && data.noticias) {
+            noticiasCargadas = data.noticias; 
+        } else {
+            return;
+        }
+ const urlParams = new URLSearchParams(window.location.search);
+// [ CAPTURADOR DE INTELIGENCIA NVVEX ]
+        let idBuscado = new URLSearchParams(window.location.search).get('id');
+
+        // Si no hay ?id=, extraemos el ID directamente de la ruta /intel/
+        if (!idBuscado && window.location.pathname.includes('/intel/')) {
+            idBuscado = window.location.pathname.split('/intel/').pop().replace(/\/$/, "");
+        }
+
+        if (idBuscado) {
+            // Buscamos en el archivo.json la noticia que coincida con el ID
+            const n = noticiasCargadas.find(item => item.headline === idBuscado);
+            if (n) {
+                ejecutarCargaNoticia(n.headline, n.headline.replace(/-/g, ' '), n.datePublished, n.articleBody);
+            } else {
+                console.log("AVISO: ID no encontrado en el búnker.");
+            }
+        } else {
+            // [ PROTOCOLO SCANNER DE TRIPLE IMPACTO ]
+            document.title = "RADAR NVVEX | Archivo de Inteligencia Musical";
+            document.getElementById('bunker-titulo').innerText = "[ REGISTRO CENTRAL NVVEX ]";
+            
+            // Tomamos las 3 noticias más frescas para el impacto inicial
+            const top3 = noticiasCargadas.slice(0, 3);
+            let nodosHTML = "";
+            
+            top3.forEach((n, index) => {
+                let t = n.articleBody.includes('| >') ? n.articleBody.split('| >')[1].split('|')[0].trim().toUpperCase() : n.headline.split('-NVX')[0].replace(/-/g, ' ').toUpperCase();
+                nodosHTML += `
+                    <div style="border-left: 2px solid ${index === 0 ? 'var(--neon)' : 'rgba(57, 255, 20, 0.3)'}; padding-left: 15px; margin-bottom: 20px;">
+                        <div style="font-size: 0.5rem; color: var(--neon); opacity: 0.6;">NODO_0${index + 1} // STATUS: ACTIVO</div>
+                        <h2 style="font-size: 1rem; margin: 5px 0; font-family: 'Share Tech Mono'; color: #fff;">[ > ] ${t}</h2>
+                    </div>`;
+            });
+
+            document.getElementById('display-texto').innerHTML = `
+                <div style="padding: 20px 10px;">
+                    <div style="font-family:'Share Tech Mono'; color:var(--neon); font-size:0.7rem; margin-bottom: 20px; letter-spacing:2px; border-bottom: 1px solid rgba(57,255,20,0.2); padding-bottom: 10px;">
+                        MONITOREO DE ACTIVOS EN TIEMPO REAL_
+                    </div>
+                    ${nodosHTML}
+                    <div style="font-family:'Share Tech Mono'; color:rgba(255,255,255,0.2); font-size:0.6rem; margin-top: 30px; text-align: center;">
+                        SISTEMA NVVEX SINCRONIZADO // MODO: ESCANEO GLOBAL
+                    </div>
+                </div>
+            `;
+        }
+        renderizarNoticias();
+    } catch(e) { 
+        console.error("ERROR_CONEXION_BUNKER", e);
+        // Si falla el fetch, intentamos cargar sin el bot check por si acaso
+        if(e.name === 'TypeError') console.log("Revisar CORS o Cloudflare Bot Shield");
+    }
+}
+
+    function filtrarRadar() {
+        const input = document.getElementById('radar-search');
+        const valor = input.value.toLowerCase();
+        if (filtroActual === valor) return;
+        filtroActual = valor;
+        noticiasVisibles = 15; 
+        renderizarNoticias();
+    }
+
+    function ejecutarCargaNoticia(id, titulo, fechaHumana, contenido) {
+    // [ 1. PROTOCOLO DE EXTRACCIÓN DE TÍTULO DE IMPACTO ]
+    let tituloFinal = "";
+    if (contenido.includes('| >')) {
+        tituloFinal = contenido.split('| >')[1].split('|')[0].trim().toUpperCase();
+    } else {
+        tituloFinal = id.split('-NVX')[0].replace(/-/g, ' ').toUpperCase();
+    }
+
+    // [ 2. FILTRADO DE CONTENIDO PARA LA DESCRIPCIÓN ]
+    // Dividimos por la barra "|" y saltamos las primeras 3 partes (ID, Titular, Fecha)
+    let partes = contenido.split('|');
+    let cuerpoNoticia = "";
+    if (partes.length >= 4) {
+        cuerpoNoticia = partes.slice(3).join('|').trim();
+    } else {
+        cuerpoNoticia = contenido; // Respaldo si el formato cambia
+    }
+
+    // [ 3. ACTUALIZACIÓN DE IDENTIDAD VISUAL Y AUTORIDAD H1 ]
+document.title = `${tituloFinal} | NVVEX NEWS`;
+
+// Convertimos el título del búnker en un H1 real para que Google lo capture de una vez
+const bunkerTitulo = document.getElementById('bunker-titulo');
+// Ahora el título es un H2 real, como debe ser
+bunkerTitulo.innerHTML = `<h2 id="titulo-noticia-real" style="font-size: 1.4rem; color: var(--neon); text-transform: uppercase; margin: 0; font-family: 'Share Tech Mono', monospace; text-shadow: 0 0 10px var(--neon);">[ ${tituloFinal} ]</h2>`;    
+    // Inyectamos solo el cuerpo limpio
+    document.getElementById('display-texto').innerHTML = `
+        <div style="color:var(--intel); font-size:0.7rem; margin-bottom:15px; border-bottom:1px solid rgba(0,242,255,0.2); padding-bottom:5px; font-family:'Share Tech Mono', monospace;">
+            [ ORIGEN: REGISTRO_CENTRAL_NVVEX ]<br>
+            [ TIPO: REPORTE_DE_INTELIGENCIA_NVVEX ]<br>
+            [ CICLO: ${fechaHumana} ]
+        </div>
+        <div style="margin-bottom:20px; line-height:1.7; color: #E0E6ED;">${cuerpoNoticia}</div>
+    `;
+
+    // [ 4. SEO  ]
+    const diccionarioTecnico = ["isrc", "onapi", "ascap", "ifpi", "equity", "market share", "uspto", "dominicana", "holding", "patrimonial", "publishing", "blindaje", "regalías"];
+    
+    // El SEO ahora se basa solo en la noticia limpia
+    let contenidoMinus = cuerpoNoticia.toLowerCase();
+    let terminosEncontrados = diccionarioTecnico.filter(palabra => contenidoMinus.includes(palabra)).join(", ");
+    let palabrasTitulo = tituloFinal.split(" ").filter(p => p.length > 4).join(", ");
+    
+    let metaKey = document.querySelector('meta[name="keywords"]') || document.createElement('meta');
+    metaKey.name = "keywords";
+    metaKey.content = `${palabrasTitulo}, ${terminosEncontrados}, NVVEX, Inteligencia de Datos`;
+    document.head.appendChild(metaKey);
+
+    // Pasamos los datos limpios a las funciones externas
+    actualizarMetaTags(tituloFinal, cuerpoNoticia.substring(0, 160), fechaHumana);
+    actualizarCanonical(id);
+    generarRelacionados(id);
+}
+
+    function actualizarMetaTags(titulo, desc, fechaISO) {
+        // [ LA LLAVE: ESTO CAMBIA LA DESCRIPCIÓN QUE GOOGLE MUESTRA ]
+        let metaDesc = document.querySelector('meta[name="description"]');
+        if(metaDesc) {
+            metaDesc.setAttribute('content', desc); 
+        }
+
+        // [ EL SEGURO: ESTO ES PARA REDES SOCIALES ]
+        let mt = document.querySelector('meta[property="og:title"]');
+        let md = document.querySelector('meta[property="og:description"]');
+        if(mt) mt.setAttribute('content', titulo);
+        if(md) md.setAttribute('content', desc);
+
+        // ... (Aquí sigue tu bloque del JSON-LD que ya está nítido)
+
+        let jsonLd = document.getElementById('schema-json');
+        if(jsonLd) {
+            try {
+                const currentId = new URLSearchParams(window.location.search).get('id');
+                const urlFinal = window.location.origin + "/intel/" + (currentId ? currentId : "");
+                
+                // [ ENTIDAD 1: LA NOTICIA DE INTELIGENCIA CON IMAGEN BLINDADA ]
+                let noticiaData = {
+                    "@context": "https://schema.org",
+                    "@type": "NewsArticle",
+                    "mainEntityOfPage": { "@type": "WebPage", "@id": urlFinal },
+                    "headline": titulo,
+                    "description": desc,
+                    "image": {
+                        "@type": "ImageObject",
+                        "url": "https://nvvexstudios.com/img/NVVEX%20LOGO%20LETRERO-01%20(1).webp",
+                        "width": 1200,
+                        "height": 675
+                    },
+                    "datePublished": fechaISO + "T12:00:00+00:00",
+                    "dateModified": new Date().toISOString(),
+                    "author": { 
+                        "@type": "Organization", 
+                        "name": "NVVEX STUDIOS",
+                        "url": "https://nvvexstudios.com/" 
+                    },
+                    "publisher": {
+                        "@type": "Organization",
+                        "name": "NVVEX STUDIOS LLC",
+                        "logo": {
+                            "@type": "ImageObject",
+                            "url": "https://nvvexstudios.com/img/NVVEX%20LOGO%20LETRERO-01%20(1).webp"
+                        }
+                    }
+                };
+
+                // [ ENTIDAD 2: LA JERARQUÍA DE MANDO (BREADCRUMBS) ]
+               let itemListElement = [
+    { "@type": "ListItem", "position": 1, "name": "SISTEMA CENTRAL", "item": "https://nvvexstudios.com/" },
+    { "@type": "ListItem", "position": 2, "name": "INTEL REPORT", "item": "https://nvvexstudios.com/intel/" }
+];
+
+// Si existe un título, significa que estamos en una noticia, así que agregamos el nivel 3
+if (typeof titulo !== 'undefined' && titulo) {
+    itemListElement.push({ "@type": "ListItem", "position": 3, "name": titulo, "item": urlFinal });
+}
+
+let breadcrumbData = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": itemListElement
+};
+
+                // INYECTAMOS LA INTELIGENCIA COMBINADA COMO ARRAY
+                jsonLd.textContent = JSON.stringify([noticiaData, breadcrumbData]);
+
+            } catch (e) { console.error("Error_Intel_Schema_Sync"); }
+        }
+    }
+
+    function actualizarCanonical(id) {
+    // Construimos la URL completa con el ID exacto
+    const urlNoticia = `https://nvvexstudios.com/intel/${id}`;
+    
+    // 1. Buscamos el canonical por ID (como lo tienes en tu HTML) o por tag
+    let linkCanonical = document.getElementById('canonical-link') || document.querySelector("link[rel='canonical']");
+    
+    if (linkCanonical) {
+        linkCanonical.setAttribute('href', urlNoticia);
+    } else {
+        // Si por alguna razón no existe, lo creamos al vuelo
+        linkCanonical = document.createElement('link');
+        linkCanonical.rel = 'canonical';
+        linkCanonical.href = urlNoticia;
+        document.head.appendChild(linkCanonical);
+    }
+
+    // 2. También actualizamos el OG:URL para que al compartir en WhatsApp/FB sea la noticia real
+    let ogUrl = document.getElementById('og-url') || document.querySelector("meta[property='og:url']");
+    if (ogUrl) {
+        ogUrl.setAttribute('content', urlNoticia);
+    }
+}
+
+
+    function generarRelacionados(idActual) {
+        // Filtramos del JSON las noticias que no sean la actual y tomamos 4 al azar
+        let sugerencias = noticiasCargadas
+            .filter(n => n.headline !== idActual)
+            .sort(() => 0.5 - Math.random())
+            .slice(0, 4);
+
+        let htmlRel = `
+            <div style="margin-top:40px; border:1px double rgba(0,242,255,0.2); padding:15px; background:rgba(0,0,0,0.2); font-family:'Share Tech Mono', monospace; margin-bottom:30px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <span style="color:var(--neon); font-size:0.6rem; letter-spacing:2px;">CERTIFICADO DE ORIGEN NVVEX</span>
+                    <span style="color:rgba(255,255,255,0.3); font-size:0.5rem;">ID_AUTH: 0x${Math.random().toString(16).slice(2, 10).toUpperCase()}</span>
+                </div>
+                <p style="color:#888; font-size:0.65rem; line-height:1.3; margin:0;">Propiedad intelectual protegida bajo registro digital NVVEX 2026</p>
+            </div>
+            <div style="border-top:1px dashed var(--intel); padding-top:20px;">
+                <div style="font-size:0.6rem; color:var(--intel); margin-bottom:15px; font-family:'Share Tech Mono'; letter-spacing:1px;">[ NODOS_VINCULADOS ]</div>
+                <div class="news-grid">`;
+
+        sugerencias.forEach(n => {
+            // [ LIMPIEZA DE TÍTULO PARA RELACIONADOS ]
+            let tituloRelacionado = "";
+            if (n.articleBody.includes('| >')) {
+                // Sacamos el título de impacto después del | >
+                tituloRelacionado = n.articleBody.split('| >')[1].split('|')[0].trim().toUpperCase();
+            } else {
+                // Backup por si acaso
+                tituloRelacionado = n.headline.split('-NVX')[0].replace(/-/g, ' ').toUpperCase();
+            }
+
+            const cSeguro = n.articleBody.replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, " ");
+
+             htmlRel += `
+                <a href="?id=${n.headline}" class="news-card" onclick="verNoticiaRapido(event, '${n.headline}', '${tituloRelacionado}', '${n.datePublished}', '${cSeguro}')">
+                    <div style="font-size:0.45rem; color:var(--intel); opacity:0.7;">VINCULO_${n.headline.split('-').pop()}</div>
+                    <div style="font-size:0.75rem; font-family:'Share Tech Mono'; margin-top:4px;">${tituloRelacionado}</div>
+                </a>`;
+        });
+
+        htmlRel += `</div></div>`;
+        document.getElementById('display-texto').innerHTML += htmlRel;
+    }
+    function renderizarNoticias() {
+        const timeline = document.getElementById('archivo-timeline');
+        let htmlContent = ""; let ultimaFechaMostrada = "";
+        
+        const filtradas = noticiasCargadas.filter(n => 
+            n.headline.toLowerCase().includes(filtroActual) || 
+            n.articleBody.toLowerCase().includes(filtroActual)
+        );
+        
+        const fragmento = filtradas.slice(0, noticiasVisibles);
+        
+        fragmento.forEach((n) => {
+            // [ 1. EXTRAER EL NVX DEL ID DE LA NOTICIA ]
+            let nvxReal = "NVX-DATA"; 
+            if (n.headline.includes('NVX-')) {
+                // Esto corta el ID y se queda con "NVX-" y los números que le siguen
+                nvxReal = "NVX-" + n.headline.split('NVX-')[1].split('-')[0];
+            }
+
+            // [ 2. LIMPIEZA DE TÍTULO DE IMPACTO ]
+            let tituloParaLista = "";
+            if (n.articleBody.includes('| >')) {
+                tituloParaLista = n.articleBody.split('| >')[1].split('|')[0].trim().toUpperCase();
+            } else {
+                tituloParaLista = n.headline.split('-NVX')[0].replace(/-/g, ' ').toUpperCase();
+            }
+
+            // [ 3. CONTROL DE FECHAS ]
+            if (n.datePublished !== ultimaFechaMostrada) {
+                if (ultimaFechaMostrada !== "") htmlContent += '</div>';
+                htmlContent += `<div class="fecha-header">[ > ] CICLO: ${n.datePublished}</div><div class="news-grid">`;
+                ultimaFechaMostrada = n.datePublished;
+            }
+
+            const cSeguro = n.articleBody.replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, " ");
+
+// [ 4. RENDERIZADO DE LA CARD CON AUTORIDAD H2 ]
+htmlContent += `
+    <a href="?id=${n.headline}" class="news-card" onclick="verNoticiaRapido(event, '${n.headline}', '${tituloParaLista}', '${n.datePublished}', '${cSeguro}')">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; border-bottom: 1px solid rgba(57, 255, 20, 0.1); padding-bottom: 3px;">
+            <span style="font-size:0.5rem; color:var(--neon); font-family:'Share Tech Mono'; letter-spacing:1px; font-weight: bold;">${nvxReal}</span>
+            <span style="font-size:0.35rem; color:rgba(57, 255, 20, 0.5); font-family:'Share Tech Mono';">INTEL_NODE</span>
+        </div>
+        <h2 style="font-size:0.75rem; font-family:'Share Tech Mono'; line-height:1.2; color: #fff; margin:0; font-weight:normal; text-transform:uppercase;">${tituloParaLista}</h2>
+    </a>`;
+        });
+        
+        timeline.innerHTML = htmlContent + '</div>';
+        const btn = document.getElementById('btn-ver-mas');
+        if (btn) btn.style.display = (noticiasVisibles < filtradas.length) ? "block" : "none";
+    }
+    function verNoticiaRapido(event, id, titulo, fecha, contenido) {
+        event.preventDefault();
+        window.history.pushState({}, '', `/intel/${id}`);
+        ejecutarCargaNoticia(id, titulo, fecha, contenido);
+        window.scrollTo({top: 0, behavior: 'smooth'});
+    }
+
+    function mostrarSiguienteCiclo() { noticiasVisibles += 15; renderizarNoticias(); }
+
+    // Estrellas
+    const sc = document.getElementById('stars-container');
+    for(let i=0; i<60; i++) {
+        const s = document.createElement('div'); s.className = 'star';
+        s.style.width = s.style.height = Math.random()*2+1+'px';
+        s.style.left = Math.random()*100+'%'; s.style.top = Math.random()*100+'%';
+        s.style.animationDuration = Math.random()*30+10+'s';
+        sc.appendChild(s);
+    }
+    window.onload = cargarBunker;
+     
+        (function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    // Si NO hay ID, configuramos el rastro para la página principal del Búnker
+    if (!urlParams.get('id')) {
+        const jsonLd = document.getElementById('schema-json');
+        if (jsonLd) {
+            try {
+                const hoy = new Date().toISOString().split('T')[0];
+                const hoyFull = new Date().toISOString();
+
+                // Creamos la estructura que combina tu CollectionPage con los Breadcrumbs
+                const dataBunker = {
+                    "@context": "https://schema.org",
+                    "@graph": [
+                        {
+                            "@type": "CollectionPage",
+                            "mainEntityOfPage": { "@type": "WebPage", "@id": "https://nvvexstudios.com/intel/" },
+                            "headline": "BÚNKER DE DATOS | NVVEX STUDIOS",
+                            "description": "Accediendo a los registros oficiales de NVVEX STUDIOS.",
+                            "datePublished": hoy + "T12:00:00+00:00",
+                            "dateModified": hoyFull
+                        },
+                        {
+                            "@type": "BreadcrumbList",
+                            "itemListElement": [
+                                { "@type": "ListItem", "position": 1, "name": "SISTEMA CENTRAL", "item": "https://nvvexstudios.com/" },
+                                { "@type": "ListItem", "position": 2, "name": "INTEL REPORT", "item": "https://nvvexstudios.com/intel/" }
+                            ]
+                        }
+                    ]
+                };
+
+                jsonLd.textContent = JSON.stringify(dataBunker);
+            } catch (e) { console.log("Init_Bunker_Breadcrumb_Error"); }
+        }
+    }
+})();
+    </script>
+        <div id="share-bunker" style="position: fixed; bottom: 25px; right: 25px; z-index: 9999; display: none;">
+    <a id="wp-link" href="#" target="_blank" style="background: #25D366; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 20px rgba(37, 211, 102, 0.4); text-decoration: none; transition: all 0.3s ease;">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="white"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.316 1.592 5.43 0 9.856-4.426 9.858-9.855.002-5.43-4.425-9.856-9.853-9.856-5.431 0-9.856 4.426-9.858 9.854 0 2.04.594 3.639 1.59 5.316l-.999 3.646 3.946-.1z"/></svg>
+    </a>
+</div>
+<script>
+function actualizarBotonCompartir() {
+    const btn = document.getElementById('share-bunker');
+    const targetH2 = document.getElementById('titulo-noticia-real'); 
+    const pathParts = window.location.pathname.split('/').filter(p => p !== "");
+    const idNoticia = pathParts.pop();
+
+    if (idNoticia && idNoticia.toLowerCase() !== "intel") {
+        if(btn) btn.style.display = 'none';
+
+        const armarLink = (titulo) => {
+            // Limpiamos los corchetes [ ] para el mensaje de WhatsApp
+            const tituloLimpio = titulo.replace('[', '').replace(']', '').trim().toUpperCase();
+            const urlFinal = window.location.href;
+            const textoMensaje = `🚨 *REPORTE RADAR NVVEX:* \n\n${tituloLimpio}\n\n📡 Ver inteligencia completa:\n${urlFinal}`;
+            
+            const wpLink = document.getElementById('wp-link');
+            if(wpLink) wpLink.href = "https://wa.me/?text=" + encodeURIComponent(textoMensaje);
+            if(btn) btn.style.display = 'flex';
+        };
+
+        // CAZADOR DE H2 (Rápido y preciso)
+        let intentos = 0;
+        const cazar = setInterval(() => {
+            const textoH2 = targetH2 ? targetH2.innerText.trim() : "";
+            intentos++;
+
+            if (textoH2 !== "" && !textoH2.includes("ACCEDIENDO")) {
+                clearInterval(cazar);
+                armarLink(textoH2);
+            }
+
+            if (intentos > 20) {
+                clearInterval(cazar);
+                // Si falla, mandamos el ID sin el -NVX para no quedar mal
+                armarLink(idNoticia.split('-NVX')[0].replace(/-/g, ' '));
+            }
+        }, 100);
+
+    } else if (btn) {
+        btn.style.display = 'none';
+    }
+}
+
+// Inyectamos el refresco después de que Mike cargue
+const originalCarga = ejecutarCargaNoticia;
+ejecutarCargaNoticia = function() {
+    originalCarga.apply(this, arguments);
+    actualizarBotonCompartir();
+};
+</script>
+</body>
+</html>
