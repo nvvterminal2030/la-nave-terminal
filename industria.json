@@ -5,7 +5,10 @@
       "yt_id": "dQw4w9WgXcQ", 
       "artista": "NOMBRE_ARTISTA",
       "analisis": "Anomalía de tráfico detectada vía YouTube API. Crecimiento del 40% en 24h.",
-      "rank": "#5 GLOBAL"
+      "rank": "05",
+      "status": "UP",
+      "pct": "+42.5%",
+      "color": "var(--morado)"
     }
   ]
 }
