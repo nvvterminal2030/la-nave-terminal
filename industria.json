@@ -2,13 +2,11 @@
   "reportes": [
     {
       "id": "B-IND-001-MAR",
-      "yt_id": "dQw4w9WgXcQ", 
-      "artista": "NOMBRE_ARTISTA",
-      "analisis": "Anomalía de tráfico detectada vía YouTube API. Crecimiento del 40% en 24h.",
-      "rank": "05",
-      "status": "UP",
-      "pct": "+42.5%",
-      "color": "var(--morado)"
+      "artista": "PAPI CRIS",
+      "analisis": "Anomalía de tráfico detectada vía YouTube API. El 'Busca' confirma una tasa de retención del 94% en mercados de España y USA. Zona de inversión máxima.",
+      "rank": "TOP 01",
+      "node": "NODO_RD_ALTO_IMPACTO",
+      "img": "https://tu-servidor.com/imagen-artista.jpg"
     }
   ]
 }
