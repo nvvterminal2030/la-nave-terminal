@@ -1,12 +1,12 @@
 {
   "noticias": [
-    {"titulo": "Tendencia en RD: El bajo 808 domina el top viral.", "hora": "14:20"},
-    {"titulo": "Nueva API detecta patrones de éxito en Miami.", "hora": "14:45"},
-    {"titulo": "Mike detecta subida de 20% en streaming de 'ALMA'.", "hora": "15:10"},
-    {"titulo": "Protocolo de datos: 15k nuevos nodos activos.", "hora": "15:30"},
-    {"titulo": "España activa radar para lanzamientos urbanos.", "hora": "16:00"},
-    {"titulo": "Algoritmo de YouTube sugiere ruptura en Dembow.", "hora": "16:20"},
-    {"titulo": "NVVEX Studios: Nuevo récord de renderizado.", "hora": "16:45"},
-    {"titulo": "Radar 'Busca' localiza artista emergente en el Cibao.", "hora": "17:10"}
+    {"titulo": "TENDENCIA EN RD: EL BAJO 808 DOMINA EL TOP VIRAL.", "hora": "14:20"},
+    {"titulo": "NUEVA API DETECTA PATRONES DE ÉXITO EN MIAMI.", "hora": "14:45"},
+    {"titulo": "MIKE DETECTA SUBIDA DE 20% EN STREAMING DE 'ALMA'.", "hora": "15:10"},
+    {"titulo": "PROTOCOLO DE DATOS: 15K NUEVOS NODOS ACTIVOS.", "hora": "15:30"},
+    {"titulo": "ESPAÑA ACTIVA RADAR PARA LANZAMIENTOS URBANOS.", "hora": "16:00"},
+    {"titulo": "ALGORITMO DE YOUTUBE SUGIERE RUPTURA EN DEMBOW.", "hora": "16:20"},
+    {"titulo": "NVVEX STUDIOS: NUEVO RÉCORD DE RENDERIZADO.", "hora": "16:45"},
+    {"titulo": "RADAR 'BUSCA' LOCALIZA ARTISTA EMERGENTE EN EL CIBAO.", "hora": "17:10"}
   ]
 }
