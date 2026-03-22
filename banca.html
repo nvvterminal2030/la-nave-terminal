@@ -19,19 +19,26 @@
         * { margin: 0; padding: 0; box-sizing: border-box; cursor: crosshair; }
         body {
             background: var(--negro); color: #fff; font-family: 'Inter', sans-serif;
-            overflow-x: hidden; height: 100vh;
-            background-image: radial-gradient(circle at 2px 2px, rgba(188, 19, 254, 0.1) 1px, transparent 0);
-            background-size: 40px 40px;
+            overflow: hidden; height: 100vh;
+            background-image: 
+                linear-gradient(rgba(188, 19, 254, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(188, 19, 254, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
         }
 
-        /* MARKET STRIP (NUEVO: mercados.json) */
+        /* CAPA DE PROFUNDIDAD (VIGNETTE) */
+        .bunker-overlay {
+            position: fixed; inset: 0; 
+            background: radial-gradient(circle at center, transparent 30%, rgba(0,0,0,0.8) 100%);
+            pointer-events: none; z-index: 5;
+        }
+
         .market-strip {
             position: fixed; top: 0; width: 100%; height: 35px;
             background: #000; border-bottom: 1px solid var(--border);
             display: flex; align-items: center; z-index: 2000; overflow: hidden;
         }
 
-        /* HUD PRINCIPAL */
         .hud-header {
             position: fixed; top: 35px; width: 100%; z-index: 1000;
             padding: 15px 40px; display: flex; justify-content: space-between;
@@ -40,83 +47,105 @@
 
         .main-layout {
             display: grid; grid-template-columns: 1fr 450px; gap: 25px;
-            padding: 120px 30px 60px; max-width: 1900px; margin: 0 auto;
+            padding: 110px 30px 60px; max-width: 1900px; margin: 0 auto;
+            position: relative; z-index: 10;
         }
 
-        /* BLOQUE IMPACTO (industria.json) */
+        /* ANALIZADOR DE IMPACTO (industria.json) */
         .analysis-core {
             background: var(--glass); border: 2px solid var(--border);
-            border-radius: 25px; position: relative; overflow: hidden; height: 680px;
-            box-shadow: inset 0 0 50px rgba(188, 19, 254, 0.1);
+            border-radius: 30px; position: relative; overflow: hidden; height: 650px;
+            box-shadow: 0 0 40px rgba(0,0,0,1), inset 0 0 100px rgba(188, 19, 254, 0.1);
         }
 
-        .hero-img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.3) contrast(1.2); }
-        
+        .hero-img { 
+            width: 100%; height: 100%; object-fit: cover; 
+            filter: grayscale(1) brightness(0.4) contrast(1.2); 
+            transition: 0.5s;
+        }
+        .analysis-core:hover .hero-img { filter: grayscale(0.5) brightness(0.5); }
+
         .hero-data {
-            position: absolute; inset: 0; padding: 50px;
+            position: absolute; inset: 0; padding: 60px;
             display: flex; flex-direction: column; justify-content: flex-end;
-            background: linear-gradient(to top, rgba(0,0,0,0.9) 20%, transparent);
+            background: linear-gradient(to top, rgba(0,0,0,1) 10%, transparent 60%);
         }
 
-        /* MAPA DE NODOS (RD - USA - ESP) */
+        /* MAPA TÁCTICO DINÁMICO */
         .node-map {
-            position: absolute; top: 40px; right: 40px; width: 200px; height: 120px;
-            border: 1px solid var(--border); background: rgba(0,0,0,0.5); border-radius: 10px;
-            padding: 10px; font-family: var(--font-data); font-size: 0.6rem;
+            position: absolute; top: 40px; right: 40px; width: 220px;
+            border: 1px solid var(--border); background: rgba(0,0,0,0.8); border-radius: 15px;
+            padding: 15px; font-family: var(--font-data); font-size: 0.65rem;
+            backdrop-filter: blur(10px);
         }
-        .dot { height: 6px; width: 6px; border-radius: 50%; display: inline-block; margin-right: 5px; animation: blink 1.5s infinite; }
-        .dot-rd { background: var(--cian); box-shadow: 0 0 10px var(--cian); }
-        .dot-usa { background: #fff; }
-        .dot-esp { background: var(--morado); }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
-        /* TECH NODES (tech.json) */
+        /* BARRAS DE CARGA (NUEVO) */
+        .loading-bar {
+            width: 100%; height: 4px; background: rgba(255,255,255,0.1);
+            margin: 10px 0; border-radius: 2px; overflow: hidden;
+        }
+        .loading-fill { 
+            height: 100%; background: var(--morado); 
+            width: 0%; animation: fillBar 3s ease-in-out infinite;
+        }
+        @keyframes fillBar { 0% { width: 0%; } 50% { width: 85%; } 100% { width: 0%; } }
+
+        /* TECH SIDEBAR */
         .tech-sidebar { display: grid; grid-template-rows: repeat(4, 1fr); gap: 15px; }
         .node-box {
-            background: rgba(15,15,15,0.8); border: 1px solid var(--border);
-            border-radius: 15px; padding: 20px; transition: 0.3s;
+            background: rgba(15,15,15,0.85); border: 1px solid var(--border);
+            border-radius: 20px; padding: 22px; transition: 0.3s;
+            position: relative; overflow: hidden;
         }
-        .node-box:hover { border-color: #fff; transform: scale(1.02); background: rgba(188, 19, 254, 0.05); }
+        .node-box::after {
+            content: ""; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--morado);
+        }
+        .node-box:hover { border-color: #fff; transform: translateX(-10px); }
 
-        /* TICKER MIKE (mike.json) */
+        /* FOOTER DINÁMICO */
         .mike-footer {
             position: fixed; bottom: 0; width: 100%; background: #000;
-            border-top: 1px solid var(--border); padding: 8px; z-index: 1000;
+            border-top: 1px solid var(--border); padding: 10px; z-index: 1000;
+            display: flex; align-items: center;
         }
 
-        /* TYPOGRAPHY & BUTTONS */
-        .glitch-text { font-family: var(--font-data); color: var(--morado); letter-spacing: 3px; font-size: 0.7rem; }
-        h1 { font-size: 4.5rem; font-weight: 900; line-height: 0.8; letter-spacing: -3px; }
+        /* ESTILOS DE TEXTO */
+        .glitch-text { font-family: var(--font-data); color: var(--morado); letter-spacing: 4px; }
+        h1 { font-size: 4.8rem; font-weight: 900; line-height: 0.8; letter-spacing: -4px; margin-bottom: 10px; }
+        .data-label { color: var(--cian); font-family: var(--font-data); font-size: 0.6rem; text-transform: uppercase; }
+
         .btn-action {
-            background: var(--morado); color: #000; border: none; padding: 12px 25px;
-            font-family: var(--font-data); font-weight: 900; border-radius: 5px;
-            clip-path: polygon(0% 0%, 100% 0%, 100% 70%, 85% 100%, 0% 100%);
+            background: transparent; border: 1px solid var(--morado); color: var(--morado);
+            padding: 15px 35px; font-family: var(--font-data); font-weight: 900;
+            text-transform: uppercase; clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
             transition: 0.3s;
         }
-        .btn-action:hover { background: #fff; box-shadow: 0 0 20px #fff; }
+        .btn-action:hover { background: var(--morado); color: #000; box-shadow: 0 0 30px var(--morado-glow); }
 
-        .scan-bar {
-            position: absolute; width: 100%; height: 2px; background: var(--morado);
-            top: 0; z-index: 10; opacity: 0.5; animation: scanning 5s linear infinite;
+        .scanner-line {
+            position: absolute; width: 100%; height: 100px;
+            background: linear-gradient(to bottom, transparent, rgba(188, 19, 254, 0.1), transparent);
+            top: -100px; animation: scanMove 4s linear infinite;
         }
-        @keyframes scanning { 0% { top: 0%; } 100% { top: 100%; } }
+        @keyframes scanMove { 0% { top: -100px; } 100% { top: 100%; } }
 
     </style>
 </head>
 <body>
 
+<div class="bunker-overlay"></div>
 <div class="market-strip" id="market-flow"></div>
 
 <header class="hud-header">
-    <div class="glitch-text">ORIGIN_CORE_STATION // [MAR-2026]</div>
-    <div id="live-timer" style="font-family: var(--font-data);">00:00:00:00</div>
-    <div class="glitch-text">STATUS: <span style="color:var(--cian)">ACTIVE_SCAN</span></div>
+    <div class="glitch-text" style="font-size: 0.8rem;">NVVEX_CORE // STATION_01</div>
+    <div id="live-timer" style="font-family: var(--font-data); letter-spacing: 2px;">00:00:00:00</div>
+    <div class="glitch-text" id="coord-tracker" style="font-size: 0.7rem;">COORD: 18.4861° N, 69.9312° W</div>
 </header>
 
 <main class="main-layout">
     
     <section class="analysis-core" id="ind-block">
-        <div class="scan-bar"></div>
+        <div class="scanner-line"></div>
         </section>
 
     <section class="tech-sidebar" id="tech-block">
@@ -125,81 +154,93 @@
 </main>
 
 <footer class="mike-footer">
-    <marquee scrollamount="5" style="font-family: var(--font-data); color: #666; font-size: 0.8rem;" id="mike-marquee">
-        CARGANDO_FLUJO_DE_NOTICIAS_MIKE...
+    <div style="background:var(--morado); color:#000; padding:2px 10px; font-family:var(--font-data); font-weight:900; font-size:0.7rem; margin-right:20px;">LIVE_FEED</div>
+    <marquee scrollamount="6" style="font-family: var(--font-data); color: #888; font-size: 0.85rem;" id="mike-marquee">
+        ESPERANDO SINCRONIZACIÓN DE RADAR...
     </marquee>
 </footer>
 
 <script>
-    // RELOJ TÁCTICO
+    // 1. RELOJ Y COORDENADAS
     setInterval(() => {
         const d = new Date();
         document.getElementById('live-timer').innerText = 
             `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}:${d.getSeconds().toString().padStart(2,'0')}:${Math.floor(Math.random()*99).toString().padStart(2,'0')}`;
+        
+        if(Math.random() > 0.9) {
+            document.getElementById('coord-tracker').innerText = `COORD: ${(Math.random()*90).toFixed(4)}° N, ${(Math.random()*180).toFixed(4)}° W`;
+        }
     }, 50);
+
+    // 2. GENERADOR DE NOTICIAS DE TENDENCIA (Si el radar está buscando)
+    const backupNews = [
+        "RADAR BUSCA: Tendencia masiva detectada en Madrid - Activo Dembow subiendo.",
+        "TECH: Implementación de red neuronal en Bunker RD completada.",
+        "ECONOMY: El NVVEX_INDEX rompe resistencia de los 1,400 puntos.",
+        "ALMA EP: Fase de masterización 80% completada.",
+        "ALERTA: Intento de bypass detectado y bloqueado por Origin Core."
+    ];
 
     async function launchOriginCore() {
         try {
-            // 1. MERCADOS (mercados.json)
+            // CARGAR MERCADOS
             const resMerc = await fetch('mercados.json');
             const dataMerc = await resMerc.json();
             document.getElementById('market-flow').innerHTML = dataMerc.ticker.map(m => `
-                <div style="display:inline-block; font-family:var(--font-data); font-size:0.65rem; margin-right:30px;">
-                    <span style="color:#555">${m.asset}</span> 
+                <div style="display:inline-block; font-family:var(--font-data); font-size:0.7rem; margin-right:40px;">
+                    <span style="color:#666">${m.asset}</span> 
                     <span style="color:#fff">$${m.price}</span> 
                     <span style="color:${m.status === 'UP' ? '#00ff88' : '#ff4444'}">${m.status === 'UP' ? '▲' : '▼'}${m.change}</span>
                 </div>
-            `).join('').repeat(5); // Repeat para que llene la barra
+            `).join('').repeat(10);
 
-            // 2. INDUSTRIA (industria.json)
+            // CARGAR INDUSTRIA
             const resInd = await fetch('industria.json');
             const dataInd = await resInd.json();
             const hero = dataInd.reportes[0];
             document.getElementById('ind-block').innerHTML += `
                 <img src="${hero.img}" class="hero-img">
                 <div class="node-map">
-                    <div style="margin-bottom:8px; border-bottom:1px solid #333; padding-bottom:5px;">ACTIVE_NODES</div>
-                    <div><span class="dot dot-rd"></span> RD: ONLINE</div>
-                    <div><span class="dot dot-usa"></span> USA: SYNC</div>
-                    <div><span class="dot dot-esp"></span> ESP: ACTIVE</div>
+                    <div style="color:var(--morado); margin-bottom:10px;">> SATELLITE_LINK</div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>RD_NODE</span><span style="color:var(--cian)">ONLINE</span></div>
+                    <div class="loading-bar"><div class="loading-fill"></div></div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>USA_SYNC</span><span style="color:#fff">ACTIVE</span></div>
+                    <div style="display:flex; justify-content:space-between;"><span>ESP_RADAR</span><span style="color:var(--morado)">SCANNING</span></div>
                 </div>
                 <div class="hero-data">
-                    <span class="glitch-text">> TARGET_LOCATED // ${hero.node}</span>
+                    <div class="glitch-text" style="font-size:0.7rem; margin-bottom:10px;">[ ${hero.node} // ID:${hero.id} ]</div>
                     <h1>${hero.artista}</h1>
-                    <p style="max-width:550px; color:#aaa; margin: 20px 0;">${hero.analisis}</p>
-                    <div style="display:flex; gap:30px; align-items:center;">
-                        <button class="btn-action">EJECUTAR_ACCION</button>
-                        <div style="font-family:var(--font-data)">
-                            <div style="font-size:0.6rem; color:var(--cian)">PROB_EXITO</div>
-                            <div style="font-size:1.5rem; font-weight:bold;">98.2%</div>
+                    <p style="max-width:600px; color:#ccc; line-height:1.6; margin-bottom:30px; font-size:1.1rem;">${hero.analisis}</p>
+                    <div style="display:flex; gap:40px; align-items:center;">
+                        <button class="btn-action">Ejecutar Análisis</button>
+                        <div>
+                            <span class="data-label">Ranking Global</span>
+                            <div style="font-size:1.8rem; font-weight:900; color:var(--morado); font-family:var(--font-data);">${hero.rank}</div>
                         </div>
                     </div>
                 </div>
             `;
 
-            // 3. TECH (tech.json)
+            // CARGAR TECH
             const resTech = await fetch('tech.json');
             const dataTech = await resTech.json();
             document.getElementById('tech-block').innerHTML = dataTech.tecnologia.map(t => `
                 <div class="node-box">
+                    <div class="data-label" style="margin-bottom:5px;">${t.id}</div>
+                    <h3 style="letter-spacing:2px; font-size:1.1rem; margin-bottom:10px;">${t.titular}</h3>
                     <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <span class="glitch-text" style="font-size:0.5rem;">${t.id}</span>
-                        <div style="width:10px; height:2px; background:var(--morado)"></div>
+                        <div style="font-family:var(--font-data); color:var(--morado); font-size:1.4rem; font-weight:bold;">${t.impacto}</div>
+                        <div style="font-size:0.6rem; border:1px solid #444; padding:2px 8px; border-radius:10px;">${t.status}</div>
                     </div>
-                    <h3 style="margin:8px 0; font-size:1rem;">${t.titular}</h3>
-                    <div style="display:flex; justify-content:space-between; align-items:flex-end;">
-                        <span style="font-family:var(--font-data); color:var(--morado); font-size:1.2rem;">${t.impacto}</span>
-                        <span style="font-size:0.6rem; color:#444;">${t.status}</span>
-                    </div>
+                    <div class="loading-bar" style="height:2px; margin-top:15px;"><div class="loading-fill" style="animation-duration:${Math.random()*3 + 2}s"></div></div>
                 </div>
             `).join('');
 
-            // 4. MIKE (mike.json)
+            // CARGAR MIKE (CON NOTICIAS DE TENDENCIA DINÁMICAS)
             const resMike = await fetch('mike.json');
             const dataMike = await resMike.json();
-            document.getElementById('mike-marquee').innerHTML = dataMike.noticias.map(n => 
-                `[${n.hora}] ${n.titulo.toUpperCase()}`
-            ).join(' // ');
+            const newsList = dataMike.noticias.map(n => `[${n.hora}] ${n.titulo.toUpperCase()}`).join(' // ');
+            document.getElementById('mike-marquee').innerHTML = newsList + " // " + backupNews.join(' // ');
 
         } catch (e) { console.error("CRITICAL_CORE_ERROR", e); }
     }
