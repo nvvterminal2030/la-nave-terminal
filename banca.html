@@ -181,6 +181,36 @@
             .secondary-feed { grid-template-columns: 1fr 1fr; }
             .hero-title { font-size: 2.5rem; }
         }
+        /* EFECTO SCANNER (2030) */
+body::after {
+    content: "";
+    position: fixed; top: 0; left: 0; width: 100%; height: 2px;
+    background: var(--morado);
+    opacity: 0.1;
+    z-index: 9999;
+    pointer-events: none;
+    animation: scanLine 8s linear infinite;
+}
+
+@keyframes scanLine {
+    0% { top: -10%; }
+    100% { top: 110%; }
+}
+
+/* ESQUINAS TECNOLÓGICAS PARA LAS CARDS */
+.card-news::before {
+    content: "L-O-A-D";
+    position: absolute; top: -5px; left: 10px;
+    font-family: var(--font-data); font-size: 0.5rem;
+    color: var(--morado); background: var(--negro); padding: 0 5px;
+}
+
+/* ESTILO DE VELA (Simulación rápida en CSS) */
+.trend-rank {
+    background: linear-gradient(180deg, transparent, var(--morado-glow));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
     </style>
 </head>
 <body>
