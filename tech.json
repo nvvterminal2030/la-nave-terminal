@@ -2,19 +2,31 @@
   "tecnologia": [
     {
       "id": "B-TECH-001-MAR",
-      "prioridad": "ALTA",
-      "titular": "IA_CORE: NUEVO MODELO DE PROCESAMIENTO REDUCE LATENCIA",
-      "descripcion": "Despliegue de nodos neuronales optimizados para renderizado 3D y análisis de big data.",
+      "titular": "IA_NEURAL_CORE",
+      "desc": "Reducción de latencia en el renderizado de datos masivos. Optimización de nodos en Miami.",
       "impacto": "95%",
-      "tag": "INTELIGENCIA_ARTIFICIAL"
+      "status": "ALTA"
     },
     {
       "id": "B-TECH-002-MAR",
-      "prioridad": "MEDIA",
-      "titular": "HARDWARE_UPDATE: CHIP CUÁNTICO EN FASE DE PRUEBA",
-      "descripcion": "La arquitectura NVVEX-SHIELD detecta mejoras en el encriptado de activos digitales.",
+      "titular": "BUNKER_SHIELD",
+      "desc": "Protocolo de encriptado NVVEX activo. Seguridad total en la base de datos de usuarios.",
+      "impacto": "100%",
+      "status": "ACTIVO"
+    },
+    {
+      "id": "B-TECH-003-MAR",
+      "titular": "QUANTUM_MIX",
+      "desc": "Fase de prueba para el motor de mezcla automatizada por inteligencia artificial.",
       "impacto": "78%",
-      "tag": "SEGURIDAD_DIGITAL"
+      "status": "TEST"
+    },
+    {
+      "id": "B-TECH-004-MAR",
+      "titular": "GEO_SYNC",
+      "desc": "Sincronización de tendencias globales en tiempo real entre RD, USA y España.",
+      "impacto": "OK",
+      "status": "SYNC"
     }
   ]
 }
