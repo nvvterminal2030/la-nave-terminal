@@ -1,32 +1,32 @@
 {
   "tecnologia": [
     {
-      "id": "B-TECH-001-MAR",
+      "id": "B-TECH-01-MAR",
       "titular": "IA_NEURAL_CORE",
-      "desc": "Reducción de latencia en el renderizado de datos masivos. Optimización de nodos en Miami.",
+      "desc": "OPTIMIZACIÓN DE RENDERIZADO EN NODOS DE MIAMI.",
       "impacto": "95%",
       "status": "ALTA"
     },
     {
-      "id": "B-TECH-002-MAR",
+      "id": "B-TECH-02-MAR",
       "titular": "BUNKER_SHIELD",
-      "desc": "Protocolo de encriptado NVVEX activo. Seguridad total en la base de datos de usuarios.",
+      "desc": "SEGURIDAD NVVEX ACTIVA. ENCRIPTADO DE NIVEL MILITAR.",
       "impacto": "100%",
       "status": "ACTIVO"
     },
     {
-      "id": "B-TECH-003-MAR",
+      "id": "B-TECH-03-MAR",
       "titular": "QUANTUM_MIX",
-      "desc": "Fase de prueba para el motor de mezcla automatizada por inteligencia artificial.",
+      "desc": "MOTOR DE MEZCLA IA EN FASE DE PRUEBAS BETA.",
       "impacto": "78%",
       "status": "TEST"
     },
     {
-      "id": "B-TECH-004-MAR",
+      "id": "B-TECH-04-MAR",
       "titular": "GEO_SYNC",
-      "desc": "Sincronización de tendencias globales en tiempo real entre RD, USA y España.",
-      "impacto": "OK",
-      "status": "SYNC"
+      "desc": "SINCRONIZACIÓN GLOBAL DE TENDENCIAS EN TIEMPO REAL.",
+      "impacto": "SYNC",
+      "status": "OK"
     }
   ]
 }
