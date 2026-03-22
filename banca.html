@@ -3,18 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NVVEX // BANCA 2030 // ORIGIN CORE</title>
-    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@200;400;900&display=swap" rel="stylesheet">
+    <title>NVVEX // BANCA DE INTELIGENCIA // 2030</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@200;400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
             --morado: #bc13fe;
             --morado-glow: rgba(188, 19, 254, 0.6);
             --negro: #000000;
-            --glass: rgba(10, 10, 10, 0.7);
+            --glass: rgba(10, 10, 10, 0.85);
             --border: rgba(188, 19, 254, 0.3);
             --font-data: 'Share Tech Mono', monospace;
         }
 
+        /* FRAMEWORK 2030 */
         * { margin: 0; padding: 0; box-sizing: border-box; cursor: crosshair; }
         body {
             background: var(--negro);
@@ -22,117 +23,89 @@
             font-family: 'Inter', sans-serif;
             overflow-x: hidden;
             background-image: 
-                linear-gradient(rgba(188, 19, 254, 0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(188, 19, 254, 0.05) 1px, transparent 1px);
-            background-size: 50px 50px; /* Rejilla de ingeniería */
+                linear-gradient(var(--border) 1px, transparent 1px),
+                linear-gradient(90deg, var(--border) 1px, transparent 1px);
+            background-size: 60px 60px;
         }
 
         #universe-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: radial-gradient(circle at 50% 50%, #12001a 0%, #000 100%); }
 
-        /* HUD SUPERIOR DINÁMICO */
+        /* HUD TOP */
         .hud-top {
-            position: fixed; top: 0; width: 100%; z-index: 100;
-            background: var(--glass); backdrop-filter: blur(20px);
+            position: fixed; top: 0; width: 100%; z-index: 1000;
+            background: var(--glass); backdrop-filter: blur(25px);
             border-bottom: 1px solid var(--border); padding: 15px 40px;
             display: flex; justify-content: space-between; align-items: center;
         }
 
-        /* NUBES DE DATOS (DATA CLUSTERS) */
+        /* GRID SYSTEM */
         .main-container {
-            display: grid;
-            grid-template-columns: 1.2fr 1fr;
-            grid-template-rows: auto auto;
-            gap: 40px;
-            padding: 120px 60px 60px;
-            max-width: 1800px;
-            margin: 0 auto;
+            max-width: 1800px; margin: 0 auto; padding: 120px 40px 60px;
+            display: grid; grid-template-columns: 1.2fr 1fr; gap: 40px;
         }
 
-        /* BLOQUE IMPACTO (INDUSTRIA) */
+        /* CLUSTER HERO (INDUSTRIA) */
         .cluster-hero {
-            grid-column: 1 / 2;
-            background: var(--glass);
-            border: 1px solid var(--border);
-            padding: 0;
-            position: relative;
-            overflow: hidden;
-            border-radius: 5px;
-            box-shadow: 0 0 40px rgba(0,0,0,0.5);
+            grid-column: 1 / 2; background: var(--glass); border: 1px solid var(--border);
+            position: relative; overflow: hidden; border-radius: 4px; height: 600px;
         }
-
         .hero-image {
-            width: 100%; height: 550px; object-fit: cover;
-            filter: grayscale(100%) brightness(0.6) contrast(1.2);
-            transition: 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            width: 100%; height: 100%; object-fit: cover;
+            filter: grayscale(1) brightness(0.5); transition: 1s;
         }
-        .cluster-hero:hover .hero-image { filter: grayscale(0%) brightness(0.8); transform: scale(1.03); }
+        .cluster-hero:hover .hero-image { filter: grayscale(0) brightness(0.7); transform: scale(1.05); }
 
-        .floating-data {
-            position: absolute; bottom: 40px; left: 40px; right: 40px;
-            z-index: 2;
-        }
+        .floating-data { position: absolute; bottom: 40px; left: 40px; z-index: 5; }
 
-        /* NUBE TECH (ASIMÉTRICA) */
-        .cluster-tech {
-            grid-column: 2 / 3;
-            display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
-        }
-
+        /* TECH NODES */
+        .cluster-tech { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .tech-node {
-            background: rgba(188, 19, 254, 0.05);
-            border: 1px solid var(--border);
-            padding: 25px;
-            backdrop-filter: blur(10px);
-            transition: 0.4s;
+            background: rgba(188, 19, 254, 0.03); border: 1px solid var(--border);
+            padding: 25px; backdrop-filter: blur(10px); transition: 0.4s;
             display: flex; flex-direction: column; justify-content: space-between;
         }
-        .tech-node:hover { background: var(--morado-glow); transform: translateY(-5px); }
+        .tech-node:hover { background: var(--morado-glow); transform: translateY(-5px); border-color: #fff; }
 
-        /* BLOQUE MERCADOS (TICKER VERTICAL FLOTANTE) */
-        .cluster-markets {
-            grid-column: 1 / 3;
-            background: var(--glass);
-            border: 1px solid var(--border);
-            padding: 20px;
-            display: flex; gap: 40px; overflow: hidden;
+        /* MIKE'S FEED (LAS 8 NOTICIAS) */
+        .mike-feed {
+            grid-column: 1 / 3; display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;
+            margin-top: 20px;
         }
-
-        /* ESTILO 2030: TEXTO Y BOTONES */
-        .glitch-text {
-            font-family: var(--font-data);
-            color: var(--morado);
-            text-transform: uppercase;
-            letter-spacing: 5px;
-            font-size: 0.8rem;
-        }
-
-        h1 { font-size: 4.5rem; font-weight: 900; line-height: 0.85; margin: 20px 0; letter-spacing: -3px; }
-
-        .btn-bunker {
-            border: 1px solid var(--morado);
-            background: transparent;
-            color: var(--morado);
-            padding: 12px 25px;
-            font-family: var(--font-data);
-            font-weight: bold;
+        .news-node {
+            background: var(--glass); border: 1px solid rgba(255,255,255,0.1);
+            padding: 20px; font-size: 0.85rem; border-left: 4px solid var(--morado);
             transition: 0.3s;
+        }
+        .news-node:hover { background: rgba(255,255,255,0.05); border-left-width: 10px; }
+
+        /* TERMINAL LOGS */
+        .terminal-bunker {
+            grid-column: 1 / 3; background: #050505; border: 1px solid var(--border);
+            font-family: var(--font-data); padding: 20px; color: #00ff88;
+            height: 200px; overflow-y: hidden; font-size: 0.75rem; line-height: 1.5;
+            box-shadow: inset 0 0 20px rgba(0,255,136,0.05);
+        }
+
+        /* UTILS */
+        .glitch-text { font-family: var(--font-data); color: var(--morado); text-transform: uppercase; letter-spacing: 4px; font-size: 0.7rem; }
+        h1 { font-size: 5rem; font-weight: 900; line-height: 0.8; margin: 15px 0; letter-spacing: -4px; }
+        .btn-bunker {
+            border: 1px solid var(--morado); background: transparent; color: var(--morado);
+            padding: 12px 30px; font-family: var(--font-data); font-weight: bold;
             clip-path: polygon(0 0, 90% 0, 100% 30%, 100% 100%, 10% 100%, 0 70%);
+            transition: 0.3s;
         }
-        .btn-bunker:hover { background: var(--morado); color: #000; box-shadow: 0 0 20px var(--morado); }
+        .btn-bunker:hover { background: var(--morado); color: #000; box-shadow: 0 0 30px var(--morado); }
 
-        /* SCANNER ANIMATION */
         .scanline {
-            position: absolute; width: 100%; height: 2px;
-            background: var(--morado); opacity: 0.3;
-            top: 0; animation: scan 4s linear infinite;
+            position: absolute; width: 100%; height: 4px; background: var(--morado);
+            opacity: 0.2; top: 0; animation: scan 6s linear infinite; z-index: 10;
         }
-        @keyframes scan { 0% { top: 0%; } 100% { top: 100%; } }
+        @keyframes scan { 0% { top: -10%; } 100% { top: 110%; } }
 
-        /* RESPONSIVE */
         @media (max-width: 1200px) {
             .main-container { grid-template-columns: 1fr; }
-            .cluster-tech { grid-column: 1 / 2; }
-            h1 { font-size: 2.5rem; }
+            .mike-feed { grid-template-columns: 1fr 1fr; }
         }
     </style>
 </head>
@@ -141,77 +114,113 @@
 <div id="universe-bg"></div>
 
 <nav class="hud-top">
-    <div class="glitch-text">NVVEX_CORE // [ MAR-2026 ]</div>
-    <div style="font-family: var(--font-data); font-size: 0.8rem;">
-        STATUS: <span style="color: #00ff88;">ENCRIPTADO_OK</span> // 
-        USUARIOS_TARGET: <span style="color: var(--morado);">200,000</span>
+    <div class="glitch-text">NVVEX_ESTUDIOS // ORIGIN_CORE</div>
+    <div class="glitch-text" id="live-clock">00:00:00</div>
+    <div style="font-family: var(--font-data); font-size: 0.7rem;">
+        TARGET: <span style="color: var(--morado);">200K_USERS</span> // 
+        STATUS: <span style="color: #00ff88;">SYNC_OK</span>
     </div>
-    <div class="glitch-text">ORIGIN_CORE_ID: B-NV-MAR</div>
 </nav>
 
 <main class="main-container">
     
     <section class="cluster-hero" id="industria-block">
         <div class="scanline"></div>
-        <img src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=2000" class="hero-image">
         <div class="floating-data">
-            <span class="glitch-text">> NODO_RD_ALTO_IMPACTO</span>
-            <h1>INTELIGENCIA<br><span>MUSICAL</span></h1>
-            <p style="max-width: 500px; color: #aaa; margin-bottom: 30px;">
-                El radar 'Busca' ha detectado una anomalía de tráfico en Madrid vinculada a activos dominicanos. Probabilidad de éxito: 94.2%.
-            </p>
-            <button class="btn-bunker">EJECUTAR_ANALISIS</button>
+            <span class="glitch-text">> BUSCA_RADAR // CARGANDO...</span>
+            <h1>CONECTANDO<br><span>DATA</span></h1>
         </div>
     </section>
 
     <section class="cluster-tech" id="tech-block">
         </section>
 
-    <section class="cluster-markets" id="mercados-block">
+    <section class="mike-feed" id="mike-block">
         </section>
+
+    <section class="terminal-bunker" id="terminal-log">
+        > [SYS] Inicializando Origin Core v3.0...<br>
+        > [SYS] Conectando con Nodos RD, USA, ESP...<br>
+        > [SYS] Radar 'Busca' activado satisfactoriamente...<br>
+    </section>
 
 </main>
 
 <script>
-    // DATA MOCK (Aquí entrarán tus JSON a mano)
-    const techData = [
-        { title: "IA_NEURAL", status: "ALTA", id: "TECH-01-MAR", val: "95%" },
-        { title: "BUNKER_SHIELD", status: "ACTIVO", id: "TECH-02-MAR", val: "OK" },
-        { title: "CUANTIC_MIX", status: "TEST", id: "TECH-03-MAR", val: "78%" },
-        { title: "GEO_LOC", status: "SYNC", id: "TECH-04-MAR", val: "GLOBAL" }
-    ];
-
-    const marketData = [
-        { asset: "BTC", price: "72,432", trend: "+2.4%" },
-        { asset: "ETH", price: "3,844", trend: "+1.1%" },
-        { asset: "USD/DOP", price: "59.20", trend: "+0.1%" },
-        { asset: "NVVEX", price: "1,240", trend: "+14.2%" }
-    ];
-
-    function initBunker() {
-        // Inyectar Tech
-        document.getElementById('tech-block').innerHTML = techData.map(t => `
-            <div class="tech-node">
-                <div>
-                    <div class="glitch-text" style="font-size: 0.6rem;">${t.id}</div>
-                    <h3 style="margin: 10px 0; letter-spacing: 2px;">${t.title}</h3>
-                </div>
-                <div style="display: flex; justify-content: space-between; align-items: flex-end;">
-                    <span style="color: var(--morado); font-family: var(--font-data); font-size: 1.2rem;">${t.val}</span>
-                    <span style="font-size: 0.6rem; opacity: 0.5;">STATUS: ${t.status}</span>
-                </div>
-            </div>
-        `).join('');
-
-        // Inyectar Mercados
-        document.getElementById('mercados-block').innerHTML = marketData.map(m => `
-            <div style="min-width: 200px; font-family: var(--font-data);">
-                <div style="color: #555; font-size: 0.7rem;">${m.asset}</div>
-                <div style="font-size: 1.3rem;">$${m.price}</div>
-                <div style="color: #00ff88; font-size: 0.7rem;">▲ ${m.trend}</div>
-            </div>
-        `).join('');
+    // RELOJ EN TIEMPO REAL
+    function updateClock() {
+        const now = new Date();
+        document.getElementById('live-clock').innerText = now.getHours().toString().padStart(2, '0') + ":" + 
+            now.getMinutes().toString().padStart(2, '0') + ":" + 
+            now.getSeconds().toString().padStart(2, '0') + " // MAR-2026";
     }
+    setInterval(updateClock, 1000);
+
+    // MOTOR DE CARGA DINÁMICA
+    async function initBunker() {
+        try {
+            // Cargar Industria
+            const resInd = await fetch('industria.json');
+            const dataInd = await resInd.json();
+            const hero = dataInd.reportes[0];
+            document.getElementById('industria-block').innerHTML = `
+                <div class="scanline"></div>
+                <img src="${hero.img}" class="hero-image">
+                <div class="floating-data">
+                    <span class="glitch-text">> ${hero.node} // ${hero.id}</span>
+                    <h1>${hero.artista}<br><span>ANALYSIS</span></h1>
+                    <p style="max-width: 500px; color: #aaa; margin-bottom: 25px; font-size: 0.9rem;">${hero.analisis}</p>
+                    <button class="btn-bunker">INVERTIR_NODO</button>
+                </div>
+            `;
+
+            // Cargar Tech
+            const resTech = await fetch('tech.json');
+            const dataTech = await resTech.json();
+            document.getElementById('tech-block').innerHTML = dataTech.tecnologia.map(t => `
+                <div class="tech-node">
+                    <div>
+                        <div class="glitch-text" style="font-size: 0.55rem;">${t.id}</div>
+                        <h3 style="margin: 8px 0; font-size: 1.1rem; letter-spacing: 1px;">${t.titular}</h3>
+                        <p style="font-size: 0.7rem; color: #666;">${t.desc}</p>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+                        <span style="color: var(--morado); font-family: var(--font-data); font-weight: bold;">${t.impacto}</span>
+                        <span style="font-size: 0.5rem; opacity: 0.5;">${t.status}</span>
+                    </div>
+                </div>
+            `).join('');
+
+            // Cargar Noticias de Mike (8 automáticas)
+            const resMike = await fetch('mike.json');
+            const dataMike = await resMike.json();
+            document.getElementById('mike-block').innerHTML = dataMike.noticias.map(n => `
+                <div class="news-node">
+                    <div class="glitch-text" style="font-size: 0.5rem; margin-bottom: 5px;">MIKE_BOT // ${n.hora}</div>
+                    <div style="font-weight: 700;">${n.titulo}</div>
+                </div>
+            `).join('');
+
+        } catch (e) {
+            console.log("Error de sync. Asegúrate de tener los archivos JSON.");
+        }
+    }
+
+    // SIMULADOR DE LOGS
+    const logs = [
+        "Anomalía detectada en sector Dembow-Tech.",
+        "Sincronizando con SerpApi...",
+        "Actualizando Top 10 España...",
+        "Inyectando protocolo Origin Core...",
+        "Misión 200k usuarios: +124 hoy.",
+        "Nodo RD reportando volumen masivo."
+    ];
+    setInterval(() => {
+        const logBox = document.getElementById('terminal-log');
+        const newLog = logs[Math.floor(Math.random() * logs.length)];
+        logBox.innerHTML += `> [LOG] ${newLog}<br>`;
+        if(logBox.innerHTML.split('<br>').length > 10) logBox.innerHTML = logBox.innerHTML.split('<br>').slice(1).join('<br>');
+    }, 3000);
 
     window.onload = initBunker;
 </script>
