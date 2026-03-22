@@ -15,23 +15,28 @@
             --font-data: 'Share Tech Mono', monospace;
         }
 
-        /* RESET & SCROLL */
         * { margin: 0; padding: 0; box-sizing: border-box; cursor: crosshair; }
+        
         body {
             background: var(--negro); color: #fff; font-family: 'Inter', sans-serif;
-            overflow-y: auto; overflow-x: hidden; /* Scroll habilitado socio */
-            background-image: radial-gradient(circle at 2px 2px, rgba(188, 19, 254, 0.05) 1px, transparent 0);
-            background-size: 40px 40px;
+            overflow-y: auto; overflow-x: hidden;
+            background-color: #000;
         }
 
-        /* 1. TICKER MERCADOS (ESPACIADO CORREGIDO) */
+        /* CAPA DE ESTRELLAS (Creada desde cero) */
+        #star-canvas {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; pointer-events: none;
+        }
+
+        /* TICKER MERCADOS */
         .market-strip {
             position: fixed; top: 0; width: 100%; height: 40px;
             background: #000; border-bottom: 1px solid var(--border);
             display: flex; align-items: center; z-index: 2000;
         }
         .market-item {
-            display: inline-block; padding: 0 60px; /* Espacio extra para que no se amontone */
+            display: inline-block; padding: 0 60px;
             font-family: var(--font-data); font-size: 0.8rem;
             border-right: 1px solid #222;
         }
@@ -42,14 +47,11 @@
             background: var(--glass); backdrop-filter: blur(15px); border-bottom: 1px solid var(--border);
         }
 
-        /* MAIN LAYOUT */
-        .content-wrapper { max-width: 1800px; margin: 0 auto; padding: 150px 30px 100px; }
+        .content-wrapper { max-width: 1800px; margin: 0 auto; padding: 150px 30px 100px; position: relative; }
 
-        .hero-grid {
-            display: grid; grid-template-columns: 1fr 400px; gap: 30px; margin-bottom: 80px;
-        }
+        .hero-grid { display: grid; grid-template-columns: 1fr 400px; gap: 30px; margin-bottom: 80px; }
 
-        /* BLOQUE IMPACTO (industria.json) */
+        /* BLOQUE IMPACTO */
         .main-analysis {
             background: var(--glass); border: 2px solid var(--border);
             border-radius: 30px; height: 600px; position: relative; overflow: hidden;
@@ -57,43 +59,61 @@
         .hero-img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.4) grayscale(0.5); }
         .hero-info { position: absolute; inset: 0; padding: 60px; display: flex; flex-direction: column; justify-content: flex-end; background: linear-gradient(to top, #000, transparent); }
 
-        /* TECH NODES (tech.json) */
+        /* TECH NODES */
         .tech-sidebar { display: flex; flex-direction: column; gap: 20px; }
         .tech-card {
             background: rgba(20,20,20,0.8); border: 1px solid var(--border);
             padding: 20px; border-radius: 20px; border-left: 5px solid var(--morado);
+            position: relative; overflow: hidden;
         }
 
-        /* 2. BANCA DE INTELIGENCIA (Bloques de Mike/Tendencias) */
-        .banca-container { padding-top: 40px; border-top: 1px solid var(--border); }
-        .section-header { font-family: var(--font-data); color: var(--morado); font-size: 1.5rem; margin-bottom: 40px; font-weight: 900; }
-        
-        .news-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 30px;
+        /* NODOS LATAM SELECTOR */
+        .latam-nav {
+            display: flex; gap: 15px; margin-bottom: 30px; flex-wrap: wrap;
         }
+        .node-btn {
+            background: transparent; border: 1px solid var(--border); color: #fff;
+            padding: 8px 20px; font-family: var(--font-data); font-size: 0.8rem;
+            border-radius: 5px; transition: 0.3s;
+        }
+        .node-btn:hover, .node-btn.active { 
+            background: var(--morado); border-color: var(--morado); 
+            box-shadow: 0 0 15px var(--morado); color: #000;
+        }
+
+        /* BANCA DE INTELIGENCIA */
+        .banca-container { padding-top: 40px; border-top: 1px solid var(--border); }
+        .section-header { font-family: var(--font-data); color: var(--morado); font-size: 1.5rem; margin-bottom: 20px; font-weight: 900; }
+        
+        .news-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 30px; }
         .news-card {
             background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 25px;
-            overflow: hidden; transition: 0.3s;
+            overflow: hidden; transition: 0.3s; position: relative;
         }
-        .news-card:hover { border-color: var(--morado); transform: scale(1.02); }
-        .news-img { width: 100%; height: 220px; object-fit: cover; filter: grayscale(1); }
-        .news-body { padding: 25px; }
+        
+        /* EFECTO LÁSER ESCÁNER */
+        .news-card::after {
+            content: ""; position: absolute; top: -100%; left: 0; width: 100%; height: 100px;
+            background: linear-gradient(to bottom, transparent, rgba(188, 19, 254, 0.1), transparent);
+            animation: scanner 4s linear infinite;
+        }
+        @keyframes scanner { 0% { top: -100%; } 100% { top: 100%; } }
+
+        .news-img { width: 100%; height: 220px; object-fit: cover; filter: grayscale(1); transition: 0.5s; }
+        .news-card:hover .news-img { filter: grayscale(0.2) brightness(0.8); }
+        .news-body { padding: 25px; background: rgba(10,10,10,0.9); }
         .news-meta { display: flex; justify-content: space-between; font-family: var(--font-data); font-size: 0.7rem; color: var(--cian); margin-bottom: 10px; }
 
-        /* TICKER FOOTER */
-        .footer-ticker {
-            position: fixed; bottom: 0; width: 100%; background: #000;
-            border-top: 1px solid var(--border); padding: 10px; z-index: 1000;
-        }
+        .footer-ticker { position: fixed; bottom: 0; width: 100%; background: #000; border-top: 1px solid var(--border); padding: 10px; z-index: 1000; }
+        .glitch-text { font-family: var(--font-data); color: var(--morado); text-transform: uppercase; letter-spacing: 2px; }
 
-        .glitch-text { font-family: var(--font-data); color: var(--morado); text-transform: uppercase; }
     </style>
 </head>
 <body>
 
-<div class="market-strip">
-    <marquee scrollamount="5" id="market-ticker"></marquee>
-</div>
+<canvas id="star-canvas"></canvas>
+
+<div class="market-strip"><marquee scrollamount="5" id="market-ticker"></marquee></div>
 
 <header class="hud-header">
     <div class="glitch-text">STATION_01 // ORIGIN_CORE</div>
@@ -108,7 +128,17 @@
     </section>
 
     <section class="banca-container">
-        <div class="section-header">> BANCA_DE_INTELIGENCIA_GLOBAL</div>
+        <div class="section-header">> BANCA_DE_INTELIGENCIA_LATAM</div>
+        
+        <div class="latam-nav">
+            <button class="node-btn active">RD</button>
+            <button class="node-btn">PR</button>
+            <button class="node-btn">COL</button>
+            <button class="node-btn">MEX</button>
+            <button class="node-btn">CHI</button>
+            <button class="node-btn">ARG</button>
+        </div>
+
         <div class="news-grid" id="mike-node"></div>
     </section>
 </div>
@@ -118,14 +148,49 @@
 </footer>
 
 <script>
-    // RELOJ
+    // 1. GENERADOR DE ESTRELLAS (STARS SYSTEM)
+    const canvas = document.getElementById('star-canvas');
+    const ctx = canvas.getContext('2d');
+    let stars = [];
+
+    function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    window.onresize = resize; resize();
+
+    for(let i=0; i<150; i++) {
+        stars.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            size: Math.random() * 1.5,
+            speed: Math.random() * 0.5
+        });
+    }
+
+    function animateStars() {
+        ctx.clearRect(0,0,canvas.width, canvas.height);
+        ctx.fillStyle = "#fff";
+        stars.forEach(s => {
+            ctx.beginPath();
+            ctx.arc(s.x, s.y, s.size, 0, Math.PI*2);
+            ctx.fill();
+            s.y += s.speed;
+            if(s.y > canvas.height) s.y = 0;
+        });
+        requestAnimationFrame(animateStars);
+    }
+    animateStars();
+
+    // 2. RELOJ TIEMPO REAL
     setInterval(() => {
         document.getElementById('live-clock').innerText = new Date().toLocaleTimeString();
     }, 1000);
 
+    // 3. SINCRONIZACIÓN DE LA NAVE
     async function syncSystem() {
         try {
-            // 1. MERCADOS (SIN AMONTONAR)
+            // MERCADOS
             const rMerc = await fetch('mercados.json');
             const dMerc = await rMerc.json();
             document.getElementById('market-ticker').innerHTML = dMerc.ticker.map(m => `
@@ -136,7 +201,7 @@
                 </span>
             `).join('').repeat(5);
 
-            // 2. INDUSTRIA (PAPI CRIS / PRINCIPAL)
+            // INDUSTRIA
             const rInd = await fetch('industria.json');
             const dInd = await rInd.json();
             const hero = dInd.reportes[0];
@@ -144,13 +209,13 @@
                 <img src="${hero.img}" class="hero-img">
                 <div class="hero-info">
                     <span class="glitch-text" style="color:var(--cian)">[ ${hero.node} ]</span>
-                    <h1 style="font-size: 5rem; font-weight: 900; line-height: 0.9;">${hero.artista}</h1>
-                    <p style="color:#888; margin: 20px 0; max-width: 600px;">${hero.analisis}</p>
-                    <div style="font-family:var(--font-data); font-size: 2rem; color:var(--morado)">${hero.rank}</div>
+                    <h1 style="font-size: 4.5rem; font-weight: 900; line-height: 0.9;">${hero.artista}</h1>
+                    <p style="color:#888; margin: 20px 0; max-width: 550px;">${hero.analisis}</p>
+                    <div style="font-family:var(--font-data); font-size: 1.8rem; color:var(--morado)">${hero.rank}</div>
                 </div>
             `;
 
-            // 3. TECH NODES
+            // TECH
             const rTech = await fetch('tech.json');
             const dTech = await rTech.json();
             document.getElementById('tech-node').innerHTML = dTech.tecnologia.map(t => `
@@ -161,30 +226,26 @@
                 </div>
             `).join('');
 
-            // 4. MIKE NEWS (BANCA DE INTELIGENCIA CON IMÁGENES)
-            // Nota: Aquí "Busca" e inyecta la data de Mike en los cuadros grandes
+            // BANCA DE INTELIGENCIA (MIKE DATA)
             const rMike = await fetch('mike.json');
             const dMike = await rMike.json();
-            
-            // Usamos las noticias de Mike para llenar la banca
-            document.getElementById('mike-node').innerHTML = dMike.noticias.map((n, index) => `
+            document.getElementById('mike-node').innerHTML = dMike.noticias.map((n, i) => `
                 <div class="news-card">
-                    <img src="https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=800&index=${index}" class="news-img">
+                    <img src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=800&sig=${i}" class="news-img">
                     <div class="news-body">
                         <div class="news-meta">
-                            <span>NODO_RADAR_SCAN</span>
+                            <span>RADAR_BUSCA</span>
                             <span>TIME: ${n.hora}</span>
                         </div>
-                        <h3 style="font-size: 1.2rem; margin-bottom: 15px;">${n.titulo}</h3>
-                        <div style="font-family:var(--font-data); font-size: 0.7rem; color: #444;">SOURCE: NVVEX_BUNKER_SYSTEM</div>
+                        <h3 style="font-size: 1.1rem; margin-bottom: 10px;">${n.titulo}</h3>
+                        <div style="font-family:var(--font-data); font-size: 0.65rem; color: var(--morado);">NODO_LATAM_ACTIVE</div>
                     </div>
                 </div>
             `).join('');
 
-            // Ticker inferior
             document.getElementById('footer-marquee').innerText = dMike.noticias.map(n => `>> ${n.titulo}`).join(' // ');
 
-        } catch (e) { console.error("ERROR_SYNC", e); }
+        } catch (e) { console.error("SYNC_ERROR", e); }
     }
 
     window.onload = syncSystem;
