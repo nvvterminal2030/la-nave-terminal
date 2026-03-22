@@ -3,10 +3,10 @@
     {
       "id": "B-IND-001-MAR",
       "artista": "PAPI CRIS",
-      "analisis": "Anomalía de tráfico detectada vía YouTube API. El 'Busca' confirma una tasa de retención del 94% en mercados de España y USA. Zona de inversión máxima.",
+      "analisis": "ANOMALÍA DE TRÁFICO DETECTADA VÍA YOUTUBE API. EL RADAR 'BUSCA' CONFIRMA UNA TASA DE RETENCIÓN DEL 94% EN MERCADOS DE ESPAÑA Y USA. ZONA DE INVERSIÓN MÁXIMA.",
       "rank": "TOP 01",
       "node": "NODO_RD_ALTO_IMPACTO",
-      "img": "https://tu-servidor.com/imagen-artista.jpg"
+      "img": "https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=2000"
     }
   ]
 }
