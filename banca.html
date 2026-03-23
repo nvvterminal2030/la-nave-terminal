@@ -8,7 +8,7 @@
     
     <style>
         /* =========================================
-           1. VARIABLES & GLOBALES
+           BLOQUE 1: VARIABLES & GLOBALES
            ========================================= */
         :root {
             --purple: #bc13fe;
@@ -24,7 +24,7 @@
         body { background: var(--white); color: var(--black); font-family: var(--font-main); -webkit-font-smoothing: antialiased; }
 
         /* =========================================
-           2. HEADER & TICKER (SISTEMA)
+           BLOQUE 2: HEADER & NAVEGACIÓN (HQ LINKS)
            ========================================= */
         .market-ticker {
             background: var(--black); color: var(--white); height: 30px;
@@ -35,51 +35,59 @@
         header {
             border-bottom: 2px solid var(--black); padding: 25px 60px;
             position: fixed; top: 30px; width: 100%; background: var(--white);
-            display: flex; justify-content: space-between; align-items: flex-end; z-index: 4000;
+            display: flex; justify-content: space-between; align-items: center; z-index: 4000;
         }
-        .brand { font-family: var(--font-serif); font-size: 2.2rem; font-weight: 900; letter-spacing: -1.5px; line-height: 1; }
-        .edition-tag { color: var(--purple); font-weight: 900; font-size: 11px; text-transform: uppercase; margin-left: 8px; }
+        
+        .header-left { display: flex; align-items: baseline; gap: 10px; }
+        .brand { font-family: var(--font-serif); font-size: 2.2rem; font-weight: 900; letter-spacing: -1.5px; line-height: 1; text-decoration: none; color: #000; }
+        .edition-tag { color: var(--purple); font-weight: 900; font-size: 11px; text-transform: uppercase; }
+
+        .header-nav { display: flex; align-items: center; gap: 25px; }
+        .nav-link { font-family: 'Share Tech Mono'; font-size: 11px; font-weight: 900; text-decoration: none; color: var(--black); transition: 0.3s; }
+        .nav-link:hover { color: var(--purple); }
+        
+        .hq-btn { 
+            background: var(--black); color: var(--white); padding: 8px 16px; 
+            font-size: 10px; letter-spacing: 1px; transition: 0.3s;
+        }
+        .hq-btn:hover { background: var(--purple); }
 
         /* =========================================
-           3. LAYOUT (ESTRUCTURA)
+           BLOQUE 3: LAYOUT & GRID
            ========================================= */
         .container { max-width: 1440px; margin: 0 auto; padding: 180px 40px 60px; }
         .grid-main { display: grid; grid-template-columns: 1fr 320px; gap: 50px; }
 
         /* =========================================
-           4. BLOQUE HERO (INDUSTRIA) - REFINADO
+           BLOQUE 4: HERO (INDUSTRIA)
            ========================================= */
         .hero-article { border-bottom: 1px solid var(--border); padding-bottom: 40px; margin-bottom: 40px; }
-        .hero-img { 
-            width: 100%; 
-            height: 480px; /* Reducido para delicadeza */
-            object-fit: cover; 
-            margin-bottom: 25px; 
-            filter: grayscale(0.2); 
-            transition: 0.5s;
-        }
+        .hero-img { width: 100%; height: 480px; object-fit: cover; margin-bottom: 25px; filter: grayscale(0.2); transition: 0.5s; }
         .hero-img:hover { filter: grayscale(0); }
         .label-intel { color: var(--purple); font-weight: 900; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px; display: block; }
         .hero-title { font-family: var(--font-serif); font-size: 3.2rem; font-weight: 900; line-height: 1; margin-bottom: 20px; letter-spacing: -2px; }
-        .hero-lead { font-size: 1.15rem; color: var(--text-gray); line-height: 1.5; max-width: 750px; font-weight: 400; }
+        .hero-lead { font-size: 1.15rem; color: var(--text-gray); line-height: 1.5; max-width: 750px; }
 
         /* =========================================
-           5. BLOQUE BANCA (MIKE)
+           BLOQUE 5: BANCA (MIKE NEWS)
            ========================================= */
         .section-header { font-size: 14px; font-weight: 900; text-transform: uppercase; border-top: 2px solid #000; padding-top: 15px; margin-bottom: 30px; }
         .banca-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
         .news-card { border-bottom: 1px solid var(--border); padding-bottom: 20px; }
-        .news-img { width: 100%; height: 210px; object-fit: cover; margin-bottom: 15px; background: #f9f9f9; }
+        .news-img { width: 100%; height: 210px; object-fit: cover; margin-bottom: 15px; }
         .news-h3 { font-size: 1.4rem; font-weight: 900; line-height: 1.15; margin-bottom: 10px; letter-spacing: -0.5px; }
         .news-time { font-family: 'Share Tech Mono'; font-size: 10px; color: #999; margin-bottom: 8px; display: block; }
 
         /* =========================================
-           6. SIDEBAR (TECH)
+           BLOQUE 6: SIDEBAR & CTA
            ========================================= */
         .side-box { margin-bottom: 40px; border-top: 2px solid var(--black); padding-top: 15px; }
         .tech-unit { margin-bottom: 18px; }
         .tech-label { font-family: 'Share Tech Mono'; font-size: 9px; color: var(--purple); font-weight: 900; }
         .tech-data { font-size: 13px; font-weight: 700; }
+        
+        .cta-box { background: #000; color: #fff; padding: 30px; margin-top: 40px; text-align: center; }
+        .cta-btn { display: inline-block; margin-top: 15px; color: #fff; font-weight: 900; font-family: 'Share Tech Mono'; text-decoration: underline; }
 
         footer { border-top: 1px solid var(--border); padding: 40px; text-align: center; font-size: 10px; color: #aaa; font-family: 'Share Tech Mono'; }
     </style>
@@ -89,10 +97,20 @@
 <div class="market-ticker"><marquee id="ticker-js"></marquee></div>
 
 <header>
-    <div class="brand">NVVEX <span class="edition-tag">Weekend Intel</span></div>
-    <div style="text-align: right;">
+    <div class="header-left">
+        <a href="#" class="brand">NVVEX</a>
+        <span class="edition-tag">Weekend Intel</span>
+    </div>
+    
+    <nav class="header-nav">
+        <a href="#hero-node" class="nav-link">WEEKLY_REPORT</a>
+        <a href="#mike-node" class="nav-link">THE_RADAR</a>
+        <a href="https://nvvexstudios.com" target="_blank" class="nav-link hq-btn">VISIT_STUDIOS // HQ</a>
+    </nav>
+
+    <div style="text-align: right; min-width: 100px;">
         <div id="live-clock" style="font-weight: 900; font-size: 12px;">00:00:00</div>
-        <div style="font-size: 9px; font-weight: 700; color: green;">RADAR_STATION_SYNCED</div>
+        <div style="font-size: 8px; font-weight: 700; color: green; letter-spacing: 1px;">SYNC_STATION_ON</div>
     </div>
 </header>
 
@@ -102,7 +120,7 @@
         <main>
             <section id="hero-node"></section>
             
-            <section>
+            <section id="banca-intel">
                 <h2 class="section-header">Banca de Inteligencia</h2>
                 <div class="banca-grid" id="mike-node"></div>
             </section>
@@ -116,7 +134,8 @@
             
             <div class="side-box" style="background:#fcfcfc; padding:20px; border:1px solid #eee;">
                 <h2 class="section-header" style="border:none; padding:0; font-size:12px; margin-bottom:10px;">Curaduría AI</h2>
-                <p style="font-size: 11px; color:#777; line-height:1.4;">Mike procesa 4,000 puntos de data por hora. Los charts mostrados reflejan momentum real, descartando anomalías de botting detectadas en la API.</p>
+                <p style="font-size: 11px; color:#777; line-height:1.4;">Mike procesa 4,000 puntos de data por hora. Los charts mostrados reflejan momentum real, descartando anomalías detectadas en el radar.</p>
+                <a href="https://nvvexstudios.com" class="cta-btn" style="color:#000">CONECTAR A LA SEDE</a>
             </div>
         </aside>
 
@@ -128,13 +147,9 @@
 </footer>
 
 <script>
-    /* =========================================
-       7. MOTOR DE INTELIGENCIA (JAVASCRIPT)
-       ========================================= */
-    
     const YT_KEY = 'AIzaSyDdCEv8KTwupFbJQnSQy8Wzw9egXdpJ6HM';
 
-    // FUNCIÓN: BÚSQUEDA MULTIMEDIA
+    // 1. MOTOR DE IMAGENES YT
     async function getYTImg(q) {
         try {
             const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=${encodeURIComponent(q)}&type=video&videoCategoryId=10&key=${YT_KEY}`);
@@ -143,7 +158,7 @@
         } catch (e) { return ''; }
     }
 
-    // FUNCIÓN: CARGAR MERCADOS
+    // 2. SINCRONIZACIÓN DE MERCADOS
     async function syncMarkets() {
         const d = await (await fetch('mercados.json')).json();
         document.getElementById('ticker-js').innerHTML = d.ticker.map(m => `
@@ -151,7 +166,7 @@
         `).join('').repeat(2);
     }
 
-    // FUNCIÓN: CARGAR HERO (INDUSTRIA)
+    // 3. SINCRONIZACIÓN HERO (INDUSTRIA)
     async function syncHero() {
         const d = await (await fetch('industria.json')).json();
         const h = d.reportes[0];
@@ -165,7 +180,7 @@
             </article>`;
     }
 
-    // FUNCIÓN: CARGAR BANCA (MIKE)
+    // 4. SINCRONIZACIÓN BANCA (MIKE)
     async function syncBanca() {
         const d = await (await fetch('mike.json')).json();
         const cards = await Promise.all(d.noticias.map(async n => {
@@ -181,7 +196,7 @@
         document.getElementById('mike-node').innerHTML = cards.join('');
     }
 
-    // FUNCIÓN: CARGAR TECH
+    // 5. SINCRONIZACIÓN TECH
     async function syncTech() {
         const d = await (await fetch('tech.json')).json();
         document.getElementById('tech-node').innerHTML = d.tecnologia.map(t => `
@@ -192,7 +207,7 @@
             </div>`).join('');
     }
 
-    // EJECUCIÓN MAESTRA
+    // INICIO MAESTRO
     async function initStation() {
         await syncMarkets();
         await syncHero();
@@ -200,6 +215,7 @@
         await syncTech();
     }
 
+    // RELOJ EN TIEMPO REAL
     setInterval(() => { document.getElementById('live-clock').innerText = new Date().toLocaleTimeString(); }, 1000);
     window.onload = initStation;
 </script>
