@@ -1,11 +1,10 @@
 {
   "reportes": [
     {
-      "id": "NV-WKND-001",
-      "artista": "BAD BUNNY",
-      "analisis": "EL RADAR DETECTA UNA RETENCIÓN DEL 98% EN EL ÚLTIMO LANZAMIENTO. LA DATA CONFIRMA QUE EL IMPACTO EDITORIAL SUPERA LAS MÉTRICAS DE ALGORITMO ESTÁNDAR.",
-      "rank": "GLOBAL #01",
-      "node": "NODO_PR_HIGH_IMPACT",
+      "artista": "EL MOVIMIENTO URBANO EN 2030",
+      "analisis": "El radar confirma que el 85% de los hits globales actuales nacen en el Caribe. La retención asimétrica detectada en la API de YouTube sugiere que el público ya no consume canciones, consume ecosistemas digitales completos.",
+      "rank": "GLOBAL AUTHORITY",
+      "node": "INTEL_REPORT_01",
       "img": ""
     }
   ]
