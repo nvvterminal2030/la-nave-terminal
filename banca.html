@@ -264,14 +264,16 @@
     }
 
     async function initStation() {
-        await syncMarkets();
-        await syncHero();
-        await syncBanca();
-        await syncTech();
-        const now = new Date();
-        const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
-        document.getElementById('archive-date').innerText = `${months[now.getMonth()]}_${now.getFullYear()}`;
-    }
+    // Ejecutan en paralelo, si una falla la otra sigue
+    syncMarkets(); 
+    syncHero();    
+    syncBanca();   
+    syncTech();
+
+    const now = new Date();
+    const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+    document.getElementById('archive-date').innerText = `${months[now.getMonth()]}_${now.getFullYear()}`;
+}
 
     setInterval(() => { document.getElementById('live-clock').innerText = new Date().toLocaleTimeString(); }, 1000);
     window.onload = initStation;
