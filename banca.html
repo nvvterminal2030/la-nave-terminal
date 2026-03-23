@@ -82,9 +82,9 @@
            BLOQUE 6: SIDEBAR & CTA
            ========================================= */
         .side-box { margin-bottom: 40px; border-top: 2px solid var(--black); padding-top: 15px; }
-        .tech-unit { margin-bottom: 18px; }
-        .tech-label { font-family: 'Share Tech Mono'; font-size: 9px; color: var(--purple); font-weight: 900; }
-        .tech-data { font-size: 13px; font-weight: 700; }
+        .tech-unit { margin-bottom: 25px; border-bottom: 1px solid #f9f9f9; padding-bottom: 15px; }
+        .tech-label { font-family: 'Share Tech Mono'; font-size: 9px; color: var(--purple); font-weight: 900; text-transform: uppercase; }
+        .tech-data { font-size: 14px; font-weight: 900; letter-spacing: -0.5px; margin-bottom: 4px; }
         
         .cta-btn { display: inline-block; margin-top: 15px; color: #fff; font-weight: 900; font-family: 'Share Tech Mono'; text-decoration: underline; }
 
@@ -150,14 +150,12 @@
     
     const YT_KEY = 'AIzaSyDdCEv8KTwupFbJQnSQy8Wzw9egXdpJ6HM';
 
-    // FUNCIÓN: CAPTURA HD DESDE GOOGLE SERVERS (SIN GUARDAR EN DISCO)
     async function getHDImg(q) {
         try {
             const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=${encodeURIComponent(q)}&type=video&videoCategoryId=10&key=${YT_KEY}`);
             const data = await res.json();
             if (data.items && data.items[0]) {
                 const videoId = data.items[0].id.videoId;
-                // Forzamos la resolución máxima de Google (1080p si existe)
                 return `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`;
             }
             return 'https://via.placeholder.com/1280x720';
@@ -199,13 +197,20 @@
         document.getElementById('mike-node').innerHTML = cards.join('');
     }
 
+    // FUNCIÓN ACTUALIZADA: CARGAR TECH (ESTILO NOTICIAS TÉCNICAS)
     async function syncTech() {
         const d = await (await fetch('tech.json')).json();
         document.getElementById('tech-node').innerHTML = d.tecnologia.map(t => `
             <div class="tech-unit">
-                <div class="tech-label">${t.id}</div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                    <div class="tech-label">${t.id}</div>
+                    <div style="font-size: 8px; font-weight: 900; background: var(--black); color: #fff; padding: 2px 6px; border-radius: 2px;">${t.status}</div>
+                </div>
                 <div class="tech-data">${t.titular}</div>
-                <div style="font-size:10px; color:#888;">${t.impacto}</div>
+                <p style="font-size: 11px; color: #666; line-height: 1.3; margin-bottom: 5px;">${t.desc}</p>
+                <div style="font-family: 'Share Tech Mono'; font-size: 10px; font-weight: 700;">
+                    IMPACTO: <span style="color: var(--purple);">${t.impacto}</span>
+                </div>
             </div>`).join('');
     }
 
