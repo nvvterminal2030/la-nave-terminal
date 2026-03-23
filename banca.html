@@ -1,3 +1,79 @@
+<?php
+// CONFIGURACIÓN DE ORIGEN CORE - MARZO 2026
+$mes_sufijo = "-" . strtoupper(date('M')); 
+$fecha_iso = date('Y-m-d');
+
+// Mike leerá esto de industria.json o tech.json según la categoría
+$titular_intel = "REPORTE DE INTELIGENCIA ESTRATÉGICA"; // Placeholder
+$desc_intel = "Análisis de flujo de datos y tendencias globales del nodo NVVEX.";
+$url_bunker = "https://nvvexstudios.com/bunker/";
+$img_bunker = "https://nvvexstudios.com/img/bunker-thumb-MAR.jpg";
+?>
+
+<title><?php echo $titular_intel; ?> // NVVEX</title>
+<meta name="description" content="<?php echo $desc_intel; ?>">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "NewsArticle",
+  "identifier": "BKR-<?php echo date('Ymd') . $mes_sufijo; ?>",
+  "headline": "<?php echo $titular_intel; ?>",
+  "description": "<?php echo $desc_intel; ?>",
+  "image": "<?php echo $img_bunker; ?>",
+  "datePublished": "<?php echo $fecha_iso; ?>T08:00:00+00:00",
+  "author": {
+    "@type": "Organization",
+    "name": "NVVEX STUDIOS",
+    "url": "https://nvvexstudios.com/"
+  }
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "ORIGIN CORE", "item": "https://nvvexstudios.com/" },
+    { "@type": "ListItem", "position": 2, "name": "BÚNKER", "item": "<?php echo $url_bunker; ?>" }
+  ]
+}
+</script>
+
+<?php
+// VINCULACIÓN QUIRÚRGICA DE ARCHIVOS JSON
+// 1. Cargamos Industria (Noticias de Impacto)
+$industria_raw = @file_get_contents('industria.json');
+$industria_data = json_decode($industria_raw, true);
+
+// 2. Cargamos Tech (Infraestructura / Noticias Técnicas)
+$tech_raw = @file_get_contents('tech.json');
+$tech_data = json_decode($tech_raw, true);
+
+// 3. Selección de la Noticia Principal para los Metatags del Paso 1
+// Si Mike ya inyectó data, la tomamos. Si no, queda en STANDBY.
+if ($industria_data && isset($industria_data['reportes'][0])) {
+    $main_news = $industria_data['reportes'][0];
+    $titular_intel = strtoupper($main_news['artista']); // El titular
+    $desc_intel = $main_news['analisis'];
+} else {
+    $titular_intel = "BÜNKER_STATION // SYNC_ACTIVE";
+    $desc_intel = "Esperando flujo de datos del radar de inteligencia NVVEX.";
+}
+
+// 4. Función para generar los Links tipo Bloomberg
+// Esto convierte "Gran Noticia de Tech" en "gran-noticia-de-tech"
+function createSlug($text) {
+    $text = preg_replace('~[^\pL\d]+~u', '-', $text);
+    $text = iconv('utf-8', 'us-ascii//TRANSLIT', $text);
+    $text = preg_replace('~[^-\w]+~', '', $text);
+    $text = trim($text, '-');
+    $text = strtolower($text);
+    return $text ?: 'n-a';
+}
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
