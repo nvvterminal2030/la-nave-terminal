@@ -7,9 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Playfair+Display:ital,wght@0,900;1,900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     
     <style>
-        /* =========================================
-           BLOQUE 1: VARIABLES & GLOBALES
-           ========================================= */
         :root {
             --purple: #bc13fe;
             --black: #000000;
@@ -23,9 +20,6 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background: var(--white); color: var(--black); font-family: var(--font-main); -webkit-font-smoothing: antialiased; }
 
-        /* =========================================
-           BLOQUE 2: HEADER & NAVEGACIÓN (HQ LINKS)
-           ========================================= */
         .market-ticker {
             background: var(--black); color: var(--white); height: 30px;
             display: flex; align-items: center; font-size: 10px; font-weight: 700;
@@ -52,15 +46,9 @@
         }
         .hq-btn:hover { background: var(--purple); }
 
-        /* =========================================
-           BLOQUE 3: LAYOUT & GRID
-           ========================================= */
         .container { max-width: 1440px; margin: 0 auto; padding: 180px 40px 60px; }
         .grid-main { display: grid; grid-template-columns: 1fr 320px; gap: 50px; }
 
-        /* =========================================
-           BLOQUE 4: HERO (INDUSTRIA) & CASCADA
-           ========================================= */
         .hero-article { border-bottom: 1px solid var(--border); padding-bottom: 40px; margin-bottom: 40px; }
         .hero-img { width: 100%; height: 480px; object-fit: cover; margin-bottom: 25px; filter: grayscale(0.2); transition: 0.5s; background: #000; }
         .hero-img:hover { filter: grayscale(0); }
@@ -82,16 +70,23 @@
         .sub-report-h4 { font-family: var(--font-serif); font-size: 1.25rem; font-weight: 900; line-height: 1.1; margin-bottom: 8px; letter-spacing: -0.5px; }
 
         /* =========================================
-           BLOQUE 5: BANCA (MIKE NEWS) - LIMITADA
+           NUEVO BLOQUE 5: MATRIZ DE ARTISTAS
            ========================================= */
         .section-header { font-size: 14px; font-weight: 900; text-transform: uppercase; border-top: 2px solid #000; padding-top: 15px; margin-bottom: 30px; }
-        .banca-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
-        .news-card { border-bottom: 1px solid var(--border); padding-bottom: 20px; }
-        .news-img { width: 100%; height: 210px; object-fit: cover; margin-bottom: 15px; background: #000; }
-        .news-h3 { font-size: 1.4rem; font-weight: 900; line-height: 1.15; margin-bottom: 10px; letter-spacing: -0.5px; }
-        .news-time { font-family: 'Share Tech Mono'; font-size: 10px; color: #999; margin-bottom: 8px; display: block; }
+        .banca-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        
+        .pais-node { border: 1px solid var(--border); height: 450px; display: flex; flex-direction: column; background: #fff; }
+        .pais-title { background: var(--black); color: #fff; padding: 10px; font-family: 'Share Tech Mono'; font-size: 11px; font-weight: 900; text-align: center; }
+        .artista-scroll { overflow-y: auto; flex-grow: 1; padding: 10px; }
+        .artista-scroll::-webkit-scrollbar { width: 3px; }
+        .artista-scroll::-webkit-scrollbar-thumb { background: var(--black); }
 
-        /* BOTÓN VER PREVIOS / ARCHIVO */
+        .artista-row { display: flex; align-items: center; padding: 8px 0; border-bottom: 1px solid #f9f9f9; gap: 12px; }
+        .artista-rank { font-family: 'Share Tech Mono'; font-size: 10px; color: #bbb; width: 15px; }
+        .artista-img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; background: #eee; border: 1px solid #eee; }
+        .artista-name { font-size: 11px; font-weight: 700; text-transform: uppercase; flex-grow: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .artista-stat { font-family: 'Share Tech Mono'; font-size: 10px; color: #00ff88; font-weight: 900; }
+
         .archive-trigger-wrap {
             grid-column: 1 / -1;
             text-align: center;
@@ -112,9 +107,6 @@
         }
         .archive-btn:hover { background: var(--black); color: var(--white); }
 
-        /* =========================================
-           BLOQUE 6: SIDEBAR & CTA
-           ========================================= */
         .side-box { margin-bottom: 40px; border-top: 2px solid var(--black); padding-top: 15px; }
         .tech-unit { margin-bottom: 25px; border-bottom: 1px solid #f9f9f9; padding-bottom: 15px; }
         .tech-label { font-family: 'Share Tech Mono'; font-size: 9px; color: var(--purple); font-weight: 900; text-transform: uppercase; }
@@ -137,7 +129,7 @@
     
     <nav class="header-nav">
         <a href="#hero-node" class="nav-link">WEEKLY_REPORT</a>
-        <a href="#mike-node" class="nav-link">THE_RADAR</a>
+        <a href="#banca-intel" class="nav-link">THE_RADAR</a>
         <a href="https://nvvexstudios.com" target="_blank" class="nav-link hq-btn">VISIT_STUDIOS // HQ</a>
     </nav>
 
@@ -154,8 +146,9 @@
             <section id="hero-node"></section>
             
             <section id="banca-intel" style="margin-top: 60px;">
-                <h2 class="section-header">Banca de Inteligencia</h2>
-                <div class="banca-grid" id="mike-node"></div>
+                <h2 class="section-header">Banca de Inteligencia // Canales YouTube</h2>
+                <div class="banca-grid" id="mike-node">
+                    </div>
                 
                 <div class="archive-trigger-wrap">
                     <a href="#" class="archive-btn">OPEN_ARCHIVE_DATA // <span id="archive-date">MAR_2026</span></a>
@@ -235,23 +228,31 @@
         document.getElementById('hero-node').innerHTML = htmlContent;
     }
 
-    // SINCRONIZACIÓN BANCA (LIMITADA A 6 PARA MANTENER LA LIMPIEZA)
+    // NUEVA FUNCIÓN BANCA: MATRIZ DE 6 PAÍSES
     async function syncBanca() {
-        const d = await (await fetch('mike.json')).json();
-        // Solo tomamos las primeras 6 noticias
-        const dLimit = d.noticias.slice(0, 6);
-        
-        const cards = await Promise.all(dLimit.map(async n => {
-            const img = await getHDImg(n.titulo);
-            return `
-            <div class="news-card">
-                <img src="${img}" class="news-img" style="object-fit:cover;">
-                <span class="news-time">INTEL_NODE // ${n.hora}</span>
-                <h3 class="news-h3">${n.titulo}</h3>
-                <div style="font-size:9px; font-weight:900; color:var(--purple); font-family:'Share Tech Mono'">SOURCE: NVVEX_RADAR_GLOBAL</div>
-            </div>`;
-        }));
-        document.getElementById('mike-node').innerHTML = cards.join('');
+        try {
+            const data = await (await fetch('artistasytv.json')).json();
+            // Estructura esperada: { "nodos": [ { "pais": "RD", "artistas": [...] }, ... ] }
+            const container = document.getElementById('mike-node');
+            
+            const html = data.nodos.map(n => `
+                <div class="pais-node">
+                    <div class="pais-title">// NODO_${n.pais} // CANALES</div>
+                    <div class="artista-scroll">
+                        ${n.artistas.map((art, i) => `
+                            <div class="artista-row">
+                                <span class="artista-rank">${String(i + 1).padStart(2, '0')}</span>
+                                <img src="${art.foto_circular}" class="artista-img">
+                                <span class="artista-name">${art.nombre}</span>
+                                <span class="artista-stat">${art.subida}% ↑</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+            
+            container.innerHTML = html;
+        } catch (e) { console.error("Error cargando artistasytv.json", e); }
     }
 
     async function syncTech() {
@@ -275,7 +276,6 @@
         await syncHero();
         await syncBanca();
         await syncTech();
-        // Fecha para el botón de archivo
         const now = new Date();
         const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
         document.getElementById('archive-date').innerText = `${months[now.getMonth()]}_${now.getFullYear()}`;
