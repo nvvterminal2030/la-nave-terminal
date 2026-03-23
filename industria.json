@@ -1,6 +1,7 @@
 {
   "reportes": [
     {
+      "fecha": "2026-03-23",
       "artista": "BAD BUNNY: ALGORITMO PURO 2026",
       "analisis": "El radar detecta una retención del 94% en usuarios orgánicos. La data confirma que el ecosistema digital de Benito sigue siendo el activo más líquido de la industria musical global.",
       "rank": "GLOBAL AUTHORITY #01",
@@ -8,6 +9,7 @@
       "img": ""
     },
     {
+      "fecha": "2026-03-23",
       "artista": "FEID: DOMINIO ESTRATÉGICO EUROPA",
       "analisis": "Expansión masiva detectada en nodos de España e Italia. El engagement real supera las métricas proyectadas por el algoritmo de Spotify en un 22%.",
       "rank": "TOP_GLOBAL #04",
@@ -15,6 +17,7 @@
       "img": ""
     },
     {
+      "fecha": "2026-03-22",
       "artista": "KAROL G: ROI DE ESTADIOS",
       "analisis": "Análisis de liquidez en ventas directas confirma que el modelo de negocio de 'La Bichota' es el estándar de rentabilidad para giras mundiales este año.",
       "rank": "GLOBAL_QUEEN #02",
@@ -22,6 +25,7 @@
       "img": ""
     },
     {
+      "fecha": "2026-03-21",
       "artista": "RAUW ALEJANDRO: EVOLUCIÓN SONORA",
       "analisis": "Nuevos patrones de producción detectados en el radar sugieren una transición hacia el synth-pop industrial con alta retención en el público anglo.",
       "rank": "INNOVATION_RANK #07",
@@ -29,27 +33,15 @@
       "img": ""
     },
     {
+      "fecha": "2026-03-20",
       "artista": "MYKE TOWERS: LIQUIDEZ EN STREAMING",
       "analisis": "Consistencia de catálogo. Mike reporta un flujo constante de 40M de oyentes mensuales sin necesidad de lanzamientos disruptivos. Activo de bajo riesgo.",
       "rank": "STABILITY_LEADER #08",
       "node": "STREAM_SHIELD",
       "img": ""
     },
-      {
-      "artista": "MYKE TOWERS: LIQUIDEZ EN STREAMING",
-      "analisis": "Consistencia de catálogo. Mike reporta un flujo constante de 40M de oyentes mensuales sin necesidad de lanzamientos disruptivos. Activo de bajo riesgo.",
-      "rank": "STABILITY_LEADER #09",
-      "node": "STREAM_SHIELD",
-      "img": ""
-    },
-      {
-      "artista": "MYKE TOWERS: LIQUIDEZ EN STREAMING",
-      "analisis": "Consistencia de catálogo. Mike reporta un flujo constante de 40M de oyentes mensuales sin necesidad de lanzamientos disruptivos. Activo de bajo riesgo.",
-      "rank": "STABILITY_LEADER #10",
-      "node": "STREAM_SHIELD",
-      "img": ""
-    },
     {
+      "fecha": "2026-03-19",
       "artista": "ELADIO CARRIÓN: EL REY DEL TRAP REAL",
       "analisis": "Penetración de mercado en el nicho de trap latino alcanza su punto máximo. La data de Mike sugiere una diversificación hacia mercados emergentes en Asia.",
       "rank": "NICHE_AUTHORITY #03",
