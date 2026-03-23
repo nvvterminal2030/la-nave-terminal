@@ -59,14 +59,28 @@
         .grid-main { display: grid; grid-template-columns: 1fr 320px; gap: 50px; }
 
         /* =========================================
-           BLOQUE 4: HERO (INDUSTRIA)
+           BLOQUE 4: HERO (INDUSTRIA) & CASCADA
            ========================================= */
         .hero-article { border-bottom: 1px solid var(--border); padding-bottom: 40px; margin-bottom: 40px; }
-        .hero-img { width: 100%; height: 480px; object-fit: cover; margin-bottom: 25px; filter: grayscale(0.2); transition: 0.5s; }
+        .hero-img { width: 100%; height: 480px; object-fit: cover; margin-bottom: 25px; filter: grayscale(0.2); transition: 0.5s; background: #000; }
         .hero-img:hover { filter: grayscale(0); }
         .label-intel { color: var(--purple); font-weight: 900; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px; display: block; }
         .hero-title { font-family: var(--font-serif); font-size: 3.2rem; font-weight: 900; line-height: 1; margin-bottom: 20px; letter-spacing: -2px; }
         .hero-lead { font-size: 1.15rem; color: var(--text-gray); line-height: 1.5; max-width: 750px; }
+
+        /* ESTILO PARA REPORTES ANTERIORES (ARCHIVO VISUAL) */
+        .reports-archive-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-top: 40px;
+            padding-top: 40px;
+            border-top: 2px solid var(--black);
+        }
+        .sub-report-img-wrap { width: 100%; height: 160px; overflow: hidden; margin-bottom: 15px; background: #000; }
+        .sub-report-img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(0.6); transition: 0.3s; }
+        .sub-report-item:hover .sub-report-img { filter: grayscale(0); }
+        .sub-report-h4 { font-family: var(--font-serif); font-size: 1.25rem; font-weight: 900; line-height: 1.1; margin-bottom: 8px; letter-spacing: -0.5px; }
 
         /* =========================================
            BLOQUE 5: BANCA (MIKE NEWS)
@@ -74,7 +88,7 @@
         .section-header { font-size: 14px; font-weight: 900; text-transform: uppercase; border-top: 2px solid #000; padding-top: 15px; margin-bottom: 30px; }
         .banca-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
         .news-card { border-bottom: 1px solid var(--border); padding-bottom: 20px; }
-        .news-img { width: 100%; height: 210px; object-fit: cover; margin-bottom: 15px; background: #f9f9f9; }
+        .news-img { width: 100%; height: 210px; object-fit: cover; margin-bottom: 15px; background: #000; }
         .news-h3 { font-size: 1.4rem; font-weight: 900; line-height: 1.15; margin-bottom: 10px; letter-spacing: -0.5px; }
         .news-time { font-family: 'Share Tech Mono'; font-size: 10px; color: #999; margin-bottom: 8px; display: block; }
 
@@ -115,10 +129,11 @@
 
 <div class="container">
     <div class="grid-main">
+        
         <main>
             <section id="hero-node"></section>
             
-            <section id="banca-intel">
+            <section id="banca-intel" style="margin-top: 60px;">
                 <h2 class="section-header">Banca de Inteligencia</h2>
                 <div class="banca-grid" id="mike-node"></div>
             </section>
@@ -150,6 +165,7 @@
     
     const YT_KEY = 'AIzaSyDdCEv8KTwupFbJQnSQy8Wzw9egXdpJ6HM';
 
+    // 1. CAPTURA HD (GOOGLE SERVERS)
     async function getHDImg(q) {
         try {
             const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=${encodeURIComponent(q)}&type=video&videoCategoryId=10&key=${YT_KEY}`);
@@ -162,6 +178,7 @@
         } catch (e) { return 'https://via.placeholder.com/1280x720'; }
     }
 
+    // 2. SINCRONIZACIÓN DE MERCADOS
     async function syncMarkets() {
         const d = await (await fetch('mercados.json')).json();
         document.getElementById('ticker-js').innerHTML = d.ticker.map(m => `
@@ -169,26 +186,49 @@
         `).join('').repeat(2);
     }
 
+    // 3. SINCRONIZACIÓN HERO (INDUSTRIA EN CASCADA)
     async function syncHero() {
         const d = await (await fetch('industria.json')).json();
-        const h = d.reportes[0];
-        const img = await getHDImg(h.artista);
-        document.getElementById('hero-node').innerHTML = `
+        
+        // LA PRINCIPAL (NOTICIA 0)
+        const principal = d.reportes[0];
+        const imgPrincipal = await getHDImg(principal.artista);
+        
+        let htmlContent = `
             <article class="hero-article">
-                <img src="${img}" class="hero-img">
-                <span class="label-intel">${h.node} // GLOBAL_AUTHORITY</span>
-                <h1 class="hero-title">${h.artista}</h1>
-                <p class="hero-lead">${h.analisis}</p>
-            </article>`;
+                <img src="${imgPrincipal}" class="hero-img">
+                <span class="label-intel">${principal.node} // GLOBAL_AUTHORITY</span>
+                <h1 class="hero-title">${principal.artista}</h1>
+                <p class="hero-lead">${principal.analisis}</p>
+            </article>
+        `;
+
+        // EL ARCHIVO VISUAL (DEL 1 EN ADELANTE)
+        if (d.reportes.length > 1) {
+            htmlContent += `<div class="reports-archive-grid">`;
+            const subReportesHtml = await Promise.all(d.reportes.slice(1).map(async (s) => {
+                const imgSub = await getHDImg(s.artista);
+                return `
+                    <div class="sub-report-item">
+                        <div class="sub-report-img-wrap"><img src="${imgSub}" class="sub-report-img"></div>
+                        <span class="label-intel" style="font-size:8px;">${s.node}</span>
+                        <h4 class="sub-report-h4">${s.artista}</h4>
+                        <div style="font-size:9px; font-weight:700; color:#999; font-family:'Share Tech Mono'">RANK: ${s.rank}</div>
+                    </div>`;
+            }));
+            htmlContent += subReportesHtml.join('') + `</div>`;
+        }
+        document.getElementById('hero-node').innerHTML = htmlContent;
     }
 
+    // 4. SINCRONIZACIÓN BANCA (MIKE NEWS)
     async function syncBanca() {
         const d = await (await fetch('mike.json')).json();
         const cards = await Promise.all(d.noticias.map(async n => {
             const img = await getHDImg(n.titulo);
             return `
             <div class="news-card">
-                <img src="${img}" class="news-img" style="object-fit:cover; background:#000;">
+                <img src="${img}" class="news-img" style="object-fit:cover;">
                 <span class="news-time">INTEL_NODE // ${n.hora}</span>
                 <h3 class="news-h3">${n.titulo}</h3>
                 <div style="font-size:9px; font-weight:900; color:var(--purple); font-family:'Share Tech Mono'">SOURCE: NVVEX_RADAR_GLOBAL</div>
@@ -197,7 +237,7 @@
         document.getElementById('mike-node').innerHTML = cards.join('');
     }
 
-    // FUNCIÓN ACTUALIZADA: CARGAR TECH (ESTILO NOTICIAS TÉCNICAS)
+    // 5. SINCRONIZACIÓN TECH (INFRAESTRUCTURA)
     async function syncTech() {
         const d = await (await fetch('tech.json')).json();
         document.getElementById('tech-node').innerHTML = d.tecnologia.map(t => `
