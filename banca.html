@@ -3,175 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NVVEX // INTELLIGENCE WEEKEND</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=Playfair+Display:ital,wght@0,900;1,900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <title>NVVEX // WEEKEND INTELLIGENCE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Publico+Headline:wght@900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --nvvex-purple: #bc13fe;
-            --black: #000000;
-            --white: #ffffff;
-            --gray-light: #f4f4f4;
-            --border: #e2e2e2;
-            --font-main: 'Inter', sans-serif;
-            --font-serif: 'Playfair Display', serif;
+            --purple: #bc13fe; --black: #000000; --white: #ffffff;
+            --gray-border: #e5e5e5; --text-muted: #666;
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background-color: var(--white); color: var(--black); font-family: var(--font-main); overflow-x: hidden; }
+        body { background: var(--white); color: var(--black); font-family: 'Inter', sans-serif; }
 
-        /* 1. TICKER SUPERIOR (MERCADOS.JSON) */
-        .market-ticker-wrap {
-            background: var(--black); color: var(--white);
-            height: 35px; display: flex; align-items: center;
-            font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;
-            position: fixed; top: 0; width: 100%; z-index: 3000;
+        /* TICKER (MERCADOS.JSON) */
+        .top-ticker {
+            background: var(--black); color: var(--white); height: 40px;
+            display: flex; align-items: center; font-size: 11px; font-weight: 700;
+            position: fixed; top: 0; width: 100%; z-index: 5000;
         }
-        .market-item { display: inline-block; padding: 0 60px; border-right: 1px solid #333; }
 
-        /* 2. HEADER EDITORIAL */
-        .main-header {
-            background: var(--white); border-bottom: 3px solid var(--black);
-            padding: 20px 60px; position: fixed; top: 35px; width: 100%; z-index: 2000;
-            display: flex; justify-content: space-between; align-items: center;
+        /* HEADER BLOOMBERG STYLE */
+        header {
+            border-bottom: 4px solid var(--black); padding: 25px 50px;
+            position: fixed; top: 40px; width: 100%; background: var(--white);
+            display: flex; justify-content: space-between; align-items: center; z-index: 4000;
         }
-        .logo-box { font-family: var(--font-serif); font-size: 1.8rem; font-weight: 900; letter-spacing: -1px; }
-        .date-box { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; border-left: 2px solid var(--nvvex-purple); padding-left: 15px; }
+        .brand { font-size: 2.2rem; font-weight: 900; letter-spacing: -2px; }
+        .edition { font-weight: 900; color: var(--purple); text-transform: uppercase; font-size: 14px; }
 
-        .container { max-width: 1600px; margin: 0 auto; padding: 180px 40px 60px; }
+        .wrapper { max-width: 1400px; margin: 0 auto; padding: 180px 20px 50px; }
 
-        /* 3. EL HERO (INDUSTRIA.JSON) */
-        .hero-grid {
-            display: grid; grid-template-columns: 2fr 1fr; gap: 40px; margin-bottom: 80px;
-            border-bottom: 1px solid var(--border); padding-bottom: 60px;
-        }
-        .hero-img-wrap { height: 550px; overflow: hidden; position: relative; }
-        .hero-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
-        .hero-img-wrap:hover img { transform: scale(1.02); }
-        
-        .hero-content { display: flex; flex-direction: column; justify-content: center; }
-        .hero-category { color: var(--nvvex-purple); font-weight: 900; font-size: 0.9rem; margin-bottom: 15px; }
-        .hero-title { font-family: var(--font-serif); font-size: 4.5rem; line-height: 0.95; margin-bottom: 25px; }
-        .hero-lead { font-size: 1.25rem; color: #444; margin-bottom: 30px; line-height: 1.4; }
+        /* GRID PRINCIPAL */
+        .main-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 40px; }
 
-        /* 4. LA BANCA (MIKE.JSON) */
-        .banca-title { font-family: var(--font-serif); font-size: 2.5rem; margin-bottom: 40px; border-bottom: 2px solid var(--black); display: inline-block; }
-        .news-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
-        .news-card { border-bottom: 1px solid var(--border); padding-bottom: 30px; transition: 0.3s; }
-        .news-card:hover { opacity: 0.8; }
-        .news-img { width: 100%; height: 260px; object-fit: cover; margin-bottom: 20px; background: #eee; }
-        .news-tag { font-size: 0.7rem; font-weight: 900; color: #888; margin-bottom: 10px; display: block; }
-        .news-headline { font-size: 1.5rem; font-weight: 800; line-height: 1.2; margin-bottom: 15px; }
-        .news-data { font-family: 'Share Tech Mono', monospace; color: var(--nvvex-purple); font-size: 0.85rem; }
+        /* HERO (INDUSTRIA.JSON) */
+        .hero-article { border-bottom: 1px solid var(--gray-border); padding-bottom: 40px; }
+        .hero-img { width: 100%; height: 500px; object-fit: cover; margin-bottom: 20px; }
+        .category-tag { color: var(--purple); font-weight: 900; font-size: 12px; margin-bottom: 10px; display: block; }
+        .hero-title { font-size: 4rem; font-weight: 900; line-height: 0.95; margin-bottom: 20px; letter-spacing: -3px; }
+        .hero-lead { font-size: 1.3rem; color: var(--text-muted); line-height: 1.4; }
 
-        /* 5. TECH STATUS (TECH.JSON) */
-        .tech-status-bar {
-            margin-top: 80px; padding: 40px; background: var(--gray-light);
-            display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;
-        }
-        .tech-item { border-left: 1px solid #ccc; padding-left: 20px; }
-        .tech-label { font-size: 0.7rem; color: #888; font-weight: 900; }
-        .tech-val { font-family: 'Share Tech Mono', monospace; font-size: 1rem; color: var(--black); }
+        /* SIDEBAR (TECH.JSON) */
+        .sidebar { border-left: 1px solid var(--gray-border); padding-left: 40px; }
+        .sidebar-title { font-weight: 900; border-bottom: 2px solid var(--black); margin-bottom: 20px; padding-bottom: 5px; }
 
-        footer { background: var(--black); color: #666; padding: 20px; font-family: 'Share Tech Mono'; font-size: 0.7rem; text-align: center; }
+        /* BANCA DE INTELIGENCIA (MIKE.JSON) */
+        .banca-section { margin-top: 60px; border-top: 2px solid var(--black); padding-top: 40px; }
+        .banca-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+        .news-item { border-bottom: 1px solid var(--gray-border); padding-bottom: 20px; }
+        .news-img { width: 100%; height: 200px; object-fit: cover; margin-bottom: 15px; }
+        .news-headline { font-size: 1.4rem; font-weight: 900; line-height: 1.1; margin-bottom: 10px; }
+        .news-meta { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
 
-        @media (max-width: 1024px) {
-            .hero-grid, .news-grid { grid-template-columns: 1fr; }
-            .hero-title { font-size: 3rem; }
-        }
+        marquee { font-family: monospace; }
     </style>
 </head>
 <body>
 
-<div class="market-ticker-wrap">
-    <marquee id="market-ticker" scrollamount="5"></marquee>
-</div>
+<div class="top-ticker"><marquee scrollamount="6" id="ticker-box"></marquee></div>
 
-<header class="main-header">
-    <div class="logo-box">NVVEX <span style="font-style: italic; color: var(--nvvex-purple);">WEEKEND</span></div>
-    <div class="date-box" id="current-date">DOMINGO, 22 MARZO 2026</div>
-    <div style="font-size: 0.7rem; font-weight: 900;">STATUS: <span style="color: green;">EN LÍNEA</span></div>
+<header>
+    <div class="brand">NVVEX <span class="edition">Weekend Edition</span></div>
+    <div id="live-timer" style="font-weight: 700; font-size: 14px;">DOMINGO, 22 MARZO 2026</div>
+    <div style="font-weight: 900; font-size: 12px; border: 1px solid #000; padding: 5px 10px;">STATUS: LIVE</div>
 </header>
 
-<main class="container">
-    <section class="hero-grid" id="hero-node"></section>
+<div class="wrapper">
+    <div class="main-layout">
+        <div class="main-content">
+            <section id="hero-node"></section>
+            
+            <div class="banca-section">
+                <h2 class="sidebar-title">Banca de Inteligencia</h2>
+                <div class="banca-grid" id="mike-node"></div>
+            </div>
+        </div>
 
-    <section class="banca-wrap">
-        <h2 class="banca-title">Banca de Inteligencia</h2>
-        <div class="news-grid" id="mike-node"></div>
-    </section>
-
-    <section class="tech-status-bar" id="tech-node"></section>
-</main>
-
-<footer>
-    © 2026 NVVEX ORIGIN CORE // TODOS LOS DERECHOS RESERVADOS VÍA RADAR BUSCA
-</footer>
+        <aside class="sidebar">
+            <h2 class="sidebar-title">System Status</h2>
+            <div id="tech-node"></div>
+        </aside>
+    </div>
+</div>
 
 <script>
     const YT_KEY = 'AIzaSyDdCEv8KTwupFbJQnSQy8Wzw9egXdpJ6HM';
 
-    async function getYTImg(query) {
+    async function fetchYT(q) {
         try {
-            // Filtro inteligente para evitar "basura": Buscamos canales oficiales y música
-            const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=${encodeURIComponent(query)}&type=video&videoCategoryId=10&key=${YT_KEY}`);
-            const data = await res.json();
-            return data.items[0] ? data.items[0].snippet.thumbnails.high.url : '';
-        } catch (e) { return ''; }
+            const r = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=${q}&type=video&videoCategoryId=10&key=${YT_KEY}`);
+            const d = await r.json();
+            return d.items[0]?.snippet.thumbnails.high.url || '';
+        } catch(e) { return ''; }
     }
 
-    async function bootWeekend() {
+    async function syncNVVEX() {
         try {
-            // 1. MERCADOS
+            // 1. LLENAR MERCADOS (DATA NEGRA SUPERIOR)
             const dMerc = await (await fetch('mercados.json')).json();
-            document.getElementById('market-ticker').innerHTML = dMerc.ticker.map(m => `
-                <span class="market-item">
-                    ${m.asset} <span style="color:#00ff88">${m.price}</span> (${m.change})
-                </span>
-            `).join('').repeat(4);
+            document.getElementById('ticker-box').innerHTML = dMerc.ticker.map(m => `
+                <span style="margin-right:80px;">${m.asset}: <span style="color:#00ff88">${m.price}</span> (${m.change})</span>
+            `).join('').repeat(3);
 
-            // 2. HERO (INDUSTRIA)
+            // 2. LLENAR HERO (NOTICIA PRINCIPAL)
             const dInd = await (await fetch('industria.json')).json();
             const hero = dInd.reportes[0];
-            const heroImg = await getYTImg(hero.artista);
+            const hImg = await fetchYT(hero.artista);
             document.getElementById('hero-node').innerHTML = `
-                <div class="hero-img-wrap"><img src="${heroImg}"></div>
-                <div class="hero-content">
-                    <span class="hero-category">INFORME GLOBAL // ${hero.node}</span>
+                <article class="hero-article">
+                    <img src="${hImg}" class="hero-img">
+                    <span class="category-tag">${hero.node} // ANALYSIS</span>
                     <h1 class="hero-title">${hero.artista}</h1>
                     <p class="hero-lead">${hero.analisis}</p>
-                    <div style="font-weight:900; font-size:1.2rem;">RANKING: ${hero.rank}</div>
-                </div>
-            `;
+                    <div style="margin-top:20px; font-weight:900;">RANKING ACTUAL: ${hero.rank}</div>
+                </article>`;
 
-            // 3. BANCA (MIKE)
+            // 3. LLENAR BANCA (NOTICIAS EN GRID)
             const dMike = await (await fetch('mike.json')).json();
-            const newsHtml = await Promise.all(dMike.noticias.map(async (n) => {
-                const img = await getYTImg(n.titulo);
+            const mHtml = await Promise.all(dMike.noticias.map(async n => {
+                const img = await fetchYT(n.titulo);
                 return `
-                    <article class="news-card">
-                        <img src="${img}" class="news-img">
-                        <span class="news-tag">${n.hora} // RADAR_DATA</span>
-                        <h3 class="news-headline">${n.titulo}</h3>
-                        <p class="news-data">VERIFICADO // YT_CORE_V3</p>
-                    </article>
-                `;
+                <div class="news-item">
+                    <img src="${img}" class="news-img">
+                    <div class="news-meta">Radar Data // ${n.hora}</div>
+                    <h3 class="news-headline">${n.titulo}</h3>
+                    <div style="color:var(--purple); font-size:10px; font-weight:900;">VERIFIED BY YT_CORE_V3</div>
+                </div>`;
             }));
-            document.getElementById('mike-node').innerHTML = newsHtml.join('');
+            document.getElementById('mike-node').innerHTML = mHtml.join('');
 
-            // 4. TECH
+            // 4. LLENAR TECH (SIDEBAR)
             const dTech = await (await fetch('tech.json')).json();
             document.getElementById('tech-node').innerHTML = dTech.tecnologia.map(t => `
-                <div class="tech-item">
-                    <div class="tech-label">${t.id}</div>
-                    <div class="tech-val">${t.titular}</div>
-                    <div style="color:var(--nvvex-purple); font-weight:bold; font-size:0.8rem;">${t.impacto}</div>
-                </div>
-            `).join('');
+                <div style="margin-bottom:20px; border-bottom:1px solid #eee; padding-bottom:10px;">
+                    <div class="news-meta" style="color:var(--purple)">${t.id}</div>
+                    <div style="font-weight:900; font-size:15px;">${t.titular}</div>
+                    <div style="font-size:12px; color:#444;">IMPACTO: ${t.impacto}</div>
+                </div>`).join('');
 
-        } catch (e) { console.error("BOOT_ERROR", e); }
+        } catch(e) { console.log("SYNC_FAIL", e); }
     }
-
-    window.onload = bootWeekend;
+    window.onload = syncNVVEX;
 </script>
 </body>
 </html>
