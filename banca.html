@@ -74,7 +74,7 @@
         .section-header { font-size: 14px; font-weight: 900; text-transform: uppercase; border-top: 2px solid #000; padding-top: 15px; margin-bottom: 30px; }
         .banca-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
         .news-card { border-bottom: 1px solid var(--border); padding-bottom: 20px; }
-        .news-img { width: 100%; height: 210px; object-fit: cover; margin-bottom: 15px; }
+        .news-img { width: 100%; height: 210px; object-fit: cover; margin-bottom: 15px; background: #f9f9f9; }
         .news-h3 { font-size: 1.4rem; font-weight: 900; line-height: 1.15; margin-bottom: 10px; letter-spacing: -0.5px; }
         .news-time { font-family: 'Share Tech Mono'; font-size: 10px; color: #999; margin-bottom: 8px; display: block; }
 
@@ -86,7 +86,6 @@
         .tech-label { font-family: 'Share Tech Mono'; font-size: 9px; color: var(--purple); font-weight: 900; }
         .tech-data { font-size: 13px; font-weight: 700; }
         
-        .cta-box { background: #000; color: #fff; padding: 30px; margin-top: 40px; text-align: center; }
         .cta-btn { display: inline-block; margin-top: 15px; color: #fff; font-weight: 900; font-family: 'Share Tech Mono'; text-decoration: underline; }
 
         footer { border-top: 1px solid var(--border); padding: 40px; text-align: center; font-size: 10px; color: #aaa; font-family: 'Share Tech Mono'; }
@@ -116,7 +115,6 @@
 
 <div class="container">
     <div class="grid-main">
-        
         <main>
             <section id="hero-node"></section>
             
@@ -134,11 +132,10 @@
             
             <div class="side-box" style="background:#fcfcfc; padding:20px; border:1px solid #eee;">
                 <h2 class="section-header" style="border:none; padding:0; font-size:12px; margin-bottom:10px;">Curaduría AI</h2>
-                <p style="font-size: 11px; color:#777; line-height:1.4;">Mike procesa 4,000 puntos de data por hora. Los charts mostrados reflejan momentum real, descartando anomalías detectadas en el radar.</p>
+                <p style="font-size: 11px; color:#777; line-height:1.4;">Mike procesa 4,000 puntos de data por hora. Los charts reflejan momentum real global.</p>
                 <a href="https://nvvexstudios.com" class="cta-btn" style="color:#000">CONECTAR A LA SEDE</a>
             </div>
         </aside>
-
     </div>
 </div>
 
@@ -147,18 +144,26 @@
 </footer>
 
 <script>
+    /* =========================================
+       BLOQUE 7: MOTOR DE INTELIGENCIA (JS_HD)
+       ========================================= */
+    
     const YT_KEY = 'AIzaSyDdCEv8KTwupFbJQnSQy8Wzw9egXdpJ6HM';
 
-    // 1. MOTOR DE IMAGENES YT
-    async function getYTImg(q) {
+    // FUNCIÓN: CAPTURA HD DESDE GOOGLE SERVERS (SIN GUARDAR EN DISCO)
+    async function getHDImg(q) {
         try {
             const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=${encodeURIComponent(q)}&type=video&videoCategoryId=10&key=${YT_KEY}`);
             const data = await res.json();
-            return data.items[0] ? data.items[0].snippet.thumbnails.high.url : '';
-        } catch (e) { return ''; }
+            if (data.items && data.items[0]) {
+                const videoId = data.items[0].id.videoId;
+                // Forzamos la resolución máxima de Google (1080p si existe)
+                return `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`;
+            }
+            return 'https://via.placeholder.com/1280x720';
+        } catch (e) { return 'https://via.placeholder.com/1280x720'; }
     }
 
-    // 2. SINCRONIZACIÓN DE MERCADOS
     async function syncMarkets() {
         const d = await (await fetch('mercados.json')).json();
         document.getElementById('ticker-js').innerHTML = d.ticker.map(m => `
@@ -166,37 +171,34 @@
         `).join('').repeat(2);
     }
 
-    // 3. SINCRONIZACIÓN HERO (INDUSTRIA)
     async function syncHero() {
         const d = await (await fetch('industria.json')).json();
         const h = d.reportes[0];
-        const img = await getYTImg(h.artista);
+        const img = await getHDImg(h.artista);
         document.getElementById('hero-node').innerHTML = `
             <article class="hero-article">
                 <img src="${img}" class="hero-img">
-                <span class="label-intel">${h.node} // GLOBAL_RANK: ${h.rank}</span>
+                <span class="label-intel">${h.node} // GLOBAL_AUTHORITY</span>
                 <h1 class="hero-title">${h.artista}</h1>
                 <p class="hero-lead">${h.analisis}</p>
             </article>`;
     }
 
-    // 4. SINCRONIZACIÓN BANCA (MIKE)
     async function syncBanca() {
         const d = await (await fetch('mike.json')).json();
         const cards = await Promise.all(d.noticias.map(async n => {
-            const img = await getYTImg(n.titulo);
+            const img = await getHDImg(n.titulo);
             return `
             <div class="news-card">
-                <img src="${img}" class="news-img">
-                <span class="news-time">DATA_CAPTURED: ${n.hora}</span>
+                <img src="${img}" class="news-img" style="object-fit:cover; background:#000;">
+                <span class="news-time">INTEL_NODE // ${n.hora}</span>
                 <h3 class="news-h3">${n.titulo}</h3>
-                <div style="font-size:9px; font-weight:900; color:var(--purple); font-family:'Share Tech Mono'">SOURCE: NVVEX_RADAR</div>
+                <div style="font-size:9px; font-weight:900; color:var(--purple); font-family:'Share Tech Mono'">SOURCE: NVVEX_RADAR_GLOBAL</div>
             </div>`;
         }));
         document.getElementById('mike-node').innerHTML = cards.join('');
     }
 
-    // 5. SINCRONIZACIÓN TECH
     async function syncTech() {
         const d = await (await fetch('tech.json')).json();
         document.getElementById('tech-node').innerHTML = d.tecnologia.map(t => `
@@ -207,7 +209,6 @@
             </div>`).join('');
     }
 
-    // INICIO MAESTRO
     async function initStation() {
         await syncMarkets();
         await syncHero();
@@ -215,7 +216,6 @@
         await syncTech();
     }
 
-    // RELOJ EN TIEMPO REAL
     setInterval(() => { document.getElementById('live-clock').innerText = new Date().toLocaleTimeString(); }, 1000);
     window.onload = initStation;
 </script>
