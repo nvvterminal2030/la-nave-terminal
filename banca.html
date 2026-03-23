@@ -68,7 +68,6 @@
         .hero-title { font-family: var(--font-serif); font-size: 3.2rem; font-weight: 900; line-height: 1; margin-bottom: 20px; letter-spacing: -2px; }
         .hero-lead { font-size: 1.15rem; color: var(--text-gray); line-height: 1.5; max-width: 750px; }
 
-        /* ESTILO PARA REPORTES ANTERIORES (ARCHIVO VISUAL) */
         .reports-archive-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -83,7 +82,7 @@
         .sub-report-h4 { font-family: var(--font-serif); font-size: 1.25rem; font-weight: 900; line-height: 1.1; margin-bottom: 8px; letter-spacing: -0.5px; }
 
         /* =========================================
-           BLOQUE 5: BANCA (MIKE NEWS)
+           BLOQUE 5: BANCA (MIKE NEWS) - LIMITADA
            ========================================= */
         .section-header { font-size: 14px; font-weight: 900; text-transform: uppercase; border-top: 2px solid #000; padding-top: 15px; margin-bottom: 30px; }
         .banca-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
@@ -91,6 +90,27 @@
         .news-img { width: 100%; height: 210px; object-fit: cover; margin-bottom: 15px; background: #000; }
         .news-h3 { font-size: 1.4rem; font-weight: 900; line-height: 1.15; margin-bottom: 10px; letter-spacing: -0.5px; }
         .news-time { font-family: 'Share Tech Mono'; font-size: 10px; color: #999; margin-bottom: 8px; display: block; }
+
+        /* BOTÓN VER PREVIOS / ARCHIVO */
+        .archive-trigger-wrap {
+            grid-column: 1 / -1;
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+        .archive-btn {
+            font-family: 'Share Tech Mono';
+            font-size: 11px;
+            font-weight: 900;
+            color: var(--black);
+            text-decoration: none;
+            padding: 10px 25px;
+            border: 1px solid var(--black);
+            display: inline-block;
+            transition: 0.3s;
+        }
+        .archive-btn:hover { background: var(--black); color: var(--white); }
 
         /* =========================================
            BLOQUE 6: SIDEBAR & CTA
@@ -136,6 +156,10 @@
             <section id="banca-intel" style="margin-top: 60px;">
                 <h2 class="section-header">Banca de Inteligencia</h2>
                 <div class="banca-grid" id="mike-node"></div>
+                
+                <div class="archive-trigger-wrap">
+                    <a href="#" class="archive-btn">OPEN_ARCHIVE_DATA // <span id="archive-date">MAR_2026</span></a>
+                </div>
             </section>
         </main>
 
@@ -159,13 +183,8 @@
 </footer>
 
 <script>
-    /* =========================================
-       BLOQUE 7: MOTOR DE INTELIGENCIA (JS_HD)
-       ========================================= */
-    
     const YT_KEY = 'AIzaSyDdCEv8KTwupFbJQnSQy8Wzw9egXdpJ6HM';
 
-    // 1. CAPTURA HD (GOOGLE SERVERS)
     async function getHDImg(q) {
         try {
             const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=${encodeURIComponent(q)}&type=video&videoCategoryId=10&key=${YT_KEY}`);
@@ -178,7 +197,6 @@
         } catch (e) { return 'https://via.placeholder.com/1280x720'; }
     }
 
-    // 2. SINCRONIZACIÓN DE MERCADOS
     async function syncMarkets() {
         const d = await (await fetch('mercados.json')).json();
         document.getElementById('ticker-js').innerHTML = d.ticker.map(m => `
@@ -186,24 +204,20 @@
         `).join('').repeat(2);
     }
 
-    // 3. SINCRONIZACIÓN HERO (INDUSTRIA EN CASCADA)
     async function syncHero() {
         const d = await (await fetch('industria.json')).json();
-        
-        // LA PRINCIPAL (NOTICIA 0)
-        const principal = d.reportes[0];
-        const imgPrincipal = await getHDImg(principal.artista);
+        const h = d.reportes[0];
+        const imgPrincipal = await getHDImg(h.artista);
         
         let htmlContent = `
             <article class="hero-article">
                 <img src="${imgPrincipal}" class="hero-img">
-                <span class="label-intel">${principal.node} // GLOBAL_AUTHORITY</span>
-                <h1 class="hero-title">${principal.artista}</h1>
-                <p class="hero-lead">${principal.analisis}</p>
+                <span class="label-intel">${h.node} // GLOBAL_AUTHORITY</span>
+                <h1 class="hero-title">${h.artista}</h1>
+                <p class="hero-lead">${h.analisis}</p>
             </article>
         `;
 
-        // EL ARCHIVO VISUAL (DEL 1 EN ADELANTE)
         if (d.reportes.length > 1) {
             htmlContent += `<div class="reports-archive-grid">`;
             const subReportesHtml = await Promise.all(d.reportes.slice(1).map(async (s) => {
@@ -221,10 +235,13 @@
         document.getElementById('hero-node').innerHTML = htmlContent;
     }
 
-    // 4. SINCRONIZACIÓN BANCA (MIKE NEWS)
+    // SINCRONIZACIÓN BANCA (LIMITADA A 6 PARA MANTENER LA LIMPIEZA)
     async function syncBanca() {
         const d = await (await fetch('mike.json')).json();
-        const cards = await Promise.all(d.noticias.map(async n => {
+        // Solo tomamos las primeras 6 noticias
+        const dLimit = d.noticias.slice(0, 6);
+        
+        const cards = await Promise.all(dLimit.map(async n => {
             const img = await getHDImg(n.titulo);
             return `
             <div class="news-card">
@@ -237,7 +254,6 @@
         document.getElementById('mike-node').innerHTML = cards.join('');
     }
 
-    // 5. SINCRONIZACIÓN TECH (INFRAESTRUCTURA)
     async function syncTech() {
         const d = await (await fetch('tech.json')).json();
         document.getElementById('tech-node').innerHTML = d.tecnologia.map(t => `
@@ -259,6 +275,10 @@
         await syncHero();
         await syncBanca();
         await syncTech();
+        // Fecha para el botón de archivo
+        const now = new Date();
+        const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+        document.getElementById('archive-date').innerText = `${months[now.getMonth()]}_${now.getFullYear()}`;
     }
 
     setInterval(() => { document.getElementById('live-clock').innerText = new Date().toLocaleTimeString(); }, 1000);
