@@ -49,7 +49,7 @@
         .container { max-width: 1440px; margin: 0 auto; padding: 180px 40px 60px; }
         .grid-main { display: grid; grid-template-columns: 1fr 320px; gap: 50px; }
 
-        .hero-article { border-bottom: 1px solid var(--border); padding-bottom: 40px; margin-bottom: 40px; }
+        .hero-article { border-bottom: 1px solid var(--border); padding-bottom: 40px; margin-bottom: 40px; cursor: pointer; }
         .hero-img { width: 100%; height: 480px; object-fit: cover; margin-bottom: 25px; filter: grayscale(0.2); transition: 0.5s; background: #000; }
         .hero-img:hover { filter: grayscale(0); }
         .label-intel { color: var(--purple); font-weight: 900; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px; display: block; }
@@ -66,6 +66,7 @@
         }
         .sub-report-img-wrap { width: 100%; height: 160px; overflow: hidden; margin-bottom: 15px; background: #000; }
         .sub-report-img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(0.6); transition: 0.3s; }
+        .sub-report-item { cursor: pointer; text-decoration: none; color: inherit; display: block; }
         .sub-report-item:hover .sub-report-img { filter: grayscale(0); }
         .sub-report-h4 { font-family: var(--font-serif); font-size: 1.25rem; font-weight: 900; line-height: 1.1; margin-bottom: 8px; letter-spacing: -0.5px; }
 
@@ -78,7 +79,8 @@
         .artista-scroll::-webkit-scrollbar { width: 3px; }
         .artista-scroll::-webkit-scrollbar-thumb { background: var(--black); }
 
-        .artista-row { display: flex; align-items: center; padding: 8px 0; border-bottom: 1px solid #f9f9f9; gap: 12px; }
+        .artista-row { display: flex; align-items: center; padding: 8px 0; border-bottom: 1px solid #f9f9f9; gap: 12px; cursor: pointer; transition: 0.2s; }
+        .artista-row:hover { background: #fcfcfc; }
         .artista-rank { font-family: 'Share Tech Mono'; font-size: 10px; color: #bbb; width: 15px; }
         .artista-img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; background: #eee; border: 1px solid #eee; }
         .artista-name { font-size: 11px; font-weight: 700; text-transform: uppercase; flex-grow: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -105,7 +107,7 @@
         .archive-btn:hover { background: var(--black); color: var(--white); }
 
         .side-box { margin-bottom: 40px; border-top: 2px solid var(--black); padding-top: 15px; }
-        .tech-unit { margin-bottom: 25px; border-bottom: 1px solid #f9f9f9; padding-bottom: 15px; }
+        .tech-unit { margin-bottom: 25px; border-bottom: 1px solid #f9f9f9; padding-bottom: 15px; cursor: pointer; display: block; text-decoration: none; color: inherit; }
         .tech-label { font-family: 'Share Tech Mono'; font-size: 9px; color: var(--purple); font-weight: 900; text-transform: uppercase; }
         .tech-data { font-size: 14px; font-weight: 900; letter-spacing: -0.5px; margin-bottom: 4px; }
         
@@ -174,6 +176,13 @@
 <script>
     const YT_KEY = 'AIzaSyDdCEv8KTwupFbJQnSQy8Wzw9egXdpJ6HM';
 
+    function createSlug(text) {
+        return text.toString().toLowerCase().trim()
+            .replace(/\s+/g, '-')
+            .replace(/[^\w\-]+/g, '')
+            .replace(/\-\-+/g, '-');
+    }
+
     async function getHDImg(q) {
         try {
             const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=${encodeURIComponent(q)}&type=video&videoCategoryId=10&key=${YT_KEY}`);
@@ -187,19 +196,22 @@
     }
 
     async function syncMarkets() {
-        const d = await (await fetch('mercados.json')).json();
-        document.getElementById('ticker-js').innerHTML = d.ticker.map(m => `
-            <span style="margin-right:80px;">${m.asset}: ${m.price} <span style="color:#00ff88">(${m.change})</span></span>
-        `).join('').repeat(2);
+        try {
+            const d = await (await fetch('mercados.json')).json();
+            document.getElementById('ticker-js').innerHTML = d.ticker.map(m => `
+                <span style="margin-right:80px;">${m.asset}: ${m.price} <span style="color:#00ff88">(${m.change})</span></span>
+            `).join('').repeat(2);
+        } catch(e) {}
     }
 
     async function syncHero() {
         const d = await (await fetch('industria.json')).json();
         const h = d.reportes[0];
         const imgPrincipal = await getHDImg(h.artista);
+        const mainSlug = createSlug(h.artista);
         
         let htmlContent = `
-            <article class="hero-article">
+            <article class="hero-article" onclick="location.href='/bunker/${mainSlug}'">
                 <img src="${imgPrincipal}" class="hero-img">
                 <span class="label-intel">[ DATE: ${h.fecha} ] // ${h.node}</span>
                 <h1 class="hero-title">${h.artista}</h1>
@@ -211,8 +223,9 @@
             htmlContent += `<div class="reports-archive-grid">`;
             const subReportesHtml = await Promise.all(d.reportes.slice(1).map(async (s) => {
                 const imgSub = await getHDImg(s.artista);
+                const subSlug = createSlug(s.artista);
                 return `
-                    <div class="sub-report-item">
+                    <div class="sub-report-item" onclick="location.href='/bunker/${subSlug}'">
                         <div class="sub-report-img-wrap"><img src="${imgSub}" class="sub-report-img"></div>
                         <span class="label-intel" style="font-size:8px;">${s.fecha} // ${s.node}</span>
                         <h4 class="sub-report-h4">${s.artista}</h4>
@@ -233,7 +246,7 @@
                     <div class="pais-title">// NODO_${n.pais} // CANALES</div>
                     <div class="artista-scroll">
                         ${n.artistas.map((art, i) => `
-                            <div class="artista-row">
+                            <div class="artista-row" onclick="window.open('https://www.youtube.com/results?search_query=${art.nombre}', '_blank')">
                                 <span class="artista-rank">${String(i + 1).padStart(2, '0')}</span>
                                 <img src="${art.foto_circular}" class="artista-img">
                                 <span class="artista-name">${art.nombre}</span>
@@ -249,8 +262,10 @@
 
     async function syncTech() {
         const d = await (await fetch('tech.json')).json();
-        document.getElementById('tech-node').innerHTML = d.tecnologia.map(t => `
-            <div class="tech-unit">
+        document.getElementById('tech-node').innerHTML = d.tecnologia.map(t => {
+            const techSlug = createSlug(t.titular);
+            return `
+            <div class="tech-unit" onclick="location.href='/bunker/tecnologia/${techSlug}'">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
                     <div class="tech-label">${t.id}</div>
                     <div style="font-size: 8px; font-weight: 900; background: var(--black); color: #fff; padding: 2px 6px; border-radius: 2px;">${t.status}</div>
@@ -260,20 +275,20 @@
                 <div style="font-family: 'Share Tech Mono'; font-size: 10px; font-weight: 700;">
                     IMPACTO: <span style="color: var(--purple);">${t.impacto}</span>
                 </div>
-            </div>`).join('');
+            </div>`;
+        }).join('');
     }
 
     async function initStation() {
-    // Ejecutan en paralelo, si una falla la otra sigue
-    syncMarkets(); 
-    syncHero();    
-    syncBanca();   
-    syncTech();
+        syncMarkets(); 
+        syncHero();    
+        syncBanca();   
+        syncTech();
 
-    const now = new Date();
-    const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
-    document.getElementById('archive-date').innerText = `${months[now.getMonth()]}_${now.getFullYear()}`;
-}
+        const now = new Date();
+        const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+        document.getElementById('archive-date').innerText = `${months[now.getMonth()]}_${now.getFullYear()}`;
+    }
 
     setInterval(() => { document.getElementById('live-clock').innerText = new Date().toLocaleTimeString(); }, 1000);
     window.onload = initStation;
