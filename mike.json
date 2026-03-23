@@ -1,7 +1,10 @@
 {
   "noticias": [
-    {"titulo": "MEXICO: EL REGIONAL MEXICANO DOMINA EL 40% DEL CHART.", "hora": "14:20"},
-    {"titulo": "COLOMBIA: PICO DE CONSUMO EN EL GENERO URBANO.", "hora": "15:45"},
-    {"titulo": "ESPAÑA: RADAR DETECTA SUBIDA EN STREAMING DE 'ALMA'.", "hora": "17:10"}
+    {"titulo": "MEXICO: El Regional Mexicano rompe la barrera de los 200M de streams.", "hora": "12:00"},
+    {"titulo": "PUERTO RICO: Radar detecta nueva ola de trap con patrones de IA.", "hora": "14:45"},
+    {"titulo": "ESPAÑA: El consumo de data latina sube un 30% en Madrid.", "hora": "16:20"},
+    {"titulo": "COLOMBIA: Medellín se consolida como el Hub #1 de exportación.", "hora": "18:00"},
+    {"titulo": "DOMINICANA: El Dembow entra en fase de expansión europea.", "hora": "19:30"},
+    {"titulo": "GLOBAL: API de YouTube detecta caída en la retención de Pop Tradicional.", "hora": "21:15"}
   ]
 }
