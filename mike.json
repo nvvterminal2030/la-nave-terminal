@@ -1,10 +1,28 @@
 {
   "noticias": [
-    {"titulo": "MEXICO: El Regional Mexicano rompe la barrera de los 200M de streams.", "hora": "12:00"},
-    {"titulo": "PUERTO RICO: Radar detecta nueva ola de trap con patrones de IA.", "hora": "14:45"},
-    {"titulo": "ESPAÑA: El consumo de data latina sube un 30% en Madrid.", "hora": "16:20"},
-    {"titulo": "COLOMBIA: Medellín se consolida como el Hub #1 de exportación.", "hora": "18:00"},
-    {"titulo": "DOMINICANA: El Dembow entra en fase de expansión europea.", "hora": "19:30"},
-    {"titulo": "GLOBAL: API de YouTube detecta caída en la retención de Pop Tradicional.", "hora": "21:15"}
+    {
+      "titulo": "MEXICO: El Regional se apodera del 45% de las listas globales.",
+      "hora": "12:00 PM"
+    },
+    {
+      "titulo": "KAROL G: El Mañana Será Bonito Tour redefine el ROI de estadios.",
+      "hora": "02:45 PM"
+    },
+    {
+      "titulo": "ESPAÑA: La IA de Mike detecta anomalías en el consumo de Madrid.",
+      "hora": "04:20 PM"
+    },
+    {
+      "titulo": "ARGENTINA: La nueva ola de productores entra en fase de exportación.",
+      "hora": "06:10 PM"
+    },
+    {
+      "titulo": "COLOMBIA: Medellín se consolida como el Hub creativo más rentable.",
+      "hora": "08:30 PM"
+    },
+    {
+      "titulo": "GLOBAL: API de YouTube detecta caída de retención en el Pop Tradicional.",
+      "hora": "10:15 PM"
+    }
   ]
 }
