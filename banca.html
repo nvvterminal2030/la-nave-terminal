@@ -69,9 +69,6 @@
         .sub-report-item:hover .sub-report-img { filter: grayscale(0); }
         .sub-report-h4 { font-family: var(--font-serif); font-size: 1.25rem; font-weight: 900; line-height: 1.1; margin-bottom: 8px; letter-spacing: -0.5px; }
 
-        /* =========================================
-           NUEVO BLOQUE 5: MATRIZ DE ARTISTAS
-           ========================================= */
         .section-header { font-size: 14px; font-weight: 900; text-transform: uppercase; border-top: 2px solid #000; padding-top: 15px; margin-bottom: 30px; }
         .banca-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
         
@@ -147,8 +144,7 @@
             
             <section id="banca-intel" style="margin-top: 60px;">
                 <h2 class="section-header">Banca de Inteligencia // Canales YouTube</h2>
-                <div class="banca-grid" id="mike-node">
-                    </div>
+                <div class="banca-grid" id="mike-node"></div>
                 
                 <div class="archive-trigger-wrap">
                     <a href="#" class="archive-btn">OPEN_ARCHIVE_DATA // <span id="archive-date">MAR_2026</span></a>
@@ -228,13 +224,10 @@
         document.getElementById('hero-node').innerHTML = htmlContent;
     }
 
-    // NUEVA FUNCIÓN BANCA: MATRIZ DE 6 PAÍSES
     async function syncBanca() {
         try {
             const data = await (await fetch('artistasytv.json')).json();
-            // Estructura esperada: { "nodos": [ { "pais": "RD", "artistas": [...] }, ... ] }
             const container = document.getElementById('mike-node');
-            
             const html = data.nodos.map(n => `
                 <div class="pais-node">
                     <div class="pais-title">// NODO_${n.pais} // CANALES</div>
@@ -250,7 +243,6 @@
                     </div>
                 </div>
             `).join('');
-            
             container.innerHTML = html;
         } catch (e) { console.error("Error cargando artistasytv.json", e); }
     }
