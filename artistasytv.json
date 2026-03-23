@@ -1,34 +1,64 @@
 {
-  "noticias": [
+  "nodos": [
     {
-      "categoria": "ENERGY",
-      "titulo": "Consumo de data en nodos rurales aumenta un 20%.",
-      "hora": "12:00 PM"
+      "pais": "RD",
+      "artistas": [
+        { "nombre": "EL ALFA", "foto_circular": "https://via.placeholder.com/150", "subida": 25, "id": "RD-01-MAR" },
+        { "nombre": "ANGEL DIOR", "foto_circular": "https://via.placeholder.com/150", "subida": 18, "id": "RD-02-MAR" },
+        { "nombre": "ROCHY RD", "foto_circular": "https://via.placeholder.com/150", "subida": 12, "id": "RD-03-MAR" },
+        { "nombre": "CHIMBALA", "foto_circular": "https://via.placeholder.com/150", "subida": 9, "id": "RD-04-MAR" },
+        { "nombre": "TOKISCHA", "foto_circular": "https://via.placeholder.com/150", "subida": 33, "id": "RD-05-MAR" }
+      ]
     },
     {
-      "categoria": "ENERGY",
-      "titulo": "Bunker Shield: Optimización de servidores en Miami.",
-      "hora": "01:30 PM"
+      "pais": "PR",
+      "artistas": [
+        { "nombre": "BAD BUNNY", "foto_circular": "https://via.placeholder.com/150", "subida": 40, "id": "PR-01-MAR" },
+        { "nombre": "RAUW ALEJANDRO", "foto_circular": "https://via.placeholder.com/150", "subida": 22, "id": "PR-02-MAR" },
+        { "nombre": "MYKE TOWERS", "foto_circular": "https://via.placeholder.com/150", "subida": 15, "id": "PR-03-MAR" },
+        { "nombre": "ANUEL AA", "foto_circular": "https://via.placeholder.com/150", "subida": 11, "id": "PR-04-MAR" },
+        { "nombre": "MORA", "foto_circular": "https://via.placeholder.com/150", "subida": 28, "id": "PR-05-MAR" }
+      ]
     },
     {
-      "categoria": "AI",
-      "titulo": "Mike detecta patrones de éxito en el Trap Global.",
-      "hora": "02:15 PM"
+      "pais": "COL",
+      "artistas": [
+        { "nombre": "FEID", "foto_circular": "https://via.placeholder.com/150", "subida": 55, "id": "COL-01-MAR" },
+        { "nombre": "KAROL G", "foto_circular": "https://via.placeholder.com/150", "subida": 30, "id": "COL-02-MAR" },
+        { "nombre": "BLESSD", "foto_circular": "https://via.placeholder.com/150", "subida": 19, "id": "COL-03-MAR" },
+        { "nombre": "RYAN CASTRO", "foto_circular": "https://via.placeholder.com/150", "subida": 14, "id": "COL-04-MAR" },
+        { "nombre": "MALUMA", "foto_circular": "https://via.placeholder.com/150", "subida": 5, "id": "COL-05-MAR" }
+      ]
     },
     {
-      "categoria": "AI",
-      "titulo": "Nuevos modelos predictivos para lanzamientos de Q3.",
-      "hora": "03:00 PM"
+      "pais": "MEX",
+      "artistas": [
+        { "nombre": "PESO PLUMA", "foto_circular": "https://via.placeholder.com/150", "subida": 60, "id": "MEX-01-MAR" },
+        { "nombre": "NATANAEL CANO", "foto_circular": "https://via.placeholder.com/150", "subida": 25, "id": "MEX-02-MAR" },
+        { "nombre": "JUNIOR H", "foto_circular": "https://via.placeholder.com/150", "subida": 20, "id": "MEX-03-MAR" },
+        { "nombre": "FUERZA REGIDA", "foto_circular": "https://via.placeholder.com/150", "subida": 18, "id": "MEX-04-MAR" },
+        { "nombre": "CARIN LEON", "foto_circular": "https://via.placeholder.com/150", "subida": 12, "id": "MEX-05-MAR" }
+      ]
     },
     {
-      "categoria": "TRADE",
-      "titulo": "Sony y Warner ajustan márgenes de regalías para 2026.",
-      "hora": "03:45 PM"
+      "pais": "CHL",
+      "artistas": [
+        { "nombre": "CRIS MJ", "foto_circular": "https://via.placeholder.com/150", "subida": 45, "id": "CHL-01-MAR" },
+        { "nombre": "PABLITO PESADILLA", "foto_circular": "https://via.placeholder.com/150", "subida": 15, "id": "CHL-02-MAR" },
+        { "nombre": "POLIMA WESTCOAST", "foto_circular": "https://via.placeholder.com/150", "subida": 10, "id": "CHL-03-MAR" },
+        { "nombre": "JORDAN 23", "foto_circular": "https://via.placeholder.com/150", "subida": 30, "id": "CHL-04-MAR" },
+        { "nombre": "FLOYYMENOR", "foto_circular": "https://via.placeholder.com/150", "subida": 50, "id": "CHL-05-MAR" }
+      ]
     },
     {
-      "categoria": "TRADE",
-      "titulo": "Inversión en startups de música sube en Latinoamérica.",
-      "hora": "04:30 PM"
+      "pais": "USA_ES",
+      "artistas": [
+        { "nombre": "QUEVEDO", "foto_circular": "https://via.placeholder.com/150", "subida": 20, "id": "UE-01-MAR" },
+        { "nombre": "SAIKO", "foto_circular": "https://via.placeholder.com/150", "subida": 35, "id": "UE-02-MAR" },
+        { "nombre": "ROSALIA", "foto_circular": "https://via.placeholder.com/150", "subida": 12, "id": "UE-03-MAR" },
+        { "nombre": "BAD GYAL", "foto_circular": "https://via.placeholder.com/150", "subida": 18, "id": "UE-04-MAR" },
+        { "nombre": "RELS B", "foto_circular": "https://via.placeholder.com/150", "subida": 14, "id": "UE-05-MAR" }
+      ]
     }
   ]
 }
