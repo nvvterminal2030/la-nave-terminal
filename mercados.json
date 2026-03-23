@@ -1,6 +1,9 @@
 {
   "ticker": [
-    {"asset": "BITCOIN (BTC)", "price": "72,432.80", "change": "+2.45%", "status": "UP"},
-    {"asset": "NVVEX_INDEX", "price": "1,450.00", "change": "+14.20%", "status": "UP"}
+    {"asset": "BITCOIN (BTC)", "price": "$72,142.50", "change": "+3.12%"},
+    {"asset": "NVVEX_INDEX", "price": "1,450.22", "change": "+12.40%"},
+    {"asset": "ETHEREUM (ETH)", "price": "$3,890.12", "change": "-1.15%"},
+    {"asset": "SOLANA (SOL)", "price": "$185.40", "change": "+5.60%"},
+    {"asset": "STREAM_COIN", "price": "$0.45", "change": "+22.8%"}
   ]
 }
