@@ -201,7 +201,7 @@
         let htmlContent = `
             <article class="hero-article">
                 <img src="${imgPrincipal}" class="hero-img">
-                <span class="label-intel">${h.node} // GLOBAL_AUTHORITY</span>
+                <span class="label-intel">[ DATE: ${h.fecha} ] // ${h.node}</span>
                 <h1 class="hero-title">${h.artista}</h1>
                 <p class="hero-lead">${h.analisis}</p>
             </article>
@@ -214,7 +214,7 @@
                 return `
                     <div class="sub-report-item">
                         <div class="sub-report-img-wrap"><img src="${imgSub}" class="sub-report-img"></div>
-                        <span class="label-intel" style="font-size:8px;">${s.node}</span>
+                        <span class="label-intel" style="font-size:8px;">${s.fecha} // ${s.node}</span>
                         <h4 class="sub-report-h4">${s.artista}</h4>
                         <div style="font-size:9px; font-weight:700; color:#999; font-family:'Share Tech Mono'">RANK: ${s.rank}</div>
                     </div>`;
