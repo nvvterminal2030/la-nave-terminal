@@ -1,13 +1,37 @@
 <?php
-// CONFIGURACIÓN DE ORIGEN CORE - MARZO 2026
+// 1. CONFIGURACIÓN DE ORIGEN CORE - MARZO 2026
 $mes_sufijo = "-" . strtoupper(date('M')); 
 $fecha_iso = date('Y-m-d');
-
-// Mike leerá esto de industria.json o tech.json según la categoría
-$titular_intel = "REPORTE DE INTELIGENCIA ESTRATÉGICA"; // Placeholder
-$desc_intel = "Análisis de flujo de datos y tendencias globales del nodo NVVEX.";
 $url_bunker = "https://nvvexstudios.com/bunker/";
+
+// 2. VINCULACIÓN QUIRÚRGICA DE ARCHIVOS JSON
+$industria_raw = @file_get_contents('industria.json');
+$industria_data = json_decode($industria_raw, true);
+
+$tech_raw = @file_get_contents('tech.json');
+$tech_data = json_decode($tech_raw, true);
+
+// 3. SELECCIÓN DINÁMICA DE DATA (Sustituye los Placeholders)
+if ($industria_data && isset($industria_data['reportes'][0])) {
+    $main_news = $industria_data['reportes'][0];
+    $titular_intel = strtoupper($main_news['artista']); 
+    $desc_intel = $main_news['analisis'];
+} else {
+    $titular_intel = "BÜNKER_STATION // SYNC_ACTIVE";
+    $desc_intel = "Esperando flujo de datos del radar de inteligencia NVVEX.";
+}
+
 $img_bunker = "https://nvvexstudios.com/img/bunker-thumb-MAR.jpg";
+
+// 4. FUNCIÓN PARA LINKS BLOOMBERG
+function createSlug($text) {
+    $text = preg_replace('~[^\pL\d]+~u', '-', $text);
+    $text = iconv('utf-8', 'us-ascii//TRANSLIT', $text);
+    $text = preg_replace('~[^-\w]+~', '', $text);
+    $text = trim($text, '-');
+    $text = strtolower($text);
+    return $text ?: 'n-a';
+}
 ?>
 
 <title><?php echo $titular_intel; ?> // NVVEX</title>
@@ -40,39 +64,6 @@ $img_bunker = "https://nvvexstudios.com/img/bunker-thumb-MAR.jpg";
   ]
 }
 </script>
-
-<?php
-// VINCULACIÓN QUIRÚRGICA DE ARCHIVOS JSON
-// 1. Cargamos Industria (Noticias de Impacto)
-$industria_raw = @file_get_contents('industria.json');
-$industria_data = json_decode($industria_raw, true);
-
-// 2. Cargamos Tech (Infraestructura / Noticias Técnicas)
-$tech_raw = @file_get_contents('tech.json');
-$tech_data = json_decode($tech_raw, true);
-
-// 3. Selección de la Noticia Principal para los Metatags del Paso 1
-// Si Mike ya inyectó data, la tomamos. Si no, queda en STANDBY.
-if ($industria_data && isset($industria_data['reportes'][0])) {
-    $main_news = $industria_data['reportes'][0];
-    $titular_intel = strtoupper($main_news['artista']); // El titular
-    $desc_intel = $main_news['analisis'];
-} else {
-    $titular_intel = "BÜNKER_STATION // SYNC_ACTIVE";
-    $desc_intel = "Esperando flujo de datos del radar de inteligencia NVVEX.";
-}
-
-// 4. Función para generar los Links tipo Bloomberg
-// Esto convierte "Gran Noticia de Tech" en "gran-noticia-de-tech"
-function createSlug($text) {
-    $text = preg_replace('~[^\pL\d]+~u', '-', $text);
-    $text = iconv('utf-8', 'us-ascii//TRANSLIT', $text);
-    $text = preg_replace('~[^-\w]+~', '', $text);
-    $text = trim($text, '-');
-    $text = strtolower($text);
-    return $text ?: 'n-a';
-}
-?>
 
 <!DOCTYPE html>
 <html lang="es">
@@ -218,7 +209,20 @@ function createSlug($text) {
     <div class="grid-main">
         
         <main>
-            <section id="hero-node"></section>
+            <section id="hero-node">
+                <?php if ($industria_data && isset($main_news)): ?>
+                    <?php 
+                        $slug_ind = createSlug($main_news['artista']); 
+                        $url_final_ind = "/bunker/" . $slug_ind . $mes_sufijo;
+                    ?>
+                    <article class="hero-article" onclick="location.href='<?php echo $url_final_ind; ?>'">
+                        <img id="main-img" class="hero-img" src="">
+                        <span class="label-intel">[ INDUSTRY_REPORT // <?php echo $main_news['fecha']; ?> ] // <?php echo $main_news['node']; ?></span>
+                        <h1 class="hero-title"><?php echo $main_news['artista']; ?></h1>
+                        <p class="hero-lead"><?php echo $main_news['analisis']; ?></p>
+                    </article>
+                <?php endif; ?>
+            </section>
             
             <section id="banca-intel" style="margin-top: 60px;">
                 <h2 class="section-header">Banca de Inteligencia // Canales YouTube</h2>
@@ -233,7 +237,26 @@ function createSlug($text) {
         <aside>
             <div class="side-box">
                 <h2 class="section-header" style="border:none; padding:0; font-size:12px;">System Infrastructure</h2>
-                <div id="tech-node"></div>
+                <div id="tech-node">
+                    <?php if ($tech_data): ?>
+                        <?php foreach($tech_data['tecnologia'] as $t): 
+                            $slug_tech = createSlug($t['titular']);
+                            $url_final_tech = "/bunker/tecnologia/" . $slug_tech . $mes_sufijo;
+                        ?>
+                        <div class="tech-unit" onclick="location.href='<?php echo $url_final_tech; ?>'">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                                <div class="tech-label"><?php echo $t['id']; ?></div>
+                                <div style="font-size: 8px; font-weight: 900; background: var(--black); color: #fff; padding: 2px 6px; border-radius: 2px;"><?php echo $t['status']; ?></div>
+                            </div>
+                            <div class="tech-data"><?php echo $t['titular']; ?></div>
+                            <p style="font-size: 11px; color: #666; line-height: 1.3; margin-bottom: 5px;"><?php echo $t['desc']; ?></p>
+                            <div style="font-family: 'Share Tech Mono'; font-size: 10px; font-weight: 700;">
+                                IMPACTO: <span style="color: var(--purple);"><?php echo $t['impacto']; ?></span>
+                            </div>
+                        </div>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </div>
             </div>
             
             <div class="side-box" style="background:#fcfcfc; padding:20px; border:1px solid #eee;">
@@ -250,74 +273,46 @@ function createSlug($text) {
 </footer>
 
 <script>
+    // LLAVE DE ACCESO
     const YT_KEY = 'AIzaSyDdCEv8KTwupFbJQnSQy8Wzw9egXdpJ6HM';
 
-    function createSlug(text) {
-        return text.toString().toLowerCase().trim()
-            .replace(/\s+/g, '-')
-            .replace(/[^\w\-]+/g, '')
-            .replace(/\-\-+/g, '-');
-    }
+    // 1. Mike busca la imagen HD basándose en el titular que ya inyectó el PHP
+    async function syncHeroVisuals() {
+        const titleElement = document.querySelector('.hero-title');
+        if (!titleElement) return;
 
-    async function getHDImg(q) {
+        const query = titleElement.innerText;
         try {
-            const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=${encodeURIComponent(q)}&type=video&videoCategoryId=10&key=${YT_KEY}`);
+            const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=${encodeURIComponent(query)}&type=video&videoCategoryId=10&key=${YT_KEY}`);
             const data = await res.json();
+            
             if (data.items && data.items[0]) {
                 const videoId = data.items[0].id.videoId;
-                return `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`;
+                document.getElementById('main-img').src = `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`;
             }
-            return 'https://via.placeholder.com/1280x720';
-        } catch (e) { return 'https://via.placeholder.com/1280x720'; }
+        } catch (e) {
+            document.getElementById('main-img').src = "https://nvvexstudios.com/img/bunker-thumb-MAR.jpg";
+        }
     }
 
+    // 2. Sincronización de Mercados (La cinta negra superior)
     async function syncMarkets() {
         try {
             const d = await (await fetch('mercados.json')).json();
             document.getElementById('ticker-js').innerHTML = d.ticker.map(m => `
                 <span style="margin-right:80px;">${m.asset}: ${m.price} <span style="color:#00ff88">(${m.change})</span></span>
             `).join('').repeat(2);
-        } catch(e) {}
-    }
-
-    async function syncHero() {
-        const d = await (await fetch('industria.json')).json();
-        const h = d.reportes[0];
-        const imgPrincipal = await getHDImg(h.artista);
-        const mainSlug = createSlug(h.artista);
-        
-        let htmlContent = `
-            <article class="hero-article" onclick="location.href='/bunker/${mainSlug}'">
-                <img src="${imgPrincipal}" class="hero-img">
-                <span class="label-intel">[ DATE: ${h.fecha} ] // ${h.node}</span>
-                <h1 class="hero-title">${h.artista}</h1>
-                <p class="hero-lead">${h.analisis}</p>
-            </article>
-        `;
-
-        if (d.reportes.length > 1) {
-            htmlContent += `<div class="reports-archive-grid">`;
-            const subReportesHtml = await Promise.all(d.reportes.slice(1).map(async (s) => {
-                const imgSub = await getHDImg(s.artista);
-                const subSlug = createSlug(s.artista);
-                return `
-                    <div class="sub-report-item" onclick="location.href='/bunker/${subSlug}'">
-                        <div class="sub-report-img-wrap"><img src="${imgSub}" class="sub-report-img"></div>
-                        <span class="label-intel" style="font-size:8px;">${s.fecha} // ${s.node}</span>
-                        <h4 class="sub-report-h4">${s.artista}</h4>
-                        <div style="font-size:9px; font-weight:700; color:#999; font-family:'Share Tech Mono'">RANK: ${s.rank}</div>
-                    </div>`;
-            }));
-            htmlContent += subReportesHtml.join('') + `</div>`;
+        } catch(e) { 
+            document.getElementById('ticker-js').innerText = "SYNC_OFFLINE // MERCADOS EN ESPERA"; 
         }
-        document.getElementById('hero-node').innerHTML = htmlContent;
     }
 
+    // 3. Carga de los bloques de Mike (Banca de Inteligencia)
     async function syncBanca() {
         try {
             const data = await (await fetch('artistasytv.json')).json();
             const container = document.getElementById('mike-node');
-            const html = data.nodos.map(n => `
+            container.innerHTML = data.nodos.map(n => `
                 <div class="pais-node">
                     <div class="pais-title">// NODO_${n.pais} // CANALES</div>
                     <div class="artista-scroll">
@@ -332,42 +327,26 @@ function createSlug($text) {
                     </div>
                 </div>
             `).join('');
-            container.innerHTML = html;
-        } catch (e) { console.error("Error cargando artistasytv.json", e); }
+        } catch (e) { console.error("Error en Banca"); }
     }
 
-    async function syncTech() {
-        const d = await (await fetch('tech.json')).json();
-        document.getElementById('tech-node').innerHTML = d.tecnologia.map(t => {
-            const techSlug = createSlug(t.titular);
-            return `
-            <div class="tech-unit" onclick="location.href='/bunker/tecnologia/${techSlug}'">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                    <div class="tech-label">${t.id}</div>
-                    <div style="font-size: 8px; font-weight: 900; background: var(--black); color: #fff; padding: 2px 6px; border-radius: 2px;">${t.status}</div>
-                </div>
-                <div class="tech-data">${t.titular}</div>
-                <p style="font-size: 11px; color: #666; line-height: 1.3; margin-bottom: 5px;">${t.desc}</p>
-                <div style="font-family: 'Share Tech Mono'; font-size: 10px; font-weight: 700;">
-                    IMPACTO: <span style="color: var(--purple);">${t.impacto}</span>
-                </div>
-            </div>`;
-        }).join('');
-    }
-
-    async function initStation() {
-        syncMarkets(); 
-        syncHero();    
-        syncBanca();   
-        syncTech();
-
+    // Inicialización Total
+    window.onload = () => {
+        syncHeroVisuals(); // Foto de YT
+        syncMarkets();     // Cinta negra
+        syncBanca();       // Nodos de canales
+        
+        // Fecha del archivo
         const now = new Date();
         const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
-        document.getElementById('archive-date').innerText = `${months[now.getMonth()]}_${now.getFullYear()}`;
-    }
-
-    setInterval(() => { document.getElementById('live-clock').innerText = new Date().toLocaleTimeString(); }, 1000);
-    window.onload = initStation;
+        const archDate = document.getElementById('archive-date');
+        if(archDate) archDate.innerText = `${months[now.getMonth()]}_${now.getFullYear()}`;
+        
+        // Reloj
+        setInterval(() => { 
+            document.getElementById('live-clock').innerText = new Date().toLocaleTimeString(); 
+        }, 1000);
+    };
 </script>
 </body>
 </html>
