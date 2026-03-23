@@ -24,7 +24,7 @@
         body { background: var(--white); color: var(--black); font-family: var(--font-main); -webkit-font-smoothing: antialiased; }
 
         /* =========================================
-           BLOQUE 2: HEADER & NAVEGACIÓN
+           BLOQUE 2: HEADER & NAVEGACIÓN (HQ LINKS)
            ========================================= */
         .market-ticker {
             background: var(--black); color: var(--white); height: 30px;
@@ -69,8 +69,12 @@
         .hero-lead { font-size: 1.15rem; color: var(--text-gray); line-height: 1.5; max-width: 750px; }
 
         .reports-archive-grid {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px;
-            margin-top: 40px; padding-top: 40px; border-top: 2px solid var(--black);
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-top: 40px;
+            padding-top: 40px;
+            border-top: 2px solid var(--black);
         }
         .sub-report-img-wrap { width: 100%; height: 160px; overflow: hidden; margin-bottom: 15px; background: #000; }
         .sub-report-img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(0.6); transition: 0.3s; }
@@ -78,32 +82,40 @@
         .sub-report-h4 { font-family: var(--font-serif); font-size: 1.25rem; font-weight: 900; line-height: 1.1; margin-bottom: 8px; letter-spacing: -0.5px; }
 
         /* =========================================
-           BLOQUE 5: BANCA (ESTILO BLOOMBERG "YOUR NEWS")
+           BLOQUE 5: BANCA (MIKE NEWS) - LIMITADA
            ========================================= */
-        .banca-section { border-top: 2px solid var(--black); padding-top: 20px; margin-top: 60px; }
-        .banca-layout { display: grid; grid-template-columns: 240px 1fr; gap: 40px; margin-top: 20px; }
-        
-        .filter-sidebar { background: #111; color: #fff; padding: 25px; border-radius: 4px; height: fit-content; }
-        .filter-group { margin-bottom: 25px; }
-        .filter-label { font-size: 10px; font-weight: 900; color: #777; text-transform: uppercase; margin-bottom: 15px; display: block; letter-spacing: 1px; }
-        .tag-wrap { display: flex; flex-wrap: wrap; gap: 6px; }
-        .tag { background: #222; border: 1px solid #333; padding: 4px 10px; font-size: 9px; font-weight: 700; cursor: pointer; border-radius: 3px; }
-        .tag:hover { border-color: var(--purple); color: var(--purple); }
+        .section-header { font-size: 14px; font-weight: 900; text-transform: uppercase; border-top: 2px solid #000; padding-top: 15px; margin-bottom: 30px; }
+        .banca-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+        .news-card { border-bottom: 1px solid var(--border); padding-bottom: 20px; }
+        .news-img { width: 100%; height: 210px; object-fit: cover; margin-bottom: 15px; background: #000; }
+        .news-h3 { font-size: 1.4rem; font-weight: 900; line-height: 1.15; margin-bottom: 10px; letter-spacing: -0.5px; }
+        .news-time { font-family: 'Share Tech Mono'; font-size: 10px; color: #999; margin-bottom: 8px; display: block; }
 
-        .news-columns { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
-        .column-unit { border-left: 1px solid #eee; padding-left: 20px; }
-        .column-unit:first-child { border-left: none; padding-left: 0; }
-        .cat-title { font-weight: 900; font-size: 15px; margin-bottom: 20px; border-bottom: 2px solid #000; display: inline-block; padding-bottom: 3px; }
-
-        .compact-item { display: flex; gap: 15px; margin-bottom: 20px; align-items: flex-start; padding-bottom: 15px; border-bottom: 1px solid #f9f9f9; }
-        .compact-txt { flex: 1; font-size: 13px; font-weight: 700; line-height: 1.25; letter-spacing: -0.3px; }
-        .compact-meta { font-family: 'Share Tech Mono'; font-size: 9px; color: #aaa; margin-top: 5px; text-transform: uppercase; }
-        .compact-thumb { width: 55px; height: 55px; object-fit: cover; background: #000; border-radius: 2px; }
+        /* BOTÓN VER PREVIOS / ARCHIVO */
+        .archive-trigger-wrap {
+            grid-column: 1 / -1;
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+        .archive-btn {
+            font-family: 'Share Tech Mono';
+            font-size: 11px;
+            font-weight: 900;
+            color: var(--black);
+            text-decoration: none;
+            padding: 10px 25px;
+            border: 1px solid var(--black);
+            display: inline-block;
+            transition: 0.3s;
+        }
+        .archive-btn:hover { background: var(--black); color: var(--white); }
 
         /* =========================================
-           BLOQUE 6: SIDEBAR & TECH
+           BLOQUE 6: SIDEBAR & CTA
            ========================================= */
-        .side-box { margin-bottom: 40px; }
+        .side-box { margin-bottom: 40px; border-top: 2px solid var(--black); padding-top: 15px; }
         .tech-unit { margin-bottom: 25px; border-bottom: 1px solid #f9f9f9; padding-bottom: 15px; }
         .tech-label { font-family: 'Share Tech Mono'; font-size: 9px; color: var(--purple); font-weight: 900; text-transform: uppercase; }
         .tech-data { font-size: 14px; font-weight: 900; letter-spacing: -0.5px; margin-bottom: 4px; }
@@ -122,11 +134,13 @@
         <a href="#" class="brand">NVVEX</a>
         <span class="edition-tag">Weekend Intel</span>
     </div>
+    
     <nav class="header-nav">
         <a href="#hero-node" class="nav-link">WEEKLY_REPORT</a>
         <a href="#mike-node" class="nav-link">THE_RADAR</a>
         <a href="https://nvvexstudios.com" target="_blank" class="nav-link hq-btn">VISIT_STUDIOS // HQ</a>
     </nav>
+
     <div style="text-align: right; min-width: 100px;">
         <div id="live-clock" style="font-weight: 900; font-size: 12px;">00:00:00</div>
         <div style="font-size: 8px; font-weight: 700; color: green; letter-spacing: 1px;">SYNC_STATION_ON</div>
@@ -135,47 +149,28 @@
 
 <div class="container">
     <div class="grid-main">
+        
         <main>
             <section id="hero-node"></section>
             
-            <section class="banca-section">
-                <div style="display: flex; align-items: baseline; gap: 15px;">
-                    <h2 style="font-size: 24px; font-weight: 900; letter-spacing: -1px;">Your News</h2>
-                    <span style="font-size: 11px; font-weight: 700; color: #999; text-transform: uppercase;">Radar Intelligence Feed</span>
-                </div>
-
-                <div class="banca-layout">
-                    <aside class="filter-sidebar">
-                        <div class="filter-group">
-                            <span class="filter-label">Follow Topics</span>
-                            <div class="tag-wrap">
-                                <div class="tag">Trade</div><div class="tag">AI</div>
-                                <div class="tag">Crypto</div><div class="tag">Analysis</div>
-                                <div class="tag">Market</div>
-                            </div>
-                        </div>
-                        <div class="filter-group">
-                            <span class="filter-label">Regions</span>
-                            <div class="tag-wrap">
-                                <div class="tag">Latin America</div><div class="tag">Europe</div>
-                                <div class="tag">USA</div>
-                            </div>
-                        </div>
-                    </aside>
-
-                    <div class="news-columns" id="mike-node"></div>
+            <section id="banca-intel" style="margin-top: 60px;">
+                <h2 class="section-header">Banca de Inteligencia</h2>
+                <div class="banca-grid" id="mike-node"></div>
+                
+                <div class="archive-trigger-wrap">
+                    <a href="#" class="archive-btn">OPEN_ARCHIVE_DATA // <span id="archive-date">MAR_2026</span></a>
                 </div>
             </section>
         </main>
 
         <aside>
             <div class="side-box">
-                <h2 style="font-size:12px; font-weight:900; text-transform:uppercase; border-top:2px solid #000; padding-top:15px; margin-bottom:20px;">System Infrastructure</h2>
+                <h2 class="section-header" style="border:none; padding:0; font-size:12px;">System Infrastructure</h2>
                 <div id="tech-node"></div>
             </div>
             
             <div class="side-box" style="background:#fcfcfc; padding:20px; border:1px solid #eee;">
-                <h2 style="font-size:12px; font-weight:900; text-transform:uppercase; margin-bottom:10px;">Curaduría AI</h2>
+                <h2 class="section-header" style="border:none; padding:0; font-size:12px; margin-bottom:10px;">Curaduría AI</h2>
                 <p style="font-size: 11px; color:#777; line-height:1.4;">Mike procesa 4,000 puntos de data por hora. Los charts reflejan momentum real global.</p>
                 <a href="https://nvvexstudios.com" class="cta-btn" style="color:#000">CONECTAR A LA SEDE</a>
             </div>
@@ -183,7 +178,9 @@
     </div>
 </div>
 
-<footer>NVVEX ORIGIN CORE // STATION 2030 // THE WEEKEND PROTOCOL</footer>
+<footer>
+    NVVEX ORIGIN CORE // STATION 2030 // THE WEEKEND PROTOCOL
+</footer>
 
 <script>
     const YT_KEY = 'AIzaSyDdCEv8KTwupFbJQnSQy8Wzw9egXdpJ6HM';
@@ -192,7 +189,11 @@
         try {
             const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=${encodeURIComponent(q)}&type=video&videoCategoryId=10&key=${YT_KEY}`);
             const data = await res.json();
-            return data.items[0] ? `https://i.ytimg.com/vi/${data.items[0].id.videoId}/maxresdefault.jpg` : 'https://via.placeholder.com/1280x720';
+            if (data.items && data.items[0]) {
+                const videoId = data.items[0].id.videoId;
+                return `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`;
+            }
+            return 'https://via.placeholder.com/1280x720';
         } catch (e) { return 'https://via.placeholder.com/1280x720'; }
     }
 
@@ -206,55 +207,51 @@
     async function syncHero() {
         const d = await (await fetch('industria.json')).json();
         const h = d.reportes[0];
-        const img = await getHDImg(h.artista);
+        const imgPrincipal = await getHDImg(h.artista);
         
-        let html = `
+        let htmlContent = `
             <article class="hero-article">
-                <img src="${img}" class="hero-img">
+                <img src="${imgPrincipal}" class="hero-img">
                 <span class="label-intel">${h.node} // GLOBAL_AUTHORITY</span>
                 <h1 class="hero-title">${h.artista}</h1>
                 <p class="hero-lead">${h.analisis}</p>
-            </article>`;
+            </article>
+        `;
 
         if (d.reportes.length > 1) {
-            html += `<div class="reports-archive-grid">`;
-            const subs = await Promise.all(d.reportes.slice(1,4).map(async (s) => {
-                const sImg = await getHDImg(s.artista);
-                return `<div class="sub-report-item">
-                    <div class="sub-report-img-wrap"><img src="${sImg}" class="sub-report-img"></div>
-                    <span class="label-intel" style="font-size:8px;">${s.node}</span>
-                    <h4 class="sub-report-h4">${s.artista}</h4>
-                    <div style="font-size:9px; font-weight:700; color:#999; font-family:'Share Tech Mono'">RANK: ${s.rank}</div>
-                </div>`;
-            }));
-            html += subs.join('') + `</div>`;
-        }
-        document.getElementById('hero-node').innerHTML = html;
-    }
-
-    async function syncBanca() {
-        const d = await (await fetch('mike.json')).json();
-        const node = document.getElementById('mike-node');
-        const groups = d.noticias.reduce((acc, n) => {
-            (acc[n.categoria] || (acc[n.categoria] = [])).push(n);
-            return acc;
-        }, {});
-
-        let html = '';
-        for (const cat in groups) {
-            const items = await Promise.all(groups[cat].slice(0, 4).map(async n => {
-                const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=${encodeURIComponent(n.titulo)}&type=video&videoCategoryId=10&key=${YT_KEY}`);
-                const yt = await res.json();
-                const thumb = yt.items[0]?.snippet.thumbnails.default.url || 'https://via.placeholder.com/55';
+            htmlContent += `<div class="reports-archive-grid">`;
+            const subReportesHtml = await Promise.all(d.reportes.slice(1).map(async (s) => {
+                const imgSub = await getHDImg(s.artista);
                 return `
-                    <div class="compact-item">
-                        <div class="compact-txt">${n.titulo}<div class="compact-meta">${n.hora} // RADAR</div></div>
-                        <img src="${thumb}" class="compact-thumb">
+                    <div class="sub-report-item">
+                        <div class="sub-report-img-wrap"><img src="${imgSub}" class="sub-report-img"></div>
+                        <span class="label-intel" style="font-size:8px;">${s.node}</span>
+                        <h4 class="sub-report-h4">${s.artista}</h4>
+                        <div style="font-size:9px; font-weight:700; color:#999; font-family:'Share Tech Mono'">RANK: ${s.rank}</div>
                     </div>`;
             }));
-            html += `<div class="column-unit"><span class="cat-title">${cat}</span><div>${items.join('')}</div></div>`;
+            htmlContent += subReportesHtml.join('') + `</div>`;
         }
-        node.innerHTML = html;
+        document.getElementById('hero-node').innerHTML = htmlContent;
+    }
+
+    // SINCRONIZACIÓN BANCA (LIMITADA A 6 PARA MANTENER LA LIMPIEZA)
+    async function syncBanca() {
+        const d = await (await fetch('mike.json')).json();
+        // Solo tomamos las primeras 6 noticias
+        const dLimit = d.noticias.slice(0, 6);
+        
+        const cards = await Promise.all(dLimit.map(async n => {
+            const img = await getHDImg(n.titulo);
+            return `
+            <div class="news-card">
+                <img src="${img}" class="news-img" style="object-fit:cover;">
+                <span class="news-time">INTEL_NODE // ${n.hora}</span>
+                <h3 class="news-h3">${n.titulo}</h3>
+                <div style="font-size:9px; font-weight:900; color:var(--purple); font-family:'Share Tech Mono'">SOURCE: NVVEX_RADAR_GLOBAL</div>
+            </div>`;
+        }));
+        document.getElementById('mike-node').innerHTML = cards.join('');
     }
 
     async function syncTech() {
@@ -263,20 +260,29 @@
             <div class="tech-unit">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
                     <div class="tech-label">${t.id}</div>
-                    <div style="font-size: 8px; font-weight: 900; background: #000; color: #fff; padding: 2px 6px; border-radius: 2px;">${t.status}</div>
+                    <div style="font-size: 8px; font-weight: 900; background: var(--black); color: #fff; padding: 2px 6px; border-radius: 2px;">${t.status}</div>
                 </div>
                 <div class="tech-data">${t.titular}</div>
                 <p style="font-size: 11px; color: #666; line-height: 1.3; margin-bottom: 5px;">${t.desc}</p>
-                <div style="font-family: 'Share Tech Mono'; font-size: 10px; font-weight: 700;">IMPACTO: <span style="color: var(--purple);">${t.impacto}</span></div>
+                <div style="font-family: 'Share Tech Mono'; font-size: 10px; font-weight: 700;">
+                    IMPACTO: <span style="color: var(--purple);">${t.impacto}</span>
+                </div>
             </div>`).join('');
     }
 
-    async function init() {
-        await syncMarkets(); await syncHero(); await syncBanca(); await syncTech();
+    async function initStation() {
+        await syncMarkets();
+        await syncHero();
+        await syncBanca();
+        await syncTech();
+        // Fecha para el botón de archivo
+        const now = new Date();
+        const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+        document.getElementById('archive-date').innerText = `${months[now.getMonth()]}_${now.getFullYear()}`;
     }
 
     setInterval(() => { document.getElementById('live-clock').innerText = new Date().toLocaleTimeString(); }, 1000);
-    window.onload = init;
+    window.onload = initStation;
 </script>
 </body>
 </html>
