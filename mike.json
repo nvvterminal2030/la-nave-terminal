@@ -1,28 +1,34 @@
 {
   "noticias": [
     {
-      "titulo": "MEXICO: El Regional se apodera del 45% de las listas globales.",
+      "categoria": "ENERGY",
+      "titulo": "Consumo de data en nodos rurales aumenta un 20%.",
       "hora": "12:00 PM"
     },
     {
-      "titulo": "KAROL G: El Mañana Será Bonito Tour redefine el ROI de estadios.",
-      "hora": "02:45 PM"
+      "categoria": "ENERGY",
+      "titulo": "Bunker Shield: Optimización de servidores en Miami.",
+      "hora": "01:30 PM"
     },
     {
-      "titulo": "ESPAÑA: La IA de Mike detecta anomalías en el consumo de Madrid.",
-      "hora": "04:20 PM"
+      "categoria": "AI",
+      "titulo": "Mike detecta patrones de éxito en el Trap Global.",
+      "hora": "02:15 PM"
     },
     {
-      "titulo": "ARGENTINA: La nueva ola de productores entra en fase de exportación.",
-      "hora": "06:10 PM"
+      "categoria": "AI",
+      "titulo": "Nuevos modelos predictivos para lanzamientos de Q3.",
+      "hora": "03:00 PM"
     },
     {
-      "titulo": "COLOMBIA: Medellín se consolida como el Hub creativo más rentable.",
-      "hora": "08:30 PM"
+      "categoria": "TRADE",
+      "titulo": "Sony y Warner ajustan márgenes de regalías para 2026.",
+      "hora": "03:45 PM"
     },
     {
-      "titulo": "GLOBAL: API de YouTube detecta caída de retención en el Pop Tradicional.",
-      "hora": "10:15 PM"
+      "categoria": "TRADE",
+      "titulo": "Inversión en startups de música sube en Latinoamérica.",
+      "hora": "04:30 PM"
     }
   ]
 }
