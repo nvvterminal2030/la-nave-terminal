@@ -1,12 +1,12 @@
 {
   "reportes": [
     {
-      "id": "B-IND-001-MAR",
-      "artista": "PAPI CRIS",
-      "analisis": "ANOMALÍA DE TRÁFICO DETECTADA VÍA YOUTUBE API. EL RADAR 'BUSCA' CONFIRMA UNA TASA DE RETENCIÓN DEL 94% EN MERCADOS DE ESPAÑA Y USA. ZONA DE INVERSIÓN MÁXIMA.",
-      "rank": "TOP 01",
-      "node": "NODO_RD_ALTO_IMPACTO",
-      "img": "https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=2000"
+      "id": "NV-WKND-001",
+      "artista": "BAD BUNNY",
+      "analisis": "EL RADAR DETECTA UNA RETENCIÓN DEL 98% EN EL ÚLTIMO LANZAMIENTO. LA DATA CONFIRMA QUE EL IMPACTO EDITORIAL SUPERA LAS MÉTRICAS DE ALGORITMO ESTÁNDAR.",
+      "rank": "GLOBAL #01",
+      "node": "NODO_PR_HIGH_IMPACT",
+      "img": ""
     }
   ]
 }
